@@ -55,3 +55,22 @@ def build_model_data(height, weight):
     num_samples = len(y)
     tx = np.c_[np.ones(num_samples), x]
     return y, tx
+
+
+def split_data(x, y, ratio, seed=1):
+    """
+    split the dataset based on the split ratio. If ratio is 0.8 
+    you will have 80% of your data set dedicated to training 
+    and the rest dedicated to testing
+    """
+    # set seed
+    np.random.seed(seed)
+    
+    split = int(ratio * x.shape[0])
+    train_ind = np.random.permutation(np.arange(x.shape[0]))[:split]
+    test_ind = np.random.permutation(np.arange(x.shape[0]))[split:]
+    
+    x_tr, y_tr = x[train_ind], y[train_ind]
+    x_te, y_te = x[test_ind], y[test_ind]
+    
+    return x_tr, y_tr, x_te, y_te
