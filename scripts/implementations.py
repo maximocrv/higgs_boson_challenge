@@ -4,6 +4,7 @@
 import numpy as np
 
 from scripts.costs import *
+from scripts.proj1_helpers import *
 
 
 def generate_w(num_intervals):
@@ -35,7 +36,7 @@ def least_squares(y, tx):
     """calculate the least squares solution."""
     a = tx.T @ tx
     b = tx.T @ y
-    w = np.linalg.solve(a,b)
+    w = np.linalg.solve(a, b)
     mse = compute_mse(y, tx, w)
     rmse = compute_rmse(y, tx, w)
     return mse, w
