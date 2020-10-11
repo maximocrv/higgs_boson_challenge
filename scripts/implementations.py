@@ -1,0 +1,101 @@
+# -*- coding: utf-8 -*-
+"""Function to compute least squared MSE and weights."""
+
+import numpy as np
+
+from scripts.costs import *
+
+
+def generate_w(num_intervals):
+    """Generate a grid of values for w0 and w1."""
+    w0 = np.linspace(-100, 200, num_intervals)
+    w1 = np.linspace(-150, 150, num_intervals)
+    return w0, w1
+
+
+def get_best_parameters(w0, w1, losses):
+    """Get the best w from the result of grid search."""
+    min_row, min_col = np.unravel_index(np.argmin(losses), losses.shape)
+    return losses[min_row, min_col], w0[min_row], w1[min_col]
+
+
+def grid_search(y, tx, w0, w1):
+    """Algorithm for grid search."""
+    losses = np.zeros((len(w0), len(w1)))
+
+    for i in range(len(w0)):
+        for j in range(len(w1)):
+            w = np.array([[w0[i]], [w1[j]]])
+            losses[i, j] = (compute_mse(y, tx, w))
+
+    return losses
+
+
+def least_squares(y, tx):
+    """calculate the least squares solution."""
+    a = tx.T @ tx
+    b = tx.T @ y
+    w = np.linalg.solve(a,b)
+    mse = compute_mse(y, tx, w)
+    rmse = compute_rmse(y, tx, w)
+    return mse, w
+
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+
+    return -1 / y.shape[0] * tx.T @ (y - tx @ w)
+
+
+def gradient_descent(y, tx, initial_w, max_iters, gamma):
+    """Gradient descent algorithm."""
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+    for n_iter in range(max_iters):
+        grad = compute_gradient(y, tx, w)
+        loss = compute_mse(y, tx, w)
+
+        w = w - gamma * grad
+
+        ws.append(w)
+        losses.append(loss)
+        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+            bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+
+    return losses, ws
+
+
+def stochastic_gradient_descent(y, tx, initial_w, batch_size, max_iters, gamma):
+    """Stochastic gradient descent algorithm."""
+    losses = []
+    ws = []
+
+    w = initial_w
+
+    for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
+        grad = compute_gradient(batch_y, batch_tx, w)
+        loss = compute_mse(batch_y, batch_tx, w)
+
+        w = w - gamma * grad
+
+        losses.append(loss)
+        ws.append(w)
+
+    #         print(f'Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
+
+    return losses, ws
+
+
+def ridge_regression(y, tx, lambda_):
+    """implement ridge regression."""
+
+    a = tx.T @ tx + 2 * lambda_ * tx.shape[0] * np.eye(tx.shape[1])
+    b = tx.T @ y
+
+    w = np.linalg.solve(a, b)
+
+    mse = compute_mse(y, tx, w)
+    rmse = compute_rmse(y, tx, w)
+
+    return mse, w
