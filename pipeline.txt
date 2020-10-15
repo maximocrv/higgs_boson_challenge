@@ -1,15 +1,23 @@
-weights: try to use and don't use them 
+- weights: try to use and don't use them 
 
-relationship tra bilanciamento e weights
+- relationship tra bilanciamento e weights
 
 -999 -> mean
 
-Which features are always corrupted
+- Which features are always corrupted
 
-Eliminate linearly dependent rows
+- Eliminate linearly dependent rows
 
-Relationships between features : covariance matrix
+- Relationships between features : covariance matrix
 
-Distributions of the variables
+- Distributions of the variables
 
-Polynomial expansion
+- Polynomial expansion
+
+- Compare different model types
+
+- Different approaches to dealing with -999 values
+
+- Additional feature column for if row contains a -999 entry
+
+- Masks to check patterns for missing features in different data points
