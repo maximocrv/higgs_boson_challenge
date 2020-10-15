@@ -1,3 +1,5 @@
+- shuffle data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 - weights: try to use and don't use them 
 
 - relationship tra bilanciamento e weights
