@@ -21,3 +21,7 @@
 - Additional feature column for if row contains a -999 entry
 
 - Masks to check patterns for missing features in different data points
+
+- normalize data/ limit ranges??.....
+
+- checking for linear dependence; before or after basis expansion?...

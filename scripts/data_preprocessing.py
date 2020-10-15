@@ -5,14 +5,51 @@ from scripts.proj1_helpers import *
 y, x, ids = load_csv_data("data/train.csv")
 
 
-def nan_to_mean(x):
-    raise NotImplementedError
-
-
 def nan_to_0(x):
-    raise NotImplementedError
+    """
+    Converts all -999 entries to 0's.
+
+    :param x: Input dataset
+    :return: Input dataset with all -999's replaced by 0's
+    """
+    x[x == -999] = 0
+    return x
 
 
 def remove_nan_features(x):
-    raise NotImplementedError
+    """
+    Removes feature columns containing -999 values.
 
+    :param x: Input data
+    :return: Returns input data with stripped columns
+    """
+    col_mins = np.min(x, axis=0)
+    x = x[:, col_mins != -999]
+    return x
+
+
+def remove_nan_entries(x):
+    """
+    Removes rows containing features with value -999
+
+    :param x: Input data
+    :return: Input data without all the rows containing -999 entries
+    """
+    row_mins = np.min(x, axis=1)
+    x = x[row_mins != -999, :]
+    return x
+
+
+def nan_to_mean(x):
+    """
+    Replace all -999 entries by the mean of their respective columns
+
+    :param x: Input data
+    :return: Input data containing column means in place of -999 entries
+    """
+    x[x == -999] = np.nan
+    col_means = np.nanmean(x, axis=0)
+    inds = np.where(np.isnan(x))
+    x[inds] = np.take(col_means, inds[1])
+
+    return x
