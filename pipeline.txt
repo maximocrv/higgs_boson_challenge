@@ -1,0 +1,15 @@
+weights: try to use and don't use them 
+
+relationship tra bilanciamento e weights
+
+-999 -> mean
+
+Which features are always corrupted
+
+Eliminate linearly dependent rows
+
+Relationships between features : covariance matrix
+
+Distributions of the variables
+
+Polynomial expansion
