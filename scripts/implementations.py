@@ -100,3 +100,32 @@ def ridge_regression(y, tx, lambda_):
     rmse = compute_rmse(y, tx, w)
 
     return mse, w
+
+
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    return np.exp(t) / (1 + np.exp(t))
+
+
+def nll_grad(y, tx, w):
+    """compute the gradient of the negative log likelihood."""
+    return tx.T @ (sigmoid(tx @ w) - y)
+
+
+def calculate_hessian(y, tx, w):
+    """return the Hessian of the loss function."""
+
+    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
+
+    return tx.T @ S @ tx
+
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient, and Hessian."""
+
+    loss = np.sum(np.log(1 + np.exp(tx @ w)) - y * tx @ w) + lambda_ * np.linalg.norm(w) ** 2
+    gradient = tx.T @ (sigmoid(tx @ w) - y) + 2 * lambda_ * w
+
+    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
+    hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
+    return loss, gradient, hessian

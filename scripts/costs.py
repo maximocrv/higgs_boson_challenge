@@ -18,3 +18,8 @@ def compute_rmse(y, tx, w):
     """
     mse = compute_mse(y, tx, w)
     return np.sqrt(2*mse)
+
+
+def log_likelihood(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    return np.sum(np.log(1+np.exp(tx @ w)) - y * tx @ w)
