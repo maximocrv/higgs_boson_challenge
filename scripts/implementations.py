@@ -129,3 +129,6 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
     hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
     return loss, gradient, hessian
+
+
+# ciao
