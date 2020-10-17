@@ -15,6 +15,16 @@ def nan_to_0(x):
     x[x == -999] = 0
     return x
 
+def set_nan(x):
+    """
+    Converts all -999 entries to nans.
+
+    :param x: Input dataset
+    :return: Input dataset with all -999's replaced by nans
+    """
+    x[x == -999] = np.nan
+    return x
+
 
 def remove_nan_features(x):
     """
@@ -47,7 +57,7 @@ def nan_to_mean(x):
     :param x: Input data
     :return: Input data containing column means in place of -999 entries
     """
-    x[x == -999] = np.nan
+    x = set_nan(x)
     col_means = np.nanmean(x, axis=0)
     inds = np.where(np.isnan(x))
     x[inds] = np.take(col_means, inds[1])
@@ -61,7 +71,7 @@ def standardize_data(x):
     :param x:
     :return:
     """
-    x[x == -999] = np.nan
+    x= set_nan(x)
 
     col_means = np.nanmean(x, axis=0)
     col_sd = np.nanstd(x, axis=0)
