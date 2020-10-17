@@ -58,12 +58,15 @@ def nan_to_mean(x):
 def standardize_data(x):
     """
 
-
     :param x:
     :return:
     """
-    col_means = x.mean(axis=0)
-    col_sd = x.std(axis=0)
+    x[x == -999] = np.nan
+
+    col_means = np.nanmean(x, axis=0)
+    col_sd = np.nanstd(x, axis=0)
+
+    x[np.isnan(x)] = 0
 
     x = (x - col_means) / col_sd
 

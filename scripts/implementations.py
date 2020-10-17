@@ -68,7 +68,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
     return losses, ws
 
 
-def stochastic_gradient_descent(y, tx, initial_w, batch_size, max_iters, gamma):
+def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1):
     """Stochastic gradient descent algorithm."""
     losses = []
     ws = []
