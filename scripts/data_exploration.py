@@ -139,6 +139,8 @@ if __name__ == '__main__':
     ind_dep = lin_dep(x)
     print(lin_dep(x))
 
+
+# data visualization with histograms
     y, xbis, ids = load_csv_data("data/train.csv")
     col_means = np.nanmean(xbis, axis=0)
     col_sd = np.nanstd(xbis, axis=0)
