@@ -15,6 +15,7 @@ def nan_to_0(x):
     x[x == -999] = 0
     return x
 
+
 def set_nan(x):
     """
     Converts all -999 entries to nans.

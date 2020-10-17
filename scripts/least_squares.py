@@ -43,14 +43,14 @@ for i, degree in enumerate(degrees):
     accuracy_ranking[i] = np.mean(temp_acc)
 
 
-tx_tr_tot = multi_build_poly(x_tr, 9)
+tx_tr_tot = multi_build_poly(x_tr, 7)
 mse, w = least_squares(y_tr, tx_tr_tot)
 
 y_te, x_te, ids_te = load_csv_data("data/test.csv")
 
 x_te = standardize_data(x_te)
-tx_te_tot = multi_build_poly(x_te, 9)
+tx_te_tot = multi_build_poly(x_te, 7)
 
 y_te_pred = predict_labels(w, tx_te_tot)
 
-create_csv_submission(ids_te, y_te_pred, 'test_submission')
+create_csv_submission(ids_te, y_te_pred, 'test_submission.csv')
