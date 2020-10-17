@@ -14,9 +14,12 @@ def build_poly(x, degree):
 
 def multi_build_poly(x, degree):
     """polynomial basis functions for multidimensional input data x"""
-    x = np.repeat(x[..., np.newaxis], degree, axis=-1)
-    x = x ** np.arange(1, degree + 1)
-    x = np.concatenate(x.transpose(2, 0, 1), axis=-1)
-    x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
+    if degree == 0:
+        x = np.ones((x.shape[0], 1))
+    else:
+        x = np.repeat(x[..., np.newaxis], degree, axis=-1)
+        x = x ** np.arange(1, degree + 1)
+        x = np.concatenate(x.transpose(2, 0, 1), axis=-1)
+        x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
 
     return x

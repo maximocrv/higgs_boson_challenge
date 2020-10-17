@@ -66,7 +66,8 @@ def standardize_data(x):
     col_means = np.nanmean(x, axis=0)
     col_sd = np.nanstd(x, axis=0)
 
-    x[np.isnan(x)] = 0
+    # x[np.isnan(x)] =
+    x = nan_to_mean(x)
 
     x = (x - col_means) / col_sd
 
