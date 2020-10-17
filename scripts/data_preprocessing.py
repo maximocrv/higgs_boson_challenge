@@ -72,7 +72,7 @@ def standardize_data(x):
     :param x:
     :return:
     """
-    x= set_nan(x)
+    x = set_nan(x)
 
     col_means = np.nanmean(x, axis=0)
     col_sd = np.nanstd(x, axis=0)
