@@ -2,13 +2,19 @@
 
 - weights: try to use and don't use them 
 
-- relationship tra bilanciamento e weights
+- relationship tra bilanciamento e weights : NON ESISTONO
 
 - -999 -> mean
 
+- Different approaches to dealing with -999 values
+
 - Which features are always corrupted
 
-- Eliminate linearly dependent rows
+- Eliminate linearly dependent rows/ columns
+
+- normalize data/ limit ranges??.....
+
+- checking for linear dependence; before or after basis expansion?...
 
 - Relationships between features : covariance matrix
 
@@ -17,15 +23,5 @@
 - Polynomial expansion
 
 - Compare different model types
-
-- Different approaches to dealing with -999 values
-
-- Additional feature column for if row contains a -999 entry
-
-- Masks to check patterns for missing features in different data points
-
-- normalize data/ limit ranges??.....
-
-- checking for linear dependence; before or after basis expansion?...
 
 - which loss functions to use??
