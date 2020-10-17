@@ -4,6 +4,7 @@
 import numpy as np
 
 from scripts.costs import *
+from scripts.helpers import batch_iter
 from scripts.proj1_helpers import *
 
 
@@ -129,5 +130,3 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
     hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
     return loss, gradient, hessian
-
-

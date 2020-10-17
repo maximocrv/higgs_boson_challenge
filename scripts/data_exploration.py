@@ -1,5 +1,3 @@
-import numpy as np
-
 from scripts.proj1_helpers import *
 
 y, x, ids = load_csv_data("data/train.csv")
