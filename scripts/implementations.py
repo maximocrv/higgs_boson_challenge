@@ -131,4 +131,3 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     return loss, gradient, hessian
 
 
-# ciao

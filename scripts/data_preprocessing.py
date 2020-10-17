@@ -53,3 +53,6 @@ def nan_to_mean(x):
     x[inds] = np.take(col_means, inds[1])
 
     return x
+
+
+
