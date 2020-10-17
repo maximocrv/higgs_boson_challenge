@@ -4,7 +4,7 @@
 
 - relationship tra bilanciamento e weights
 
--999 -> mean
+- -999 -> mean
 
 - Which features are always corrupted
 

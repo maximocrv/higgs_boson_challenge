@@ -53,3 +53,34 @@ def nan_to_mean(x):
     x[inds] = np.take(col_means, inds[1])
 
     return x
+
+
+def standardize_data(x):
+    """
+
+
+    :param x:
+    :return:
+    """
+    col_means = x.mean(axis=0)
+    col_sd = x.std(axis=0)
+
+    x = (x - col_means) / col_sd
+
+    return x
+
+
+def check_linearity(x):
+    raise NotImplementedError
+
+
+def eigen_corr(x):
+    """
+    Generate eigenvalue matrix for pearson correlation matrix.
+    :param x:
+    :return:
+    """
+    corr_mat = np.corrcoef(x)
+    eig = np.linalg.eig(corr_mat)
+
+    return eig
