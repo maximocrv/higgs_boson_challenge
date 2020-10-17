@@ -26,6 +26,7 @@ def build_k_indices (y, k_fold, seed):
                  for k in range(k_fold)]
     return np.array(k_indices)
 
+
 def cross_validation(y, x, k_indices, k, lambda_, degree):
     """return the loss of ridge regression."""
     # indices calculation
