@@ -5,7 +5,7 @@ from scripts.proj1_helpers import *
 from scripts.data_preprocessing import *
 from scripts.model_batching import build_k_indices, generate_batch
 from scripts.build_polynomial import multi_build_poly
-from scripts.implementations import compute_accuracy, log_reg_gd
+from scripts.implementations import compute_accuracy, log_reg_gd, penalized_logistic_regression
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
@@ -17,29 +17,58 @@ seed = 1
 degrees = np.arange(1, 5)
 k_fold = 5
 gammas = [1e-8, 1e-6, 1e-4, 1e-3]
-# split data in k fold
+lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
+# split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 # define lists to store the loss of training data and test data
 accuracy_ranking = np.zeros((len(gammas), len(degrees)))
-# cross validation
-for h, gamma in enumerate(gammas):
-    for i, degree in enumerate(degrees):
-        temp_acc = []
-        for k in range(k_fold):
-            _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
-            tx_tr = multi_build_poly(_x_tr, degree)
-            tx_te = multi_build_poly(_x_te, degree)
+# set mode to either lr or regularized_lr
+mode = 'lr'
 
-            # w0 = np.random.randn(tx_tr.shape[1])
-            w0 = np.random.randn(tx_tr.shape[1])
+if mode == 'lr':
+    for h, gamma in enumerate(gammas):
+        for i, degree in enumerate(degrees):
+            temp_acc = []
+            for k in range(k_fold):
+                _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
-            # ridge regression
-            nll, w_tr = log_reg_gd(_y_tr, tx_tr, w0, max_iters=30, gamma=gamma)
+                tx_tr = multi_build_poly(_x_tr, degree)
+                tx_te = multi_build_poly(_x_te, degree)
 
-            acc = compute_accuracy(w_tr, tx_te, _y_te)
+                # w0 = np.random.randn(tx_tr.shape[1])
+                w0 = np.random.randn(tx_tr.shape[1])
 
-            temp_acc.append(acc)
-        print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
-        #accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
-        accuracy_ranking[h, i] = np.mean(temp_acc)
+                # ridge regression
+                nll, w_tr = log_reg_gd(_y_tr, tx_tr, w0, max_iters=30, gamma=gamma)
+
+                acc = compute_accuracy(w_tr, tx_te, _y_te)
+
+                temp_acc.append(acc)
+            print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+            #accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
+            accuracy_ranking[h, i] = np.mean(temp_acc)
+
+elif mode == 'regularized_lr':
+    for h, gamma in enumerate(gammas):
+        for i, degree in enumerate(degrees):
+            for j, lambda_ in enumerate(lambdas):
+                temp_acc = []
+                for k in range(k_fold):
+                    _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
+
+                    tx_tr = multi_build_poly(_x_tr, degree)
+                    tx_te = multi_build_poly(_x_te, degree)
+
+                    # w0 = np.random.randn(tx_tr.shape[1])
+                    w0 = np.random.randn(tx_tr.shape[1])
+
+                    # ridge regression
+                    nll, w_tr = penalized_logistic_regression(_y_tr, tx_tr, w0, gamma, lambda_)
+
+                    acc = compute_accuracy(w_tr, tx_te, _y_te)
+
+                    temp_acc.append(acc)
+                print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+                # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
+                accuracy_ranking[h, i] = np.mean(temp_acc)

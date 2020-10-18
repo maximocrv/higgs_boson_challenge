@@ -153,3 +153,22 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
     hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
     return loss, gradient, hessian
+
+
+def regularized_log_reg_gd(y, tx, w0, max_iters, gamma, lambda_):
+    """
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    ws = [w0]
+    losses = []
+    w = w0
+
+    for i in range(max_iters):
+        loss, grad, hessian = penalized_logistic_regression(y, tx, w, lambda_)
+        w = w - gamma * grad
+
+        ws.append(w0)
+        losses.append(loss)
+
+    return loss, w
