@@ -140,13 +140,15 @@ if __name__ == '__main__':
     ind_dep = lin_dep(x)
     print(lin_dep(x))
 
-    # data visualization with histograms
+    # Data visualization
+    # Standardization
     y, xbis, ids = load_csv_data("data/train.csv")
     col_means = np.nanmean(xbis, axis=0)
     col_sd = np.nanstd(xbis, axis=0)
 
     xbis = (xbis - col_means) / col_sd
 
+    # Histograms to show the distribution of each feature, colored depending on hit/miss
     figure1 = plt.figure(1)
     for i in range(30):
         plt.subplot(5, 6, i + 1)
@@ -159,7 +161,11 @@ if __name__ == '__main__':
         plt.title(f'feature : {i}')
         plt.axis('tight')
 
+    # Lineplots of the ratios between hit and miss for different values, for each feature.
+    # if this ratio is constant then the feature does not have predictive power
     figure2 = plt.figure(2)
+    L = 50  # number of bins
+    ratio = np.zeros(L)
     for i in range(30):
         plt.subplot(5, 6, i + 1)
         k = xbis[:, i]
@@ -167,19 +173,19 @@ if __name__ == '__main__':
         kf = k[y == -1]
         kt = kt[~np.isnan(kt)]
         kf = kf[~np.isnan(kf)]
-        kthist = np.histogram(kt, bins=50, range=(k.min(), k.max()))
-        kfhist = np.histogram(kf, bins=50, range=(k.min(), k.max()))
-        for j in range(50):
-            if (kfhist[0][j] == 0 or kthist[0][j]==0):
+        kthist = np.histogram(kt, bins=L, range=(k.min(), k.max()))
+        kfhist = np.histogram(kf, bins=L, range=(k.min(), k.max()))
+        for j in range(L):
+            if (kfhist[0][j] == 0 or kthist[0][j] == 0):
                 ratio[j] = 0
             else:
                 ratio[j] = kthist[0][j] / kfhist[0][j]
-        binz = kthist[1][0:50]
+        binz = kthist[1][0:L]
         plt.plot(binz, ratio)
         plt.title(f'feature : {i}')
-        plt.ylim(0,2)
+        plt.ylim(0, 2)
 
-
+    # Creation of an array with the numbered variables names
     import pandas as pd
 
     df = pd.read_csv("data/train.csv")
