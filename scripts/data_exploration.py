@@ -12,10 +12,10 @@ def count_nan(x):
     """
     x = set_nan(x)
     truth_array = np.isnan(x)
-    return (np.sum(truth_array, axis=0) )/ x.shape[0]
+    return (np.sum(truth_array, axis=0)) / x.shape[0]
 
 
-def check_nan_positions(x,candidates):
+def check_nan_positions(x, candidates):
     "check if nan occurs in the same place, outputs the percentage of values with nans in all the candidates columns"
 
     c = np.isnan(x[:, candidates])
@@ -24,12 +24,13 @@ def check_nan_positions(x,candidates):
 
 
 def check_nan_positions(x, features):
-    "check if nan occurs in the same place, outputs the percentage of values with nans that are in all the chosen columns"
+    """check if nan occurs in the same place, outputs the percentage of values with nans that are in all the chosen
+    columns """
 
-    c= np.isnan(x[:, features])
-    check = np.sum(c,1) == features.shape[0]
+    c = np.isnan(x[:, features])
+    check = np.sum(c, 1) == features.shape[0]
 
-    value = np.sum(check)/ check.shape[0]
+    value = np.sum(check) / check.shape[0]
     return value
 
 
@@ -54,9 +55,9 @@ def create_confusion_matrix(predicted, actual) -> np.ndarray:
 def calculate_recall_precision_accuracy(confusion_matrix: np.ndarray) -> (float, float, float):
     """From the confusion matrix, return recall, precision and accuracy for class True"""
     cm = confusion_matrix
-    recall = cm[1, 1]/(cm[1, 1] + cm[0, 1])
-    precision = cm[1, 1]/(cm[1, 1] + cm[1, 0])
-    accuracy = (cm[0, 0] + cm[1, 1])/np.sum(cm)
+    recall = cm[1, 1] / (cm[1, 1] + cm[0, 1])
+    precision = cm[1, 1] / (cm[1, 1] + cm[1, 0])
+    accuracy = (cm[0, 0] + cm[1, 1]) / np.sum(cm)
     return recall, precision, accuracy
 
 
@@ -77,7 +78,7 @@ def covariance_matrix(x):
     :param x: input 
     :return: covmat : covariance matrix
     """
-    x= standardize_data(x)
+    x = standardize_data(x)
     covmat = np.corrcoef(x.T)
     return covmat
 
@@ -96,7 +97,7 @@ def lin_dep(x):
     for i in range(diff.shape[0]):
         for j in range(diff.shape[0]):
             if i != j:
-                if np.abs(diff[i,j]) < 1E-1:
+                if np.abs(diff[i, j]) < 1E-1:
                     id = np.array([i, j])
                     ind_dep.append(id)
     return ind_dep
@@ -139,18 +140,63 @@ if __name__ == '__main__':
     ind_dep = lin_dep(x)
     print(lin_dep(x))
 
-
-# data visualization with histograms
+    # Data visualization
+    # Standardization
     y, xbis, ids = load_csv_data("data/train.csv")
     col_means = np.nanmean(xbis, axis=0)
     col_sd = np.nanstd(xbis, axis=0)
 
     xbis = (xbis - col_means) / col_sd
 
-    figure = plt.figure()
-    for i in range(6):
-        plt.subplot(2, 3, i+1)
+    # Histograms to show the distribution of each feature, colored depending on hit/miss
+    figure1 = plt.figure(1)
+    for i in range(30):
+        plt.subplot(5, 6, i + 1)
         k = xbis[:, i]
-        plt.hist(k[~np.isnan(k)], bins='auto')
+        kt = k[y == 1]
+        kf = k[y == -1]
+
+        plt.hist(kt[~np.isnan(kt)], bins='auto', alpha=0.5, facecolor='b')
+        plt.hist(kf[~np.isnan(kf)], bins='auto', alpha=0.5, facecolor='r')
         plt.title(f'feature : {i}')
-        plt.xlim(-5, 5)
+        plt.axis('tight')
+
+    # Lineplots of the ratios between hit and miss for different values, for each feature.
+    # if this ratio is constant then the feature does not have predictive power
+    figure2 = plt.figure(2)
+    L = 50  # number of bins
+    ratio = np.zeros(L)
+    for i in range(30):
+        plt.subplot(5, 6, i + 1)
+        k = xbis[:, i]
+        kt = k[y == 1]
+        kf = k[y == -1]
+        kt = kt[~np.isnan(kt)]
+        kf = kf[~np.isnan(kf)]
+        kthist = np.histogram(kt, bins=L, range=(k.min(), k.max()))
+        kfhist = np.histogram(kf, bins=L, range=(k.min(), k.max()))
+        for j in range(L):
+            if (kfhist[0][j] == 0 or kthist[0][j] == 0):
+                ratio[j] = 0
+            else:
+                ratio[j] = kthist[0][j] / kfhist[0][j]
+        binz = kthist[1][0:L]
+        plt.plot(binz, ratio)
+        plt.title(f'feature : {i}')
+        plt.ylim(0, 2)
+
+    # Creation of an array with the numbered variables names
+    import pandas as pd
+
+    df = pd.read_csv("data/train.csv")
+    name_dict = {}
+    for i, name in enumerate(df.columns):
+        name_dict[f"{name}"] = f"{i - 2}_{name}"
+
+    df = df.rename(columns=name_dict)
+
+    """names = name_dict.values()
+    df_names = pd.DataFrame(names)
+    df_names.to_csv("names_vars.csv")
+    names = np.array(list(names))
+    names = names[..., np.newaxis].T"""
