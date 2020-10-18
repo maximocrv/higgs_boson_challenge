@@ -27,8 +27,8 @@ def log_likelihood(y, tx, w):
     return np.sum(np.log(1+np.exp(tx @ w)) - y * tx @ w)
 
 
-def compute_accuracy(w, x, y_true):
-    y_pred = predict_labels(w, x)
+def compute_accuracy(w, x, y_true, mode='default'):
+    y_pred = predict_labels(w, x, mode)
     true_list = y_true - y_pred
     num_true = np.where(true_list == 0)
     acc = len(num_true[0]) / y_true.shape[0]
