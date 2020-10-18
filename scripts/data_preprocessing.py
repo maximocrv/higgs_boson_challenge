@@ -83,6 +83,19 @@ def standardize_data(x):
 
     return x
 
+def balance(y,x):
+
+    datalength = y.shape[0]
+    hits = np.sum(y[y == 1])
+    misses = hits = np.sum(y[y == -1])
+    proportion_hits = hits / datalength
+    diff = misses - hits
+    features= np.array([23, 24, 25, 4, 5, 6, 12, 26, 27, 28])
+    c = np.isnan(x[:, features])
+    check = np.sum(c, 1) == features.shape[0]
+
+
+
 
 def check_linearity(x):
     raise NotImplementedError

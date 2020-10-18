@@ -132,10 +132,6 @@ if __name__ == '__main__':
 
     covariance = covariance_matrix(x)
 
-    covariance[covariance > 0.99] = 0
-    covariance[covariance > 0.6] = 10
-    covariance[covariance < -0.6] = -10
-
     "are features linearly dependent"
     ind_dep = lin_dep(x)
     print(lin_dep(x))
@@ -186,14 +182,14 @@ if __name__ == '__main__':
         plt.ylim(0, 2)
 
     # Creation of an array with the numbered variables names
-    import pandas as pd
+    """import pandas as pd
 
     df = pd.read_csv("data/train.csv")
     name_dict = {}
     for i, name in enumerate(df.columns):
         name_dict[f"{name}"] = f"{i - 2}_{name}"
 
-    df = df.rename(columns=name_dict)
+    df = df.rename(columns=name_dict)"""
 
     """names = name_dict.values()
     df_names = pd.DataFrame(names)
