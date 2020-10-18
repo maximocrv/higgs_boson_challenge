@@ -66,7 +66,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
     return losses, ws
 
 
-def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1):
+def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1, mode='ls'):
     """Stochastic gradient descent algorithm."""
     losses = []
     ws = []
@@ -74,8 +74,17 @@ def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1
     w = initial_w
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        grad = compute_gradient(batch_y, batch_tx, w)
-        loss = compute_mse(batch_y, batch_tx, w)
+        if mode == 'ls':
+            grad = compute_gradient(batch_y, batch_tx, w)
+            loss = compute_mse(batch_y, batch_tx, w)
+
+        elif mode == 'logistic_reg':
+            grad = nll_grad(batch_y, batch_tx, w)
+            loss = neg_log_loss(batch_y, batch_tx, w)
+
+        else:
+            print('please enter a valid sgd mode')
+            break
 
         w = w - gamma * grad
 
