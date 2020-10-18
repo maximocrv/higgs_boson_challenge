@@ -5,7 +5,6 @@ import numpy as np
 
 from scripts.costs import *
 from scripts.helpers import batch_iter
-from scripts.proj1_helpers import *
 
 
 def generate_w(num_intervals):
@@ -107,9 +106,34 @@ def sigmoid(t):
     return np.exp(t) / (1 + np.exp(t))
 
 
+def neg_log_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w))
+
+
 def nll_grad(y, tx, w):
     """compute the gradient of the negative log likelihood."""
     return tx.T @ (sigmoid(tx @ w) - y)
+
+
+def log_reg_gd(y, tx, w0, max_iters, gamma):
+    """
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    ws = [w0]
+    losses = []
+    w = w0
+
+    for i in range(max_iters):
+        loss = neg_log_loss(y, tx, w)
+        grad = nll_grad(y, tx, w)
+        w = w - gamma * grad
+
+        ws.append(w0)
+        losses.append(loss)
+
+    return loss, w
 
 
 def calculate_hessian(y, tx, w):

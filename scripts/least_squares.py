@@ -53,4 +53,4 @@ tx_te_tot = multi_build_poly(x_te, 7)
 
 y_te_pred = predict_labels(w, tx_te_tot)
 
-create_csv_submission(ids_te, y_te_pred, 'test_submission.csv')
+create_csv_submission(ids_te, y_te_pred, 'submission.csv')

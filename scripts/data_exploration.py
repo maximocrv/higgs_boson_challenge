@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 from scripts.proj1_helpers import *
 from scripts.data_preprocessing import *
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     y, x, ids = load_csv_data("data/train.csv")
 
     "how are the nans connected?"
-    x[x == -999] = np.nan
+    x = set_nan(x)
 
     features1 = np.array([4, 5, 6, 12, 26, 27, 28])
     value1 = check_nan_positions(x, features1)
@@ -138,3 +138,19 @@ if __name__ == '__main__':
     "are features linearly dependent"
     ind_dep = lin_dep(x)
     print(lin_dep(x))
+
+
+# data visualization with histograms
+    y, xbis, ids = load_csv_data("data/train.csv")
+    col_means = np.nanmean(xbis, axis=0)
+    col_sd = np.nanstd(xbis, axis=0)
+
+    xbis = (xbis - col_means) / col_sd
+
+    figure = plt.figure()
+    for i in range(6):
+        plt.subplot(2, 3, i+1)
+        k = xbis[:, i]
+        plt.hist(k[~np.isnan(k)], bins='auto')
+        plt.title(f'feature : {i}')
+        plt.xlim(-5, 5)
