@@ -15,12 +15,6 @@ def count_nan(x):
     return (np.sum(truth_array, axis=0)) / x.shape[0]
 
 
-def check_nan_positions(x, candidates):
-    "check if nan occurs in the same place, outputs the percentage of values with nans in all the candidates columns"
-
-    c = np.isnan(x[:, candidates])
-
-    return c
 
 
 def check_nan_positions(x, features):
