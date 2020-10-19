@@ -128,11 +128,3 @@ def eigen_corr(x):
     eig = np.linalg.eig(corr_mat)
 
     return eig
-
-
-y, x, ids = load_csv_data("data/train.csv")
-yc,xc = balance (y,x)
-hits = np.sum(yc[yc == 1])
-misses = - np.sum(yc[yc == -1])
-datalength = yc.shape[0]
-proportion_hitsc = hits / datalength
