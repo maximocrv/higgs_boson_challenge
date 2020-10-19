@@ -66,7 +66,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
     return losses, ws
 
 
-def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1):
+def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1, mode='ls'):
     """Stochastic gradient descent algorithm."""
     losses = []
     ws = []
@@ -74,8 +74,17 @@ def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1
     w = initial_w
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        grad = compute_gradient(batch_y, batch_tx, w)
-        loss = compute_mse(batch_y, batch_tx, w)
+        if mode == 'ls':
+            grad = compute_gradient(batch_y, batch_tx, w)
+            loss = compute_mse(batch_y, batch_tx, w)
+
+        elif mode == 'logistic_reg':
+            grad = nll_grad(batch_y, batch_tx, w)
+            loss = neg_log_loss(batch_y, batch_tx, w)
+
+        else:
+            print('please enter a valid sgd mode')
+            break
 
         w = w - gamma * grad
 
@@ -153,3 +162,22 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
     hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
     return loss, gradient, hessian
+
+
+def regularized_log_reg_gd(y, tx, w0, max_iters, gamma, lambda_):
+    """
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    ws = [w0]
+    losses = []
+    w = w0
+
+    for i in range(max_iters):
+        loss, grad, hessian = penalized_logistic_regression(y, tx, w, lambda_)
+        w = w - gamma * grad
+
+        ws.append(w0)
+        losses.append(loss)
+
+    return loss, w

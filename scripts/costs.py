@@ -27,8 +27,8 @@ def log_likelihood(y, tx, w):
     return np.sum(np.log(1+np.exp(tx @ w)) - y * tx @ w)
 
 
-def compute_accuracy(w, x, y_true):
-    y_pred = predict_labels(w, x)
+def compute_accuracy(w, x, y_true, mode='default'):
+    y_pred = predict_labels(w, x, mode)
     true_list = y_true - y_pred
     num_true = np.where(true_list == 0)
     acc = len(num_true[0]) / y_true.shape[0]
@@ -46,3 +46,4 @@ def matthews_coeff (w, x, y_true):
     # mc = (TP*TN - FP*FN)/sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN))
     mc = (cm[1,1]*cm[0,0]-cm[1,0]*cm[0,1])/np.sqrt((cm[1,1]+cm[1,0])*(cm[1,1]+cm[0,1])*(cm[0,0]+cm[1,0])*(cm[0,0]+cm[0,1]))
     return mc
+

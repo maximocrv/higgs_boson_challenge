@@ -44,7 +44,6 @@ for h, lambda_ in enumerate(lambdas):
         #accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
 
-
 # tx_tr_tot = multi_build_poly(x_tr, 7)
 # mse, w = least_squares(y_tr, tx_tr_tot)
 #
