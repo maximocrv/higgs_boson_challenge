@@ -6,10 +6,6 @@ from scripts.model_batching import build_k_indices, generate_batch
 from scripts.build_polynomial import multi_build_poly
 from scripts.implementations import compute_accuracy, least_squares
 
-# standardize data after polynomial basis expansion?
-# function to generate test predictions?.....
-# implement confusion matrix....
-
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 x_tr = standardize_data(x_tr)
