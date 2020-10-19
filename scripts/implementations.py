@@ -3,8 +3,8 @@
 
 import numpy as np
 
-from scripts.costs import *
-from scripts.helpers import batch_iter
+from scripts.costs import compute_mse, compute_rmse
+from scripts.data_preprocessing import batch_iter
 
 
 def generate_w(num_intervals):

@@ -1,10 +1,8 @@
 import numpy as np
 
 from scripts.proj1_helpers import load_csv_data
-from scripts.data_preprocessing import *
-from scripts.model_batching import build_k_indices, generate_batch
-from scripts.build_polynomial import multi_build_poly
-from scripts.implementations import compute_accuracy, least_squares, ridge_regression
+from scripts.implementations import ridge_regression
+from scripts.data_preprocessing import standardize_data, multi_build_poly, build_k_indices, generate_batch
 
 # standardize data after polynomial basis expansion?
 # function to generate test predictions?.....

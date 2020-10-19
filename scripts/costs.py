@@ -6,6 +6,7 @@ import numpy as np
 from scripts.proj1_helpers import predict_labels
 from scripts.data_exploration import calculate_recall_precision_accuracy, create_confusion_matrix
 
+
 def compute_mse(y, tx, w):
     """
     Compute mean square error.
@@ -35,10 +36,12 @@ def compute_accuracy(w, x, y_true, mode='default'):
 
     return acc
 
+
 def compute_f1score (w, x, y_true):
     y_pred = predict_labels(w, x)
     recall, precision, accuracy = calculate_recall_precision_accuracy(create_confusion_matrix(y_pred, y_true))
     return 2*(precision*recall)/(precision+recall)
+
 
 def matthews_coeff (w, x, y_true):
     y_pred = predict_labels(w, x)

@@ -1,6 +1,6 @@
 import numpy as np
 
-from scripts.proj1_helpers import *
+from scripts.proj1_helpers import load_csv_data
 
 y, x, ids = load_csv_data("data/train.csv")
 
@@ -83,7 +83,8 @@ def standardize_data(x):
 
     return x
 
-def balance(y,x):
+
+def balance(y, x):
     """
 
     :param y: classification feature, 1 or -1
@@ -114,6 +115,7 @@ def balance(y,x):
     diffv = missesv - hitsv
     return yv, xv
 
+
 def check_linearity(x):
     raise NotImplementedError
 
@@ -128,3 +130,94 @@ def eigen_corr(x):
     eig = np.linalg.eig(corr_mat)
 
     return eig
+
+
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    x = np.tile(x, (degree+1, 1)).transpose()
+    pwrs = np.arange(0, degree+1)
+    x = x**pwrs
+    return x
+
+
+def multi_build_poly(x, degree):
+    """polynomial basis functions for multidimensional input data x"""
+    if degree == 0:
+        x = np.ones((x.shape[0], 1))
+    else:
+        x = np.repeat(x[..., np.newaxis], degree, axis=-1)
+        x = x ** np.arange(1, degree + 1)
+        x = np.concatenate(x.transpose(2, 0, 1), axis=-1)
+        x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
+        #tx = np.c_[np.ones(num_samples), x]
+    return x
+
+
+def split_data(x, y, ratio, seed=1):
+    """
+    split the dataset based on the split ratio. If ratio is 0.8
+    you will have 80% of your data set dedicated to training
+    and the rest dedicated to testing
+    """
+    # set seed
+    np.random.seed(seed)
+
+    split = int(ratio * x.shape[0])
+    train_ind = np.random.permutation(np.arange(x.shape[0]))[:split]
+    test_ind = np.random.permutation(np.arange(x.shape[0]))[split:]
+
+    x_tr, y_tr = x[train_ind], y[train_ind]
+    x_te, y_te = x[test_ind], y[test_ind]
+
+    return x_tr, y_tr, x_te, y_te
+
+
+def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+    """
+    Generate a minibatch iterator for a dataset.
+    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
+    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
+    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
+    Example of use :
+    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
+        <DO-SOMETHING>
+    """
+    data_size = len(y)
+
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
+
+def build_k_indices(y, k_fold, seed):
+    """build k indices for k-fold."""
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval]
+                 for k in range(k_fold)]
+    return np.array(k_indices)
+
+
+def generate_batch(y, x, k_indices, k):
+    """return the loss of ridge regression."""
+    # indices calculation
+    te_indices = k_indices[k]
+    tr_indices = k_indices[~(np.arange(k_indices.shape[0])==k)]
+    tr_indices = tr_indices.reshape(-1)
+    # dividing x and y in training and testing set
+    x_te = x[te_indices]
+    x_tr = x[tr_indices]
+    y_te = y[te_indices]
+    y_tr = y[tr_indices]
+    return x_tr, y_tr, x_te, y_te

@@ -1,17 +1,10 @@
 import numpy as np
 
-from scripts.proj1_helpers import load_csv_data
-from scripts.data_preprocessing import *
-from scripts.model_batching import build_k_indices, generate_batch
-from scripts.build_polynomial import multi_build_poly
-from scripts.implementations import compute_accuracy, least_squares, gradient_descent, stochastic_gradient_descent
+from scripts.costs import compute_accuracy
+from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
+from scripts.implementations import least_squares, gradient_descent, stochastic_gradient_descent
+from scripts.data_preprocessing import build_k_indices, generate_batch, standardize_data, multi_build_poly
 
-# standardize data after polynomial basis expansion?
-# function to generate test predictions?.....
-# implement confusion matrix....
-# remove features 15, 18, 20
-# balance dataset?....
-# remove 30% of 40% dataset containing nans and misses (to balance dataset!!!!!)
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 

@@ -1,12 +1,9 @@
 import numpy as np
 
-from scripts.helpers import batch_iter
-from scripts.proj1_helpers import *
-from scripts.data_preprocessing import *
-from scripts.model_batching import build_k_indices, generate_batch
-from scripts.build_polynomial import multi_build_poly
-from scripts.implementations import compute_accuracy, log_reg_gd, penalized_logistic_regression, \
-    stochastic_gradient_descent
+from scripts.costs import compute_accuracy
+from scripts.proj1_helpers import load_csv_data
+from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch
+from scripts.implementations import log_reg_gd, penalized_logistic_regression, stochastic_gradient_descent
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # x_tr = nan_to_mean(x_tr)

@@ -1,7 +1,8 @@
 import numpy as np
+
 import matplotlib.pyplot as plt
-from scripts.proj1_helpers import *
-from scripts.data_preprocessing import *
+from scripts.data_preprocessing import set_nan, standardize_data
+from scripts.proj1_helpers import load_csv_data
 
 
 def count_nan(x):
@@ -13,8 +14,6 @@ def count_nan(x):
     x = set_nan(x)
     truth_array = np.isnan(x)
     return (np.sum(truth_array, axis=0)) / x.shape[0]
-
-
 
 
 def check_nan_positions(x, features):
@@ -166,7 +165,7 @@ if __name__ == '__main__':
         kthist = np.histogram(kt, bins=L, range=(k.min(), k.max()))
         kfhist = np.histogram(kf, bins=L, range=(k.min(), k.max()))
         for j in range(L):
-            if (kfhist[0][j] == 0 or kthist[0][j] == 0):
+            if kfhist[0][j] == 0 or kthist[0][j] == 0:
                 ratio[j] = 0
             else:
                 ratio[j] = kthist[0][j] / kfhist[0][j]

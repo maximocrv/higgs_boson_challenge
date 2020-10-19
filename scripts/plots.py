@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """function for plot."""
-import matplotlib.pyplot as plt
 import numpy as np
-from grid_search import get_best_parameters
+
+import matplotlib.pyplot as plt
+
+from scripts.implementations import get_best_parameters
 
 
 def prediction(w0, w1, mean_x, std_x):

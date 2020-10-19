@@ -11,7 +11,7 @@ def load_csv_data(data_path, sub_sample=False, mode='default'):
     ids = x[:, 0].astype(np.int)
     input_data = x[:, 2:]
 
-    # convert class labels from strings to binary (-1,1)
+    # convert class labels from strings to binary (-1,1) (or also one-hot encoding)
     yb = np.ones(len(y))
     if mode == 'default':
         yb[np.where(y == 'b')] = -1
