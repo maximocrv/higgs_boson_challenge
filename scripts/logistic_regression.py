@@ -9,10 +9,10 @@ from scripts.implementations import compute_accuracy, log_reg_gd, penalized_logi
     stochastic_gradient_descent
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
-x_tr = nan_to_mean(x_tr)
+# x_tr = nan_to_mean(x_tr)
 
 #STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
-# x_tr = standardize_data(x_tr)
+x_tr = standardize_data(x_tr)
 
 
 seed = 1
@@ -66,10 +66,9 @@ elif mode == 'lr_sgd':
 
                 tx_tr = standardize_data(tx_tr[:, 1:])
                 tx_tr = np.concatenate((np.ones((tx_tr.shape[0], 1)), tx_tr), axis=1)
-
+                #
                 tx_te = standardize_data(tx_te[:, 1:])
                 tx_te = np.concatenate((np.ones((tx_te.shape[0], 1)), tx_te), axis=1)
-
 
                 # w0 = np.random.randn(tx_tr.shape[1])
                 w0 = np.random.randn(tx_tr.shape[1])
@@ -111,25 +110,25 @@ elif mode == 'regularized_lr':
                 # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
                 accuracy_ranking[h, i] = np.mean(temp_acc)
 
-gamma = 1e-1
-degree = 6
-tx_tr_tot = multi_build_poly(x_tr, degree)
-tx_tr_tot = standardize_data(tx_tr_tot[:, 1:])
-tx_tr_tot = np.concatenate((np.ones((tx_tr_tot.shape[0], 1)), tx_tr_tot), axis=1)
-
-w0 = np.random.randn(tx_tr_tot.shape[1])
-nll, w = stochastic_gradient_descent(y_tr, tx_tr_tot, w0, max_iters=5000, gamma=gamma, batch_size=1,
-                                     mode='logistic_reg')
-w = w[-1]
-
-y_te, x_te, ids_te = load_csv_data("data/test.csv", mode='one_hot')
-x_te = nan_to_mean(x_te)
-
-tx_te_tot = multi_build_poly(x_te, degree)
-tx_te_tot = standardize_data(tx_te_tot[:, 1:])
-tx_te_tot = np.concatenate((np.ones((tx_te_tot.shape[0], 1)), tx_te_tot), axis=1)
-
-y_te_pred = predict_labels(w, tx_te_tot, mode='one_hot')
-y_te_pred[y_te_pred == 0] = -1
-
-create_csv_submission(ids_te, y_te_pred, 'log_reg_sgd_submission.csv')
+# gamma = 1e-1
+# degree = 6
+# tx_tr_tot = multi_build_poly(x_tr, degree)
+# tx_tr_tot = standardize_data(tx_tr_tot[:, 1:])
+# tx_tr_tot = np.concatenate((np.ones((tx_tr_tot.shape[0], 1)), tx_tr_tot), axis=1)
+#
+# w0 = np.random.randn(tx_tr_tot.shape[1])
+# nll, w = stochastic_gradient_descent(y_tr, tx_tr_tot, w0, max_iters=5000, gamma=gamma, batch_size=1,
+#                                      mode='logistic_reg')
+# w = w[-1]
+#
+# y_te, x_te, ids_te = load_csv_data("data/test.csv", mode='one_hot')
+# x_te = nan_to_mean(x_te)
+#
+# tx_te_tot = multi_build_poly(x_te, degree)
+# tx_te_tot = standardize_data(tx_te_tot[:, 1:])
+# tx_te_tot = np.concatenate((np.ones((tx_te_tot.shape[0], 1)), tx_te_tot), axis=1)
+#
+# y_te_pred = predict_labels(w, tx_te_tot, mode='one_hot')
+# y_te_pred[y_te_pred == 0] = -1
+#
+# create_csv_submission(ids_te, y_te_pred, 'log_reg_sgd_submission.csv')
