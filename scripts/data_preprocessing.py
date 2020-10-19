@@ -84,19 +84,35 @@ def standardize_data(x):
     return x
 
 def balance(y,x):
+    """
+
+    :param y: classification feature, 1 or -1
+    :param x: input matrix
+    :return: yv and xv, with equal hits and misses
+    """
     x = set_nan(x)
     datalength = y.shape[0]
     hits = np.sum(y[y == 1])
-    misses = hits = np.sum(y[y == -1])
+    misses = - np.sum(y[y == -1])
     proportion_hits = hits / datalength
     diff = misses - hits
 
     features = np.array([23, 24, 25, 4, 5, 6, 12, 26, 27, 28])
-    c = np.isnan(x[:, features])
-    check = np.sum(c, 1) == features.shape[0]
-    miss_sub= np.sum(check)
+    nancount = np.isnan(x[:, features])
+    nancount_allfeat = np.sum(nancount, 1) == features.shape[0]
+    misses_subgroup = np.sum(nancount_allfeat)
+    assert misses_subgroup > diff, "not enough misses to cut that are nans in the selected features"
+    all_indexes = np.argwhere(nancount_allfeat)
+    cut_indexes = np.random.choice(all_indexes.flatten(), size=np.int(diff), replace=False )
 
-
+    xv = np.delete(x, cut_indexes, axis=0)
+    yv = np.delete(y, cut_indexes, axis=0)
+    datalengthv = yv.shape[0]
+    hitsv = np.sum(yv[yv == 1])
+    missesv = - np.sum(yv[yv == -1])
+    proportion_hitsv = hitsv / datalengthv
+    diffv = missesv - hitsv
+    return yv, xv
 
 def check_linearity(x):
     raise NotImplementedError
@@ -112,3 +128,11 @@ def eigen_corr(x):
     eig = np.linalg.eig(corr_mat)
 
     return eig
+
+
+y, x, ids = load_csv_data("data/train.csv")
+yc,xc = balance (y,x)
+hits = np.sum(yc[yc == 1])
+misses = - np.sum(yc[yc == -1])
+datalength = yc.shape[0]
+proportion_hitsc = hits / datalength
