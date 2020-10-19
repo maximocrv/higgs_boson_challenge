@@ -121,13 +121,15 @@ def balance_fromnans(y, x):
     x = set_nan(x)
     datalength = y.shape[0]
     hits = np.sum(y[y == 1])
-    misses = - np.sum(y[y == -1])
+    # misses = - np.sum(y[y == -1])
+    misses = len(y[y == 0])
     proportion_hits = hits / datalength
     diff = misses - hits
 
     features = np.array([23, 24, 25, 4, 5, 6, 12, 26, 27, 28])
     nancount = np.isnan(x[:, features])
-    nancount_allfeat = (np.sum(nancount, 1) == features.shape[0]) & (y == -1)
+    # nancount_allfeat = (np.sum(nancount, 1) == features.shape[0]) & (y == -1)
+    nancount_allfeat = (np.sum(nancount, 1) == features.shape[0]) & (y == 0)
     misses_subgroup = np.sum(nancount_allfeat)
 
     if misses_subgroup < diff:
@@ -148,6 +150,7 @@ def balance_fromnans(y, x):
     missesv = - np.sum(yv[yv == -1])
     proportion_hitsv = hitsv / datalengthv
     diffv = missesv - hitsv
+
     return yv, xv
 
 
