@@ -51,7 +51,7 @@ def remove_nan_entries(x):
     return x
 
 
-def nan_to_mean(x):
+def convert_nan(x, mode):
     """
     Replace all -999 entries by the mean of their respective columns
 
@@ -59,25 +59,27 @@ def nan_to_mean(x):
     :return: Input data containing column means in place of -999 entries
     """
     x = set_nan(x)
-    col_means = np.nanmean(x, axis=0)
-    inds = np.where(np.isnan(x))
-    x[inds] = np.take(col_means, inds[1])
+    if mode == 'mean':
+        col_vals = np.nanmean(x, axis=0)
 
+    elif mode == 'median':
+        col_vals = np.nanmedian(x, axis=0)
+
+    inds = np.where(np.isnan(x))
+    x[inds] = np.take(col_vals, inds[1])
     return x
 
 
-def standardize_data(x):
+def standardize_data(x, nan_mode):
     """
 
     :param x:
     :return:
     """
-    x = nan_to_mean(x)
+    x = convert_nan(x, nan_mode)
 
     col_means = np.nanmean(x, axis=0)
     col_sd = np.nanstd(x, axis=0)
-
-    # x[np.isnan(x)] =
 
     x = (x - col_means) / col_sd
 

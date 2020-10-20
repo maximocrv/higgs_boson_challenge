@@ -3,16 +3,23 @@ import numpy as np
 from scripts.costs import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch, balance_fromnans, \
-    multi_build_poly, nan_to_mean
+    multi_build_poly, convert_nan
 from scripts.implementations import log_reg_gd, penalized_logistic_regression, stochastic_gradient_descent, \
     regularized_log_reg_gd
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
-# x_tr = nan_to_mean(x_tr)
+
 
 y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 #STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
-x_tr = standardize_data(x_tr)
+# try the median or mean
+x_tr = standardize_data(x_tr,'median')
+
+# Choice of variables to cut based on covariance and histograms
+cut_features = np.array([9, 29, 3,   4])
+cut_features2 = np.array([15, 18, 20])
+cut_features3 = np.array([4,5,6,12,26,27,28])
+#x_tr = np.delete(x_tr, cut_features, axis=1)
 
 
 seed = 1
@@ -23,7 +30,7 @@ lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
-# set mode to either lr or regularized_lr
+# set mode to either lr, lr_sgd or regularized_lr
 mode = 'regularized_lr'
 
 if mode == 'lr':
@@ -116,6 +123,7 @@ elif mode == 'regularized_lr':
                 # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
                 accuracy_ranking[h, i, j] = np.mean(temp_acc)
 
+
 gamma = 1e-1
 degree = 5
 # x_tr and y_tr already balanced from nans and standardized
@@ -129,8 +137,20 @@ nll, w = stochastic_gradient_descent(y_tr, tx_tr_tot, w0, max_iters=10000, gamma
                                      mode='logistic_reg')
 w = w[-1]
 
+
 y_te, x_te, ids_te = load_csv_data("data/test.csv", mode='one_hot')
-x_te = standardize_data(x_te)
+
+
+
+
+# Choice of variables to cut based on covariance and histograms
+cut_features = np.array([9, 29, 3,   4])
+cut_features2 = np.array([15, 18, 20])
+cut_features3 = np.array([4,5,6,12,26,27,28])
+#x_tr = np.delete(x_tr, cut_features, axis=1)
+
+# nan to mean or median
+x_te = standardize_data(x_te,'median')
 
 tx_te_tot = multi_build_poly(x_te, degree)
 tx_te_tot = standardize_data(tx_te_tot[:, 1:])

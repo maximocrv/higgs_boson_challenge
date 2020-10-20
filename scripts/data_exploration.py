@@ -71,7 +71,7 @@ def covariance_matrix(x):
     :param x: input 
     :return: covmat : covariance matrix
     """
-    x = standardize_data(x)
+    x = standardize_data(x,'mean')
     covmat = np.corrcoef(x.T)
     return covmat
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     "how are the nans connected?"
     x = set_nan(x)
-
+    nan_ratios = count_nan(x)
     features1 = np.array([4, 5, 6, 12, 26, 27, 28])
     value1 = check_nan_positions(x, features1)
 
