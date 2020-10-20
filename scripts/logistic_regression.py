@@ -14,6 +14,9 @@ from scripts.implementations import log_reg_gd, penalized_logistic_regression, s
 # test all the above with ridge regression
 nan_mode = 'mean'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
+# balance dataset
+y_tr, x_tr = balance_fromnans(y_tr, x_tr)
+
 # unprocessed highly correlated features
 features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
 
@@ -22,8 +25,6 @@ features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
 
 # highly correlated features no nans
 x_tr = np.delete(x_tr, features, axis=1)
-
-y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 #STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
 # try the median or mean
 x_tr = standardize_data(x_tr, nan_mode=nan_mode)
