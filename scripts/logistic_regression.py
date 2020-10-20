@@ -7,6 +7,7 @@ from scripts.data_preprocessing import standardize_data, build_k_indices, genera
 from scripts.implementations import log_reg_gd, penalized_logistic_regression, stochastic_gradient_descent, \
     regularized_log_reg_gd
 
+# streamlining hyperparameter tuning and testing across all optimization methods!!!!!!
 # logistic regression sgd is best example of how to perform preprocessing etc
 # standardizing continuous variables and leaving categorical variables be
 # test feature elimination based on unprocessed highcorr features and nan to mean highcorr features
@@ -14,6 +15,7 @@ from scripts.implementations import log_reg_gd, penalized_logistic_regression, s
 # implement accuracy metric using distribution across folds (i.e. max(mean(acc) - 2*sd(acc)))
 # PCA
 # test all the above with ridge regression
+
 nan_mode = 'median'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
