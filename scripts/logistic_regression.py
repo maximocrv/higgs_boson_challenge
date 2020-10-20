@@ -11,9 +11,10 @@ from scripts.implementations import log_reg_gd, penalized_logistic_regression, s
 # standardizing continuous variables and leaving categorical variables be
 # test feature elimination based on unprocessed highcorr features and nan to mean highcorr features
 # test mean and median nan mode w logistic regression
+# implement accuracy metric using distribution across folds (i.e. max(mean(acc) - 2*sd(acc)))
 # PCA
 # test all the above with ridge regression
-nan_mode = 'mean'
+nan_mode = 'median'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
 y_tr, x_tr = balance_fromnans(y_tr, x_tr)
@@ -46,7 +47,8 @@ lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
-mode = 'lr_sgd'
+# mode = 'lr_sgd'
+mode = 'submission'
 
 if mode == 'lr':
     accuracy_ranking = np.zeros((len(gammas), len(degrees)))
@@ -95,7 +97,7 @@ elif mode == 'lr_sgd':
                 w0 = np.random.randn(tx_tr.shape[1])
 
                 # ridge regression
-                nll_tr, w_tr = stochastic_gradient_descent(_y_tr, tx_tr, w0, max_iters=30000, gamma=gamma, batch_size=1,
+                nll_tr, w_tr = stochastic_gradient_descent(_y_tr, tx_tr, w0, max_iters=5000, gamma=gamma, batch_size=1,
                                                            mode='logistic_reg')
 
                 w = w_tr[-1]
@@ -137,9 +139,12 @@ elif mode == 'regularized_lr':
                 print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
                 # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
                 accuracy_ranking[h, i, j] = np.mean(temp_acc)
+elif mode == 'submission':
+    print('gl hf')
 
-
-gamma = 1e-1
+# gamma = np.argmax(accuracy_ranking, axis=0)
+# degree = np.argmax(accuracy_ranking, axis=1)
+gamma = 1e-3
 degree = 5
 # x_tr and y_tr already balanced from nans and standardized
 tx_tr_tot = multi_build_poly(x_tr, degree)
@@ -148,18 +153,15 @@ tx_tr_tot = standardize_data(tx_tr_tot[:, 1:])
 tx_tr_tot = np.concatenate((np.ones((tx_tr_tot.shape[0], 1)), tx_tr_tot), axis=1)
 
 w0 = np.random.randn(tx_tr_tot.shape[1])
-nll, w = stochastic_gradient_descent(y_tr, tx_tr_tot, w0, max_iters=10000, gamma=gamma, batch_size=1,
+nll, w = stochastic_gradient_descent(y_tr, tx_tr_tot, w0, max_iters=50000, gamma=gamma, batch_size=1,
                                      mode='logistic_reg')
 w = w[-1]
 
 
 y_te, x_te, ids_te = load_csv_data("data/test.csv", mode='one_hot')
-
-# Choice of variables to cut based on covariance and histograms
-
+x_te = np.delete(x_te, features, axis=1)
 # nan to mean or median
 x_te = standardize_data(x_te, nan_mode=nan_mode)
-# x_te = np.delete(x_te, cut_features, axis=1)
 
 tx_te_tot = multi_build_poly(x_te, degree)
 tx_te_tot = standardize_data(tx_te_tot[:, 1:], nan_mode=nan_mode)
