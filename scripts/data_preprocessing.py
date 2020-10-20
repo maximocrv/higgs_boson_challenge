@@ -70,9 +70,10 @@ def convert_nan(x, mode):
     return x
 
 
-def standardize_data(x, nan_mode):
+def standardize_data(x, nan_mode='mean'):
     """
 
+    :param nan_mode:
     :param x:
     :return:
     """
