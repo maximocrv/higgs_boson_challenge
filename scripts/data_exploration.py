@@ -71,7 +71,7 @@ def covariance_matrix(x):
     :param x: input 
     :return: covmat : covariance matrix
     """
-    x = standardize_data(x,'mean')
+    x = standardize_data(x, 'mean')
     covmat = np.corrcoef(x.T)
     return covmat
 
@@ -189,3 +189,7 @@ if __name__ == '__main__':
     df_names.to_csv("names_vars.csv")
     names = np.array(list(names))
     names = names[..., np.newaxis].T"""
+
+    # highly correlated features using unprocessed dataset [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
+    # highly correlated features using nan_to_mean dataset [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
+    # note that standardizing (i.e. transforming to standard normal RV has no effect on correlations)
