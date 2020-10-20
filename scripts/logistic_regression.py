@@ -25,13 +25,14 @@ features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
 # features = [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
 
 # highly correlated features no nans
-x_tr = np.delete(x_tr, features, axis=1)
+# features = INSERT INDICES
 
 # Choice of variables to cut based on covariance and histograms
 cut_features = np.array([9, 29, 3, 4])
 cut_features2 = np.array([15, 18, 20])
 cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
-#x_tr = np.delete(x_tr, cut_features, axis=1)
+# x_tr = np.delete(x_tr, cut_features, axis=1)
+x_tr = np.delete(x_tr, features, axis=1)
 
 # STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
 x_tr = standardize_data(x_tr, nan_mode=nan_mode)
