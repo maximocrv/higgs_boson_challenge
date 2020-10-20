@@ -1,34 +1,31 @@
 # standardize data after polynomial basis expansion?
-# function to generate test predictions?.....
+# function to generate test predictions?..... is this run.py descritta sul doc?
 # implement confusion matrix....
 # remove features 15, 18, 20
-# balance dataset?....
-# remove 30% of 40% dataset containing nans and misses (to balance dataset!!!!!)
-# test newton's method, random forest?...
+# balance dataset done
+# remove 30% of 40% dataset containing nans and misses (to balance dataset!) yep done
+# test newton's method, random forest?... idk do we have time?
 
-- shuffle data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+- shuffle data!
 
-- weights: try to use and don't use them 
+- normalize data = mean to 0 and variance to 1
 
-- relationship tra bilanciamento e weights : NON ESISTONO
+- -999 -> mean or median
 
-- -999 -> mean
+- Different approaches to dealing with -999 values: mean or median or eliminate features
 
-- Different approaches to dealing with -999 values
+- Which features are always corrupted? three groups, 15 40 70
 
-- Which features are always corrupted
+- Eliminate linearly dependent rows/ columns: no directly linearly dependent features. Role of linear dependency on rows
+unclear, ASK TA
 
-- Eliminate linearly dependent rows/ columns
+- checking for linear dependence; before or after basis expansion? does it make any difference? ASK TA
 
-- normalize data/ limit ranges??.....
+- Relationships between features : covariance matrix = eliminate features with correlation over 90%?
 
-- checking for linear dependence; before or after basis expansion?...
+- Distributions of the variables : explored using histograms and graphs of the hit/miss ratio for each variable
 
-- Relationships between features : covariance matrix
-
-- Distributions of the variables
-
-- Polynomial expansion
+- Polynomial expansion done
 
 - Compare different model types
 
