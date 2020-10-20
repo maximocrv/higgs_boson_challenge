@@ -1,5 +1,6 @@
 import numpy as np
 
+from scripts.costs import compute_accuracy
 from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import ridge_regression
 from scripts.data_preprocessing import standardize_data, multi_build_poly, build_k_indices, generate_batch
