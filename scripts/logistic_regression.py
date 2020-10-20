@@ -18,19 +18,19 @@ y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
 y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 
-# unprocessed highly correlated features
-features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
-
-# nan to mean highly correlated features
-# features = [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
-
-# highly correlated features no nans
-# features = INSERT INDICES
 
 # Choice of variables to cut based on covariance and histograms
 cut_features = np.array([9, 29, 3, 4])
 cut_features2 = np.array([15, 18, 20])
 cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
+
+# unprocessed highly correlated features
+features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
+# nan to mean highly correlated features
+# features = [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
+# highly correlated features no nans
+# features = INSERT INDICES
+
 # x_tr = np.delete(x_tr, cut_features, axis=1)
 x_tr = np.delete(x_tr, features, axis=1)
 
@@ -46,7 +46,7 @@ lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
-mode = 'regularized_lr'
+mode = 'lr_sgd'
 
 if mode == 'lr':
     accuracy_ranking = np.zeros((len(gammas), len(degrees)))
