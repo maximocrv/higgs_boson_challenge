@@ -7,10 +7,11 @@ from scripts.data_preprocessing import standardize_data, build_k_indices, genera
 from scripts.implementations import log_reg_gd, penalized_logistic_regression, stochastic_gradient_descent, \
     regularized_log_reg_gd
 
-# PCA
+# logistic regression sgd is best example of how to perform preprocessing etc
 # standardizing continuous variables and leaving categorical variables be
 # test feature elimination based on unprocessed highcorr features and nan to mean highcorr features
 # test mean and median nan mode w logistic regression
+# PCA
 # test all the above with ridge regression
 nan_mode = 'mean'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
@@ -25,16 +26,15 @@ features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
 
 # highly correlated features no nans
 x_tr = np.delete(x_tr, features, axis=1)
-#STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
-# try the median or mean
-x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 # Choice of variables to cut based on covariance and histograms
 cut_features = np.array([9, 29, 3, 4])
 cut_features2 = np.array([15, 18, 20])
-cut_features3 = np.array([4,5,6,12,26,27,28])
+cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
 #x_tr = np.delete(x_tr, cut_features, axis=1)
 
+# STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
+x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
 degrees = np.arange(3, 8)
