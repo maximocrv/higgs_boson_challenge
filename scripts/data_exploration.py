@@ -24,7 +24,7 @@ def check_nan_positions(x, features):
     check = np.sum(c, 1) == features.shape[0]
 
     value = np.sum(check) / check.shape[0]
-    return value
+    return value * 100
 
 
 def create_confusion_matrix(predicted, actual) -> np.ndarray:
@@ -74,6 +74,29 @@ def covariance_matrix(x):
     x = standardize_data(x, 'mean')
     covmat = np.corrcoef(x.T)
     return covmat
+
+
+def principal_component_analysis(x):
+    """
+    
+    :param y: 
+    :param x: 
+    :return: 
+    """
+    x = standardize_data(x, 'mean')
+    cov_matrix = np.cov(x.T)
+    evalues, evectors = np.linalg.eig(cov_matrix)
+    indexes = evalues.argsort()[::-1]  # Sort descending and get sorted indices
+    evalues = evalues[indexes]
+    evectors = evectors[:, indexes]
+    explained_var = []
+    for j in evalues:
+        explanatory_power = (j / sum(evalues)) * 100
+        explained_var.append(explanatory_power)
+    return explained_var
+
+
+vec = principal_component_analysis(x)
 
 
 def lin_dep(x):
@@ -138,7 +161,7 @@ if __name__ == '__main__':
     figure1 = plt.figure(1)
     for i in range(30):
         plt.subplot(5, 6, i + 1)
-        k = xbis[:, i]
+        k = x[:, i]
         kt = k[y == 1]
         kf = k[y == -1]
 
@@ -154,7 +177,7 @@ if __name__ == '__main__':
     ratio = np.zeros(L)
     for i in range(30):
         plt.subplot(5, 6, i + 1)
-        k = xbis[:, i]
+        k = x[:, i]
         kt = k[y == 1]
         kf = k[y == -1]
         kt = kt[~np.isnan(kt)]
