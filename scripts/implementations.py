@@ -224,7 +224,7 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         # acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
         # acc_te = compute_accuracy(w, x_te, y_te, mode='default')
         #
-        acc_tr = len(np.where(y_train_pred - y_tr == 0)) / y_train_pred.shape[0]
-        acc_te = len(np.where(y_test_pred - y_te == 0)) / y_test_pred.shape[0]
+        acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
+        acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
     return acc_tr, acc_te

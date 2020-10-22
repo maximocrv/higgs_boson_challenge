@@ -12,7 +12,7 @@ from scripts.data_preprocessing import standardize_data, multi_build_poly, build
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
-degrees = np.arange(4, 10)
+degrees = np.arange(6, 10)
 lambdas = np.logspace(-5, -1, 5)
 k_fold = 10
 # split data in k fold

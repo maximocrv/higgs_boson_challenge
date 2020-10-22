@@ -96,7 +96,7 @@ def principal_component_analysis(x):
     return explained_var
 
 
-vec = principal_component_analysis(x)
+# vec = principal_component_analysis(x)
 
 
 def lin_dep(x):
