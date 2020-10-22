@@ -132,11 +132,8 @@ if __name__ == '__main__':
     # Data visualization
     # Standardization
     y, xbis, ids = load_csv_data("data/train.csv")
-    col_means = np.nanmean(xbis, axis=0)
-    col_sd = np.nanstd(xbis, axis=0)
 
-    xbis = (xbis - col_means) / col_sd
-
+    xbis = set_nan(xbis)
     # Histograms to show the distribution of each feature, colored depending on hit/miss
     figure1 = plt.figure(1)
     for i in range(30):
@@ -162,8 +159,8 @@ if __name__ == '__main__':
         kf = k[y == -1]
         kt = kt[~np.isnan(kt)]
         kf = kf[~np.isnan(kf)]
-        kthist = np.histogram(kt, bins=L, range=(k.min(), k.max()))
-        kfhist = np.histogram(kf, bins=L, range=(k.min(), k.max()))
+        kthist = np.histogram(kt, bins=L, range=(np.min(k[~np.isnan(k)]), np.max(k[~np.isnan(k)])))
+        kfhist = np.histogram(kf, bins=L, range=(np.min(k[~np.isnan(k)]), np.max(k[~np.isnan(k)])))
         for j in range(L):
             if kfhist[0][j] == 0 or kthist[0][j] == 0:
                 ratio[j] = 0
