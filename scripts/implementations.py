@@ -67,7 +67,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
     return losses, ws
 
 
-def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1, method, calc_loss):
+def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, method, calc_loss, batch_size=1):
     """Stochastic gradient descent algorithm."""
     losses = []
     ws = []
@@ -209,18 +209,22 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
             _x_tr = x_tr[jet_group_tr]
             _x_te = x_te[jet_group_te]
             _y_tr = y_tr[jet_group_tr]
+            _y_te = y_te[jet_group_te]
 
             _x_tr = preprocess_data(_x_tr, mode='mode', degree=degree)
             _x_te = preprocess_data(_x_te, mode='mode', degree=degree)
 
-            loss_tr, w = method(y_tr, x_tr, degree, **kwargs)
+            loss_tr, w = method(_y_tr, _x_tr, **kwargs)
 
             y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, mode='default')
             y_test_pred[jet_group_te] = predict_labels(w, _x_te, mode='default')
 
-            loss_te = compute_mse(y_te, x_te, w)
+            loss_te = compute_mse(_y_te, _x_te, w)
 
-        acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
-        acc_te = compute_accuracy(w, x_te, y_te, mode='default')
+        # acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
+        # acc_te = compute_accuracy(w, x_te, y_te, mode='default')
+        #
+        acc_tr = len(np.where(y_train_pred - y_tr == 0)) / y_train_pred.shape[0]
+        acc_te = len(np.where(y_test_pred - y_te == 0)) / y_test_pred.shape[0]
 
     return acc_tr, acc_te

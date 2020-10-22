@@ -60,6 +60,10 @@ def convert_nan(x, mode):
     """
     x = set_nan(x)
 
+    nan_count = np.sum(np.isnan(x), axis=0)
+    only_nans = np.where(nan_count == x.shape[0])
+    x = np.delete(x, only_nans, axis=1)
+
     if mode == 'mean':
         col_vals = np.nanmean(x, axis=0)
 
@@ -71,7 +75,11 @@ def convert_nan(x, mode):
         for i in range(x.shape[1]):
             nan_rows = np.isnan(x[:, i])
             unique, counts = np.unique(x[~nan_rows, i], return_counts=True, axis=0)
-            col_vals[:, i] = unique[counts.argmax()]
+            if len(unique) == 1:
+                x = np.delete(x, i, axis=1)
+                col_vals = col_vals[:, :-1]
+            else:
+                col_vals[:, i] = unique[counts.argmax()]
 
     inds = np.where(np.isnan(x))
     x[inds] = np.take(col_vals, inds[1])
@@ -197,7 +205,7 @@ def multi_build_poly(x, degree):
         x = np.repeat(x[..., np.newaxis], degree, axis=-1)
         x = x ** np.arange(1, degree + 1)
         x = np.concatenate(x.transpose(2, 0, 1), axis=-1)
-        x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
+        # x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
         #tx = np.c_[np.ones(num_samples), x]
     return x
 
@@ -289,6 +297,8 @@ def preprocess_data(x, mode, degree):
     x = multi_build_poly(x, degree)
 
     x = standardize_data(x)
+
+    x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
 
     return x
 
