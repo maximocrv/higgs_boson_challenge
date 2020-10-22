@@ -59,11 +59,19 @@ def convert_nan(x, mode):
     :return: Input data containing column means in place of -999 entries
     """
     x = set_nan(x)
+
     if mode == 'mean':
         col_vals = np.nanmean(x, axis=0)
 
     elif mode == 'median':
         col_vals = np.nanmedian(x, axis=0)
+
+    elif mode == 'mode':
+        col_vals = np.zeros((1, x.shape[1]))
+        for i in range(x.shape[1]):
+            nan_rows = np.isnan(x[:, i])
+            unique, counts = np.unique(x[~nan_rows, i], return_counts=True, axis=0)
+            col_vals[:, i] = unique[counts.argmax()]
 
     inds = np.where(np.isnan(x))
     x[inds] = np.take(col_vals, inds[1])
@@ -262,3 +270,27 @@ def generate_batch(y, x, k_indices, k):
     y_te = y[te_indices]
     y_tr = y[tr_indices]
     return x_tr, y_tr, x_te, y_te
+
+
+def split_data_jet(x):
+    ind_0 = x[:, 22] == 0
+    ind_1 = x[:, 22] == 1
+    ind_2 = np.logical_or(x[:, 22] == 2, x[:, 22] == 3)
+
+    return ind_0, ind_1, ind_2
+
+
+def preprocess_data(x, mode, degree):
+    # remove unnecessary features, 22 -- > jet group number
+    x = np.delete(x, [15, 18, 20, 22, 25, 28], axis=1)
+
+    x = convert_nan(x, mode)
+
+    x = multi_build_poly(x, degree)
+
+    x = standardize_data(x)
+
+    return x
+
+
+x = convert_nan(x, mode='mode')
