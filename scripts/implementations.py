@@ -223,4 +223,4 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
         acc_te = compute_accuracy(w, x_te, y_te, mode='default')
 
-    return w, acc_tr, acc_te
+    return acc_tr, acc_te

@@ -2,7 +2,7 @@ import numpy as np
 
 from scripts.costs import compute_accuracy
 from scripts.proj1_helpers import load_csv_data
-from scripts.implementations import ridge_regression
+from scripts.implementations import ridge_regression, cross_validation
 from scripts.data_preprocessing import standardize_data, multi_build_poly, build_k_indices, generate_batch
 
 # standardize data after polynomial basis expansion?
@@ -10,8 +10,8 @@ from scripts.data_preprocessing import standardize_data, multi_build_poly, build
 # implement confusion matrix....
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
-
-x_tr = standardize_data(x_tr)
+#
+# x_tr = standardize_data(x_tr)
 
 # x_tr = nan_to_mean(x_tr)
 
@@ -28,17 +28,17 @@ for h, lambda_ in enumerate(lambdas):
     for i, degree in enumerate(degrees):
         temp_acc = []
         for k in range(k_fold):
-            _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
+            # _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
+            #
+            # tx_tr = multi_build_poly(_x_tr, degree)
+            # tx_te = multi_build_poly(_x_te, degree)
+            #
+            # # ridge regression
+            # mse_tr, w_tr = ridge_regression(_y_tr, tx_tr, lambda_)
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree, mode='jet_groups',
+                                              lambda_=lambda_)
 
-            tx_tr = multi_build_poly(_x_tr, degree)
-            tx_te = multi_build_poly(_x_te, degree)
-
-            # ridge regression
-            mse_tr, w_tr = ridge_regression(_y_tr, tx_tr, lambda_)
-
-            acc = compute_accuracy(w_tr, tx_te, _y_te)
-
-            temp_acc.append(acc)
+            temp_acc.append(acc_te)
         print(f'#: {h*len(degrees) + i + 1} / {len(degrees) * len(lambdas)}, accuracy = {np.mean(temp_acc)}')
         #accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
