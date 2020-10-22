@@ -3,8 +3,9 @@
 
 import numpy as np
 
-from scripts.costs import compute_mse, compute_rmse
-from scripts.data_preprocessing import batch_iter
+from scripts.costs import compute_mse, compute_rmse, compute_accuracy
+from scripts.data_preprocessing import batch_iter, multi_build_poly, split_data_jet, preprocess_data
+from scripts.proj1_helpers import predict_labels
 
 
 def generate_w(num_intervals):
@@ -66,7 +67,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
     return losses, ws
 
 
-def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1, mode='ls'):
+def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1, method, calc_loss):
     """Stochastic gradient descent algorithm."""
     losses = []
     ws = []
@@ -74,17 +75,8 @@ def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, batch_size=1
     w = initial_w
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        if mode == 'ls':
-            grad = compute_gradient(batch_y, batch_tx, w)
-            loss = compute_mse(batch_y, batch_tx, w)
-
-        elif mode == 'logistic_reg':
-            grad = nll_grad(batch_y, batch_tx, w)
-            loss = neg_log_loss(batch_y, batch_tx, w)
-
-        else:
-            print('please enter a valid sgd mode')
-            break
+        grad = method(batch_y, batch_tx, w)
+        loss = calc_loss(batch_y, batch_tx, w)
 
         w = w - gamma * grad
 
@@ -181,3 +173,54 @@ def regularized_log_reg_gd(y, tx, w0, max_iters, gamma, lambda_):
         losses.append(loss)
 
     return loss, w
+
+
+def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
+    """return the loss of ridge regression."""
+
+    test_ind = k_indices[k]
+    train_ind = k_indices[np.arange(len(k_indices)) != k].ravel()
+
+    x_tr, y_tr = x[train_ind], y[train_ind]
+    x_te, y_te = x[test_ind], y[test_ind]
+
+    if mode == 'default':
+        x_tr = preprocess_data(x_tr)
+        x_te = preprocess_data(x_te)
+
+        loss_tr, w = method(y_tr, x_tr, degree, **kwargs)
+
+        y_tr_pred = predict_labels(w, x_tr, mode='default')
+        y_te_pred = predict_labels(w, x_te, mode='default')
+
+        loss_te = compute_mse(y_te, x_te, w)
+
+        acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
+        acc_te = compute_accuracy(w, x_te, y_te, mode='default')
+
+    elif mode == 'jet_groups':
+        y_train_pred = np.zeros(len(y_tr))
+        y_test_pred = np.zeros(len(y_te))
+
+        jet_groups_tr = split_data_jet(x_tr)
+        jet_groups_te = split_data_jet(x_te)
+
+        for jet_group_tr, jet_group_te in zip(jet_groups_tr, jet_groups_te):
+            _x_tr = x_tr[jet_group_tr]
+            _x_te = x_te[jet_group_te]
+            _y_tr = y_tr[jet_group_tr]
+
+            _x_tr = preprocess_data(_x_tr, mode='mode', degree=degree)
+            _x_te = preprocess_data(_x_te, mode='mode', degree=degree)
+
+            loss_tr, w = method(y_tr, x_tr, degree, **kwargs)
+
+            y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, mode='default')
+            y_test_pred[jet_group_te] = predict_labels(w, _x_te, mode='default')
+
+            loss_te = compute_mse(y_te, x_te, w)
+
+        acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
+        acc_te = compute_accuracy(w, x_te, y_te, mode='default')
+
+    return acc_tr, acc_te
