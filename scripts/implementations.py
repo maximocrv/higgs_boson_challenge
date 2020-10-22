@@ -148,7 +148,7 @@ def calculate_hessian(y, tx, w):
 def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss, gradient, and Hessian."""
 
-    loss = np.sum(np.log(1 + np.exp(tx @ w)) - y * tx @ w) + lambda_ * np.linalg.norm(w) ** 2
+    loss = np.sum(np.log(1 + np.exp(tx @ w)) - y * (tx @ w)) + lambda_ * np.linalg.norm(w) ** 2
     gradient = tx.T @ (sigmoid(tx @ w) - y) + 2 * lambda_ * w
 
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())

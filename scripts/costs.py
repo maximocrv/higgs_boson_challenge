@@ -8,13 +8,17 @@ from scripts.data_exploration import calculate_recall_precision_accuracy, create
 
 
 def compute_mse(y, tx, w):
-    """Compute mean square error."""
+    """
+    Compute mean square error.
+    """
     e = y - tx @ w
     return 1/2 * np.mean(e**2)
 
 
 def compute_rmse(y, tx, w):
-    """Compute root mean square error"""
+    """
+    Comput root mean square error
+    """
     mse = compute_mse(y, tx, w)
     return np.sqrt(2*mse)
 

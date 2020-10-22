@@ -1,6 +1,7 @@
 import numpy as np
 from scripts.proj1_helpers import load_csv_data
-from scripts.data_exploration import covariance_matrix, set_nan
+from scripts.data_exploration import covariance_matrix
+from scripts.data_preprocessing import convert_nan
 
 def set_cov_inf(cov):
     cov_ = cov
@@ -24,8 +25,8 @@ def corr_col(cov, t):
 
 if __name__ == '__main__':
     y, x, ids = load_csv_data("data/train.csv")
-    x = set_nan(x)
+    x = convert_nan(x, mode='median')
     cov = covariance_matrix(x)
     cov_ = set_cov_inf(cov)
-    col_el = corr_col(cov_, t=0.6)
+    col_el = corr_col(cov_, t=0.85)
     print(col_el)
