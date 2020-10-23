@@ -1,9 +1,9 @@
 import numpy as np
 from scripts.proj1_helpers import load_csv_data
 from scripts.data_preprocessing import balance_fromnans, standardize_data, build_k_indices, generate_batch, \
-    multi_build_poly
-from scripts.implementations import regularized_log_reg_gd
-from scripts.costs import compute_accuracy, compute_f1score
+    build_poly
+from scripts.implementations import reg_logistic_regression_GD
+from scripts.utilities import compute_accuracy, compute_f1score
 
 # load the data
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
@@ -41,8 +41,8 @@ for h, gamma in enumerate(gammas):
                 _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
                 # polynomial expansion of the features
-                tx_tr = multi_build_poly(_x_tr, degree)
-                tx_te = multi_build_poly(_x_te, degree)
+                tx_tr = build_poly(_x_tr, degree)
+                tx_te = build_poly(_x_te, degree)
 
                 # standardize the features after polynomial expansion
                 tx_tr = standardize_data(tx_tr[:, 1:])
@@ -53,7 +53,7 @@ for h, gamma in enumerate(gammas):
 
                 # regularized ridge regression
                 # loss, w = regularized_log_reg_gd(y, tx, w0, max_iters, gamma, lambda_):
-                nll, w_tr = regularized_log_reg_gd(_y_tr, tx_tr, w0, 5, gamma, lambda_)
+                nll, w_tr = reg_logistic_regression_GD(_y_tr, tx_tr, w0, 5, gamma, lambda_)
 
                 # compute accuracy
                 acc = compute_accuracy(w_tr, tx_te, _y_te)

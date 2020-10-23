@@ -23,9 +23,33 @@ def compute_rmse(y, tx, w):
     return np.sqrt(2*mse)
 
 
-def log_likelihood(y, tx, w):
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+
+    return -1 / y.shape[0] * tx.T @ (y - tx @ w)
+
+
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    return np.exp(t) / (1 + np.exp(t))
+
+
+def compute_negative_log_likelihood_loss(y, tx, w):
     """compute the loss: negative log likelihood."""
-    return np.sum(np.log(1+np.exp(tx @ w)) - y * tx @ w)
+    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w))
+
+
+def compute_negative_log_likelihood_gradient(y, tx, w):
+    """compute the gradient of the negative log likelihood."""
+    return tx.T @ (sigmoid(tx @ w) - y)
+
+
+def calculate_hessian(y, tx, w):
+    """return the Hessian of the loss function."""
+
+    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
+
+    return tx.T @ S @ tx
 
 
 def compute_accuracy(w, x, y_true, mode='default'):
@@ -49,4 +73,3 @@ def matthews_coeff (w, x, y_true):
     # mc = (TP*TN - FP*FN)/sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN))
     mc = (cm[1,1]*cm[0,0]-cm[1,0]*cm[0,1])/np.sqrt((cm[1,1]+cm[1,0])*(cm[1,1]+cm[0,1])*(cm[0,0]+cm[1,0])*(cm[0,0]+cm[0,1]))
     return mc
-

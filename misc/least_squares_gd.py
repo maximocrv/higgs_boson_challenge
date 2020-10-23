@@ -5,7 +5,7 @@ from scripts.proj1_helpers import *
 from scripts.data_preprocessing import *
 from scripts.model_batching import build_k_indices, generate_batch
 from scripts.build_polynomial import multi_build_poly
-from scripts.implementations import gradient_descent, compute_accuracy
+from scripts.implementations import least_squares_GD, compute_accuracy
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
@@ -33,7 +33,7 @@ for h, gamma in enumerate(gammas):
             w0 = np.random.randn(tx_tr.shape[1])
 
             # ridge regression
-            mse_tr, w_tr = gradient_descent(_y_tr, tx_tr, w0, max_iters=80, gamma=gamma)
+            mse_tr, w_tr = least_squares_GD(_y_tr, tx_tr, w0, max_iters=80, gamma=gamma)
 
             w = w_tr[-1]
 

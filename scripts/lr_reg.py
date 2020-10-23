@@ -1,11 +1,11 @@
 import numpy as np
 
-from scripts.costs import compute_accuracy
+from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch, balance_fromnans, \
-    multi_build_poly, convert_nan
-from scripts.implementations import log_reg_gd, penalized_logistic_regression, stochastic_gradient_descent, \
-    regularized_log_reg_gd
+    build_poly, convert_nan
+from scripts.implementations import logistic_regression_GD, reg_logistic_regression, least_squares_SGD, \
+    reg_logistic_regression_GD
 
 # logistic regression sgd is best example of how to perform preprocessing etc
 # standardizing continuous variables and leaving categorical variables be
@@ -59,14 +59,14 @@ if mode == 'lr':
             for k in range(k_fold):
                 _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
-                tx_tr = multi_build_poly(_x_tr, degree)
-                tx_te = multi_build_poly(_x_te, degree)
+                tx_tr = build_poly(_x_tr, degree)
+                tx_te = build_poly(_x_te, degree)
 
                 # w0 = np.random.randn(tx_tr.shape[1])
                 w0 = np.random.randn(tx_tr.shape[1])
 
                 # ridge regression
-                nll, w_tr = log_reg_gd(_y_tr, tx_tr, w0, max_iters=30, gamma=gamma)
+                nll, w_tr = logistic_regression_GD(_y_tr, tx_tr, w0, max_iters=30, gamma=gamma)
 
                 acc = compute_accuracy(w_tr, tx_te, _y_te)
 
@@ -85,8 +85,8 @@ elif mode == 'lr_sgd':
             for k in range(k_fold):
                 _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
-                tx_tr = multi_build_poly(_x_tr, degree)
-                tx_te = multi_build_poly(_x_te, degree)
+                tx_tr = build_poly(_x_tr, degree)
+                tx_te = build_poly(_x_te, degree)
 
                 tx_tr = standardize_data(tx_tr[:, 1:])
                 tx_tr = np.concatenate((np.ones((tx_tr.shape[0], 1)), tx_tr), axis=1)
@@ -98,8 +98,8 @@ elif mode == 'lr_sgd':
                 w0 = np.random.randn(tx_tr.shape[1])
 
                 # ridge regression
-                nll_tr, w_tr = stochastic_gradient_descent(_y_tr, tx_tr, w0, max_iters=5000, gamma=gamma, batch_size=1,
-                                                           mode='logistic_reg')
+                nll_tr, w_tr = least_squares_SGD(_y_tr, tx_tr, w0, max_iters=5000, gamma=gamma, batch_size=1,
+                                                 mode='logistic_reg')
 
                 w = w_tr[-1]
 
@@ -119,8 +119,8 @@ elif mode == 'regularized_lr':
                 for k in range(k_fold):
                     _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
-                    tx_tr = multi_build_poly(_x_tr, degree)
-                    tx_te = multi_build_poly(_x_te, degree)
+                    tx_tr = build_poly(_x_tr, degree)
+                    tx_te = build_poly(_x_te, degree)
 
                     tx_tr = standardize_data(tx_tr[:, 1:])
                     tx_tr = np.concatenate((np.ones((tx_tr.shape[0], 1)), tx_tr), axis=1)
@@ -132,7 +132,7 @@ elif mode == 'regularized_lr':
                     w0 = np.random.randn(tx_tr.shape[1])
 
                     # ridge regression
-                    nll, w_tr = regularized_log_reg_gd(_y_tr, tx_tr, w0, 5, gamma, lambda_)
+                    nll, w_tr = reg_logistic_regression_GD(_y_tr, tx_tr, w0, 5, gamma, lambda_)
 
                     acc = compute_accuracy(w_tr, tx_te, _y_te)
 
@@ -148,14 +148,14 @@ elif mode == 'submission':
 gamma = 1e-3
 degree = 5
 # x_tr and y_tr already balanced from nans and standardized
-tx_tr_tot = multi_build_poly(x_tr, degree)
+tx_tr_tot = build_poly(x_tr, degree)
 # standardize again after polynomial basis expansion
 tx_tr_tot = standardize_data(tx_tr_tot[:, 1:])
 tx_tr_tot = np.concatenate((np.ones((tx_tr_tot.shape[0], 1)), tx_tr_tot), axis=1)
 
 w0 = np.random.randn(tx_tr_tot.shape[1])
-nll, w = stochastic_gradient_descent(y_tr, tx_tr_tot, w0, max_iters=50000, gamma=gamma, batch_size=1,
-                                     mode='logistic_reg')
+nll, w = least_squares_SGD(y_tr, tx_tr_tot, w0, max_iters=50000, gamma=gamma, batch_size=1,
+                           mode='logistic_reg')
 w = w[-1]
 
 
@@ -164,7 +164,7 @@ x_te = np.delete(x_te, features, axis=1)
 # nan to mean or median
 x_te = standardize_data(x_te, nan_mode=nan_mode)
 
-tx_te_tot = multi_build_poly(x_te, degree)
+tx_te_tot = build_poly(x_te, degree)
 tx_te_tot = standardize_data(tx_te_tot[:, 1:], nan_mode=nan_mode)
 tx_te_tot = np.concatenate((np.ones((tx_te_tot.shape[0], 1)), tx_te_tot), axis=1)
 

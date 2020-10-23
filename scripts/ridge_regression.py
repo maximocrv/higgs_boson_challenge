@@ -1,9 +1,9 @@
 import numpy as np
 
-from scripts.costs import compute_accuracy
+from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import ridge_regression, cross_validation
-from scripts.data_preprocessing import standardize_data, multi_build_poly, build_k_indices, generate_batch
+from scripts.data_preprocessing import standardize_data, build_poly, build_k_indices, generate_batch
 
 # standardize data after polynomial basis expansion?
 # function to generate test predictions?.....
@@ -13,7 +13,7 @@ y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
 degrees = np.arange(6, 10)
-lambdas = np.logspace(-5, -1, 5)
+lambdas = np.logspace(-4, -1, 5)
 k_fold = 10
 # split data in k fold
 k_indices = build_k_indices(y_tr, k_fold, seed)

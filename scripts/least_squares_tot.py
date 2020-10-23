@@ -1,9 +1,9 @@
 import numpy as np
 
-from scripts.costs import compute_accuracy
+from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
-from scripts.implementations import least_squares, gradient_descent, stochastic_gradient_descent
-from scripts.data_preprocessing import build_k_indices, generate_batch, standardize_data, multi_build_poly
+from scripts.implementations import least_squares, least_squares_GD, least_squares_SGD, cross_validation
+from scripts.data_preprocessing import build_k_indices, generate_batch, standardize_data, build_poly
 
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
@@ -27,19 +27,11 @@ if mode == 'ls':
     for i, degree in enumerate(degrees):
         temp_acc = []
         for k in range(k_fold):
-            _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, mode='default')
 
-            tx_tr = multi_build_poly(_x_tr, degree)
-            tx_te = multi_build_poly(_x_te, degree)
-
-            # ridge regression
-            mse_tr, w_tr = least_squares(_y_tr, tx_tr)
-
-            acc = compute_accuracy(w_tr, tx_te, _y_te)
-
-            temp_acc.append(acc)
+            temp_acc.append(acc_te)
         print(f'#: {i + 1} / {len(degrees)}, accuracy = {np.mean(temp_acc)}')
-        #accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
+        # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[i] = np.mean(temp_acc)
 
 elif mode == 'ls_gd':
@@ -51,22 +43,10 @@ elif mode == 'ls_gd':
         for i, degree in enumerate(degrees):
             temp_acc = []
             for k in range(k_fold):
-                _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
+                acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree, mode='default',
+                                                  gamma=gamma)
 
-                tx_tr = multi_build_poly(_x_tr, degree)
-                tx_te = multi_build_poly(_x_te, degree)
-
-                # w0 = np.random.randn(tx_tr.shape[1])
-                w0 = np.random.randn(tx_tr.shape[1])
-
-                # ridge regression
-                mse_tr, w_tr = gradient_descent(_y_tr, tx_tr, w0, max_iters=80, gamma=gamma)
-
-                w = w_tr[-1]
-
-                acc = compute_accuracy(w, tx_te, _y_te)
-
-                temp_acc.append(acc)
+                temp_acc.append(acc_te)
             print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
@@ -82,14 +62,14 @@ elif mode == 'ls_sgd':
             for k in range(k_fold):
                 _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
 
-                tx_tr = multi_build_poly(_x_tr, degree)
-                tx_te = multi_build_poly(_x_te, degree)
+                tx_tr = build_poly(_x_tr, degree)
+                tx_te = build_poly(_x_te, degree)
 
                 # w0 = np.random.randn(tx_tr.shape[1])
                 w0 = np.random.randn(tx_tr.shape[1])
 
                 # ridge regression
-                mse_tr, w_tr = stochastic_gradient_descent(_y_tr, tx_tr, w0, max_iters=80, gamma=gamma, batch_size=1)
+                mse_tr, w_tr = least_squares_SGD(_y_tr, tx_tr, w0, max_iters=80, gamma=gamma, batch_size=1)
 
                 w = w_tr[-1]
 
@@ -103,13 +83,13 @@ elif mode == 'ls_sgd':
 else:
     print('please enter a valid least squares mode')
 
-tx_tr_tot = multi_build_poly(x_tr, 7)
+tx_tr_tot = build_poly(x_tr, 7)
 mse, w = least_squares(y_tr, tx_tr_tot)
 
 y_te, x_te, ids_te = load_csv_data("data/test.csv")
 
 x_te = standardize_data(x_te)
-tx_te_tot = multi_build_poly(x_te, 7)
+tx_te_tot = build_poly(x_te, 7)
 
 y_te_pred = predict_labels(w, tx_te_tot)
 
