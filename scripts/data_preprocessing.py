@@ -69,7 +69,8 @@ def standardize_data(x):
 
 def balance_all(y, x):
     """
-
+    Balances the datasets by selecting and cutting a random subsets of misses, which are more abundant,
+    to obtain an equal number of hits and misses
     :param y: input, categorical
     :param x: input features
     :return: 50/50 balanced random
@@ -85,7 +86,7 @@ def balance_all(y, x):
     xv = np.delete(x, cut_indexes, axis=0)
     yv = np.delete(y, cut_indexes, axis=0)
 
-    # check if proportion hits = 0.5
+    # for testing : check if proportion hits = 0.5
     datalengthv = yv.shape[0]
     hitsv = np.sum(yv[yv == 1])
     missesv = - np.sum(yv[yv == -1])
@@ -96,7 +97,8 @@ def balance_all(y, x):
 
 def balance_fromnans(y, x):
     """
-
+    Balances the datasets by preferably cutting features with nans. To be used with the entire dataset and
+    not with spit-number-of-jets specific subdatasets
     :param y: classification feature, 1 or -1
     :param x: input matrix
     :return: yv and xv, with equal hits and misses
@@ -127,7 +129,7 @@ def balance_fromnans(y, x):
     xv = np.delete(x, cut_indexes, axis=0)
     yv = np.delete(y, cut_indexes, axis=0)
 
-    # checks to verify the new ratio hit/tot
+    # for testing : checks to verify the new ratio hit/tot
     datalengthv = yv.shape[0]
     hitsv = np.sum(yv[yv == 1])
     missesv = - np.sum(yv[yv == -1])
@@ -220,6 +222,11 @@ def generate_batch(y, x, k_indices, k):
 
 
 def split_data_jet(x):
+    """
+    Splits the data depending on the value of the number of jets variable (22)
+    :param x: input dataset
+    :return: split datasets
+    """
     ind_0 = x[:, 22] == 0
     ind_1 = x[:, 22] == 1
     ind_2 = np.logical_or(x[:, 22] == 2, x[:, 22] == 3)
