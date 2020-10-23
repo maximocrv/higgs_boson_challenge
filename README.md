@@ -22,7 +22,7 @@ list that contains all the couples of features that has a correlation higher tha
 Contains all the functions used to apply different pre-processing methods to the data,
 that are useful to treat them before building the model. The functions implemented in this section are:
 - ```set_nan```, ```convert_nan```: respectively to set all -999 values to nan and to convert them to the mean, median
-or ...;
+or mode;
 - ```standardize_data```: to standardize the dataset;
 - ```balance_all```, ```balance_fromnans```: to balance the dataset, so that we have an input with the same numbers of 
 signals and backgrounds;
