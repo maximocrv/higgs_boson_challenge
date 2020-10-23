@@ -51,8 +51,8 @@ def calculate_hessian(tx, w):
     return tx.T @ S @ tx
 
 
-def compute_accuracy(w, x, y_true, binary_mode='default'):
-    y_pred = predict_labels(w, x, binary_mode)
+def compute_accuracy(w, x, y_true, mode='default'):
+    y_pred = predict_labels(w, x, mode)
     true_list = y_true - y_pred
     num_true = np.where(true_list == 0)
     acc = len(num_true[0]) / y_true.shape[0]
