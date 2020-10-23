@@ -40,10 +40,10 @@ feat = [21, 29]
 # x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
-degrees = np.arange(6, 8)
+degrees = np.arange(6, 10)
 k_fold = 5
-gammas = [1e-4, 1e-3, 1e-2, 2e-2]
-lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
+gammas = [1e-3, 1e-2, 2e-2]
+lambdas = [1e-5]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
@@ -60,16 +60,20 @@ for h, gamma in enumerate(gammas):
             for k in range(k_fold):
                 if mode == 'reg_lr_GD':
                     acc_tr, acc_te, mc_tr, mc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
-                                                                    k, degree, split_mode='jet_groups', max_iters=50,
+                                                                    k, degree, split_mode='jet_groups',
+                                                                    binary_mode='one_hot', max_iters=50,
                                                                     gamma=gamma, lambda_=lambda_, w0=None)
                 elif mode == 'reg_lr_SGD':
                     acc_tr, acc_te, mc_tr, mc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices,
-                                                                    k, degree, split_mode='jet_groups', max_iters=2000,
+                                                                    k, degree, split_mode='default',
+                                                                    binary_mode='one_hot', max_iters=5000,
                                                                     gamma=gamma, lambda_=lambda_, w0=None)
 
                 temp_acc.append(acc_te)
-                print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree},'
-                      f'lambda = {lambda_}, accuracy = {np.mean(temp_acc)}')
+            print(f'#: {h*len(gammas) + i*len(degrees) + j + 1} / '
+                  f'{len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree}, lambda = '
+                  f'{lambda_}, accuracy = {np.mean(temp_acc)}')
+
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
 
@@ -97,7 +101,7 @@ tx_te_tot = build_poly(x_te, degree)
 tx_te_tot = standardize_data(tx_te_tot[:, 1:], nan_mode=nan_mode)
 tx_te_tot = np.concatenate((np.ones((tx_te_tot.shape[0], 1)), tx_te_tot), axis=1)
 
-y_te_pred = predict_labels(w, tx_te_tot, mode='one_hot')
+y_te_pred = predict_labels(w, tx_te_tot, binary_mode='one_hot')
 y_te_pred[y_te_pred == 0] = -1
 
 # create_csv_submission(ids_te, y_te_pred, 'log_reg_sgd_submission.csv')

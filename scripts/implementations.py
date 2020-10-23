@@ -153,11 +153,12 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     Return the loss and the updated w.
     """
     if w0 is None:
-        w0 = np.zeros(tx.shape[1])
+        w0 = np.random.randn(tx.shape[1])
 
     ws = [w0]
     losses = []
     w = w0
+
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
         loss, grad, hessian = reg_logistic_regression(batch_y, batch_tx, w, lambda_)
 
@@ -171,7 +172,7 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     return loss, w
 
 
-def cross_validation(y, x, method, k_indices, k, degree, split_mode, **kwargs):
+def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, **kwargs):
     """return the loss of ridge regression."""
 
     test_ind = k_indices[k]
@@ -181,21 +182,21 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, **kwargs):
     x_te, y_te = x[test_ind], y[test_ind]
 
     if split_mode == 'default':
-        x_tr = preprocess_data(x_tr, degree=degree, nan_mode='median')
-        x_te = preprocess_data(x_te, degree=degree, nan_mode='median')
+        x_tr = preprocess_data(x_tr, degree=degree, nan_mode='mode')
+        x_te = preprocess_data(x_te, degree=degree, nan_mode='mode')
 
-        loss_tr, w = method(y_tr, x_tr, degree, **kwargs)
+        loss_tr, w = method(y_tr, x_tr, **kwargs)
 
-        y_tr_pred = predict_labels(w, x_tr, mode='default')
-        y_te_pred = predict_labels(w, x_te, mode='default')
+        y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
+        y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
 
         loss_te = compute_mse(y_te, x_te, w)
 
-        acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
-        acc_te = compute_accuracy(w, x_te, y_te, mode='default')
+        acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
+        acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
 
-        mc_tr = matthews_coeff(w, x_tr, y_tr)
-        mc_te = matthews_coeff(w, x_te, y_te)
+        mc_tr = matthews_coeff(w, x_tr, y_tr, _y_pred=None)
+        mc_te = matthews_coeff(w, x_te, y_te, _y_pred=None)
 
     elif split_mode == 'jet_groups':
         y_train_pred = np.zeros(len(y_tr))
@@ -215,8 +216,8 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, **kwargs):
 
             loss_tr, w = method(_y_tr, _x_tr, **kwargs)
 
-            y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, mode='default')
-            y_test_pred[jet_group_te] = predict_labels(w, _x_te, mode='default')
+            y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
+            y_test_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
 
             loss_te = compute_mse(_y_te, _x_te, w)
 
