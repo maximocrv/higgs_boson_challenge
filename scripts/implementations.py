@@ -1,7 +1,7 @@
 import numpy as np
 
 from scripts.utilities import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
-    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient
+    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient, matthews_coeff
 from scripts.data_preprocessing import batch_iter, build_poly, split_data_jet, preprocess_data
 from scripts.proj1_helpers import predict_labels
 
@@ -89,12 +89,15 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
     return loss, w
 
 
-def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma, batch_size=1):
+def logistic_regression_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     """Stochastic gradient descent algorithm."""
-    losses = []
-    ws = []
+    if w0 is None:
+        w0 = np.zeros(tx.shape[1])
 
-    w = initial_w
+    losses = []
+    ws = [w0]
+
+    w = w0
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
         grad = compute_negative_log_likelihood_loss(batch_y, batch_tx, w)
@@ -127,6 +130,9 @@ def reg_logistic_regression_GD(y, tx, w0, max_iters, gamma, lambda_):
     Do one step of gradient descent using logistic regression.
     Return the loss and the updated w.
     """
+    if w0 is None:
+        w0 = np.zeros(tx.shape[1])
+
     ws = [w0]
     losses = []
     w = w0
@@ -146,6 +152,9 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     Do one step of gradient descent using logistic regression.
     Return the loss and the updated w.
     """
+    if w0 is None:
+        w0 = np.zeros(tx.shape[1])
+
     ws = [w0]
     losses = []
     w = w0
@@ -172,8 +181,8 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
     x_te, y_te = x[test_ind], y[test_ind]
 
     if mode == 'default':
-        x_tr = preprocess_data(x_tr)
-        x_te = preprocess_data(x_te)
+        x_tr = preprocess_data(x_tr, degree=degree, mode='median')
+        x_te = preprocess_data(x_te, degree=degree, mode='median')
 
         loss_tr, w = method(y_tr, x_tr, degree, **kwargs)
 
@@ -185,6 +194,9 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         acc_tr = compute_accuracy(w, x_tr, y_tr, mode='default')
         acc_te = compute_accuracy(w, x_te, y_te, mode='default')
 
+        mc_tr = matthews_coeff(w, x_tr, y_tr)
+        mc_te = matthews_coeff(w, x_te, y_te)
+
     elif mode == 'jet_groups':
         y_train_pred = np.zeros(len(y_tr))
         y_test_pred = np.zeros(len(y_te))
@@ -192,17 +204,14 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         jet_groups_tr = split_data_jet(x_tr)
         jet_groups_te = split_data_jet(x_te)
 
-        x_tr = preprocess_data(x_tr, mode='mode', degree=degree)
-        x_te = preprocess_data(x_te, mode='mode', degree=degree)
-
         for jet_group_tr, jet_group_te in zip(jet_groups_tr, jet_groups_te):
             _x_tr = x_tr[jet_group_tr]
             _x_te = x_te[jet_group_te]
             _y_tr = y_tr[jet_group_tr]
             _y_te = y_te[jet_group_te]
 
-            # _x_tr = preprocess_data(_x_tr, mode='mode', degree=degree)
-            # _x_te = preprocess_data(_x_te, mode='mode', degree=degree)
+            _x_tr = preprocess_data(_x_tr, mode='mode', degree=degree)
+            _x_te = preprocess_data(_x_te, mode='mode', degree=degree)
 
             loss_tr, w = method(_y_tr, _x_tr, **kwargs)
 
@@ -214,4 +223,7 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
-    return acc_tr, acc_te
+        mc_tr = matthews_coeff(w=None, x=None, y_true=y_tr, y_pred=y_train_pred)
+        mc_te = matthews_coeff(w=None, x=None, y_true=y_te, y_pred=y_test_pred)
+
+    return acc_tr, acc_te, mc_tr, mc_te

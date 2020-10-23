@@ -17,7 +17,7 @@ from scripts.implementations import logistic_regression_GD, reg_logistic_regress
 nan_mode = 'median'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
-y_tr, x_tr = balance_fromnans(y_tr, x_tr)
+# y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 
 
 # Choice of variables to cut based on covariance and histograms
@@ -34,21 +34,21 @@ features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
 
 # x_tr = np.delete(x_tr, cut_features, axis=1)
 feat = [21, 29]
-x_tr = np.delete(x_tr, features, axis=1)
+# x_tr = np.delete(x_tr, features, axis=1)
 
 # STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
-x_tr = standardize_data(x_tr, nan_mode=nan_mode)
+# x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
 degrees = np.arange(3, 8)
 k_fold = 5
-gammas = [1e-3, 1e-2, 1e-1, 0.2, 0.4, 0.6]
+gammas = [1e-6, 1e-5, 1e-4]
 lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
-mode = 'reg_lr_GD'
+mode = 'reg_lr_SGD'
 assert mode == 'reg_lr_GD' or mode == 'reg_lr_SGD', "Please enter a valid mode (reg_lr_GD, reg_lr_SGD)"
 # mode = 'submission'
 
@@ -59,14 +59,17 @@ for h, gamma in enumerate(gammas):
             temp_acc = []
             for k in range(k_fold):
                 if mode == 'reg_lr_GD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices, k, degree,
-                                                      mode='default', max_iters=30, gamma=gamma, lambda_=lambda_)
+                    acc_tr, acc_te, mc_tr, mc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
+                                                                    k, degree, mode='jet_groups', max_iters=2,
+                                                                    gamma=gamma, lambda_=lambda_, w0=None)
                 elif mode == 'reg_lr_SGD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices, k, degree,
-                                                      mode='default', max_iters=10000, gamma=gamma, lambda_=lambda_)
+                    acc_tr, acc_te, mc_tr, mc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices,
+                                                                    k, degree, mode='jet_groups', max_iters=50,
+                                                                    gamma=gamma, lambda_=lambda_, w0=None)
 
                 temp_acc.append(acc_te)
-            print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+                print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, gamma = {gamma}, degree = {degree},'
+                      f'lambda = {lambda_}, accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
 

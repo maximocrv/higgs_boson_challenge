@@ -1,20 +1,5 @@
 import numpy as np
 
-from scripts.proj1_helpers import load_csv_data
-
-y, x, ids = load_csv_data("data/train.csv")
-
-
-def nan_to_0(x):
-    """
-    Converts all -999 entries to 0's.
-
-    :param x: Input dataset
-    :return: Input dataset with all -999's replaced by 0's
-    """
-    x[x == -999] = 0
-    return x
-
 
 def set_nan(x):
     """
@@ -27,34 +12,11 @@ def set_nan(x):
     return x
 
 
-def remove_nan_features(x):
-    """
-    Removes feature columns containing -999 values.
-
-    :param x: Input data
-    :return: Returns input data with stripped columns
-    """
-    col_mins = np.min(x, axis=0)
-    x = x[:, col_mins != -999]
-    return x
-
-
-def remove_nan_entries(x):
-    """
-    Removes rows containing features with value -999
-
-    :param x: Input data
-    :return: Input data without all the rows containing -999 entries
-    """
-    row_mins = np.min(x, axis=1)
-    x = x[row_mins != -999, :]
-    return x
-
-
-def convert_nan(x, mode):
+def convert_nan(x, mode='mode'):
     """
     Replace all -999 entries by the mean of their respective columns
 
+    :param mode:
     :param x: Input data
     :return: Input data containing column means in place of -999 entries
     """
@@ -86,14 +48,13 @@ def convert_nan(x, mode):
     return x
 
 
-def standardize_data(x, nan_mode='mean'):
+def standardize_data(x):
     """
 
     :param nan_mode:
     :param x:
     :return:
     """
-    x = convert_nan(x, nan_mode)
 
     col_means = np.nanmean(x, axis=0)
     col_sd = np.nanstd(x, axis=0)
@@ -171,22 +132,6 @@ def balance_fromnans(y, x):
     diffv = missesv - hitsv
 
     return yv, xv
-
-
-def check_linearity(x):
-    raise NotImplementedError
-
-
-def eigen_corr(x):
-    """
-    Generate eigenvalue matrix for pearson correlation matrix.
-    :param x:
-    :return:
-    """
-    corr_mat = np.corrcoef(x)
-    eig = np.linalg.eig(corr_mat)
-
-    return eig
 
 
 def build_poly(x, degree):
@@ -281,7 +226,7 @@ def split_data_jet(x):
 
 def preprocess_data(x, mode, degree):
     # remove unnecessary features, 22 -- > jet group number
-    x = np.delete(x, [15, 18, 20, 22, 25, 28], axis=1)
+    x = np.delete(x, [15, 18, 20, 25, 28], axis=1)
 
     x = convert_nan(x, mode)
 
@@ -292,6 +237,3 @@ def preprocess_data(x, mode, degree):
     x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
 
     return x
-
-
-x = convert_nan(x, mode='mode')

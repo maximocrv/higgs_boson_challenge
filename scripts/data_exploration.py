@@ -1,7 +1,7 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-from scripts.data_preprocessing import set_nan, standardize_data
+from scripts.data_preprocessing import set_nan, standardize_data, convert_nan
 from scripts.proj1_helpers import load_csv_data
 
 
@@ -25,33 +25,6 @@ def check_nan_positions(x, features):
 
     value = np.sum(check) / check.shape[0]
     return value * 100
-
-
-def create_confusion_matrix(predicted, actual) -> np.ndarray:
-    """
-    Given predicted and actual arrays, calculate confusion matrix (not normalized).
-    Predicted on first axis, actual on second axis, i.e. confusion_matrix[0, 1] is false negative
-    """
-    cm = np.zeros((2, 2), dtype=np.int)
-    for i in range(len(predicted)):
-        if actual[i] == -1 and predicted[i] == -1:
-            cm[0, 0] += 1
-        if actual[i] == -1 and not predicted[i] == -1:
-            cm[1, 0] += 1
-        if actual[i] == 1 and not predicted[i] == 1:
-            cm[0, 1] += 1
-        if actual[i] == 1 and predicted[i] == 1:
-            cm[1, 1] += 1
-    return cm
-
-
-def calculate_recall_precision_accuracy(confusion_matrix: np.ndarray) -> (float, float, float):
-    """From the confusion matrix, return recall, precision and accuracy for class True"""
-    cm = confusion_matrix
-    recall = cm[1, 1] / (cm[1, 1] + cm[0, 1])
-    precision = cm[1, 1] / (cm[1, 1] + cm[1, 0])
-    accuracy = (cm[0, 0] + cm[1, 1]) / np.sum(cm)
-    return recall, precision, accuracy
 
 
 def cut_datasets(y, x, features):
@@ -117,6 +90,27 @@ def lin_dep(x):
                     id = np.array([i, j])
                     ind_dep.append(id)
     return ind_dep
+
+
+def set_cov_inf(cov):
+    cov_ = cov
+    for i in range(cov.shape[0]):
+        for j in range(cov.shape[1]):
+            if i >= j:
+                cov_[i, j] = 0
+    return cov_
+
+
+def corr_col(cov, t):
+    # initialize an array filled with the columns to be eliminated
+    # t is the threshold correlation
+    cde = []
+    for i in range(cov.shape[0]):
+        for j in range(cov.shape[1]):
+            if abs(cov[i, j]) > t :
+                v = np.array([i, j])
+                cde.append(v)
+    return cde
 
 
 if __name__ == '__main__':
@@ -193,6 +187,12 @@ if __name__ == '__main__':
         plt.plot(binz, ratio)
         plt.title(f'feature : {i}')
         plt.ylim(0, 2)
+
+    # x = convert_nan(x, mode='median')
+    # cov = covariance_matrix(x)
+    # cov_ = set_cov_inf(cov)
+    # col_el = corr_col(cov_, t=0.85)
+    # print(col_el)
 
     # Creation of an array with the numbered variables names
     """import pandas as pd

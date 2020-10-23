@@ -58,11 +58,11 @@ if mode == 'lr':
             for k in range(k_fold):
                 if mode == 'lr_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
-                                                      mode='default', max_iters=30, gamma=gamma)
+                                                      mode='one_hot', max_iters=30, gamma=gamma)
 
                 elif mode == 'lr_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
-                                                      mode='default', max_iters=1000, gamma=gamma)
+                                                      mode='one_hot', max_iters=1000, gamma=gamma)
 
                 temp_acc.append(acc_tr)
             print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
