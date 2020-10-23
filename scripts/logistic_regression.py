@@ -141,6 +141,7 @@ elif mode == 'regularized_lr':
                 print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
                 # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
                 accuracy_ranking[h, i, j] = np.mean(temp_acc)
+
 elif mode == 'submission':
     print('gl hf')
 
