@@ -44,7 +44,8 @@ def covariance_matrix(x):
     :param x: input 
     :return: covmat : covariance matrix
     """
-    x = standardize_data(x, 'mean')
+    x = convert_nan(x, mode='median')
+    x = standardize_data(x)
     covmat = np.corrcoef(x.T)
     return covmat
 
@@ -56,7 +57,8 @@ def principal_component_analysis(x):
     :param x: 
     :return: 
     """
-    x = standardize_data(x, 'mean')
+    x = convert_nan(x, mode='median')
+    x = standardize_data(x)
     cov_matrix = np.cov(x.T)
     evalues, evectors = np.linalg.eig(cov_matrix)
     indexes = evalues.argsort()[::-1]  # Sort descending and get sorted indices
@@ -188,11 +190,11 @@ if __name__ == '__main__':
         plt.title(f'feature : {i}')
         plt.ylim(0, 2)
 
-    # x = convert_nan(x, mode='median')
-    # cov = covariance_matrix(x)
-    # cov_ = set_cov_inf(cov)
-    # col_el = corr_col(cov_, t=0.85)
-    # print(col_el)
+    x = convert_nan(x, mode='median')
+    cov = covariance_matrix(x)
+    cov_ = set_cov_inf(cov)
+    col_el = corr_col(cov_, t=0.85)
+    print(col_el)
 
     # Creation of an array with the numbered variables names
     """import pandas as pd
