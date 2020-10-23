@@ -12,11 +12,11 @@ def set_nan(x):
     return x
 
 
-def convert_nan(x, mode='mode'):
+def convert_nan(x, nan_mode='mode'):
     """
     Replace all -999 entries by the mean of their respective columns
 
-    :param mode:
+    :param nan_mode:
     :param x: Input data
     :return: Input data containing column means in place of -999 entries
     """
@@ -26,22 +26,25 @@ def convert_nan(x, mode='mode'):
     only_nans = np.where(nan_count == x.shape[0])
     x = np.delete(x, only_nans, axis=1)
 
-    if mode == 'mean':
+    if nan_mode == 'mean':
         col_vals = np.nanmean(x, axis=0)
 
-    elif mode == 'median':
+    elif nan_mode == 'median':
         col_vals = np.nanmedian(x, axis=0)
 
-    elif mode == 'mode':
+    elif nan_mode == 'mode':
         col_vals = np.zeros((1, x.shape[1]))
+        single_list = []
         for i in range(x.shape[1]):
             nan_rows = np.isnan(x[:, i])
             unique, counts = np.unique(x[~nan_rows, i], return_counts=True, axis=0)
             if len(unique) == 1:
-                x = np.delete(x, i, axis=1)
-                col_vals = col_vals[:, :-1]
+                single_list.append(i)
+                col_vals[:, i] = np.nan
             else:
                 col_vals[:, i] = unique[counts.argmax()]
+        x = np.delete(x, single_list, axis=1)
+        col_vals = col_vals[~np.isnan(col_vals)]
 
     inds = np.where(np.isnan(x))
     x[inds] = np.take(col_vals, inds[1])
@@ -224,11 +227,11 @@ def split_data_jet(x):
     return ind_0, ind_1, ind_2
 
 
-def preprocess_data(x, mode, degree):
+def preprocess_data(x, nan_mode, degree):
     # remove unnecessary features, 22 -- > jet group number
     x = np.delete(x, [15, 18, 20, 25, 28], axis=1)
 
-    x = convert_nan(x, mode)
+    x = convert_nan(x, nan_mode)
 
     x = build_poly(x, degree)
 

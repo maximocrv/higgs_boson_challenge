@@ -171,7 +171,7 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     return loss, w
 
 
-def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
+def cross_validation(y, x, method, k_indices, k, degree, split_mode, **kwargs):
     """return the loss of ridge regression."""
 
     test_ind = k_indices[k]
@@ -180,9 +180,9 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
     x_tr, y_tr = x[train_ind], y[train_ind]
     x_te, y_te = x[test_ind], y[test_ind]
 
-    if mode == 'default':
-        x_tr = preprocess_data(x_tr, degree=degree, mode='median')
-        x_te = preprocess_data(x_te, degree=degree, mode='median')
+    if split_mode == 'default':
+        x_tr = preprocess_data(x_tr, degree=degree, nan_mode='median')
+        x_te = preprocess_data(x_te, degree=degree, nan_mode='median')
 
         loss_tr, w = method(y_tr, x_tr, degree, **kwargs)
 
@@ -197,7 +197,7 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         mc_tr = matthews_coeff(w, x_tr, y_tr)
         mc_te = matthews_coeff(w, x_te, y_te)
 
-    elif mode == 'jet_groups':
+    elif split_mode == 'jet_groups':
         y_train_pred = np.zeros(len(y_tr))
         y_test_pred = np.zeros(len(y_te))
 
@@ -210,8 +210,8 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
             _y_tr = y_tr[jet_group_tr]
             _y_te = y_te[jet_group_te]
 
-            _x_tr = preprocess_data(_x_tr, mode='mode', degree=degree)
-            _x_te = preprocess_data(_x_te, mode='mode', degree=degree)
+            _x_tr = preprocess_data(_x_tr, nan_mode='mode', degree=degree)
+            _x_te = preprocess_data(_x_te, nan_mode='mode', degree=degree)
 
             loss_tr, w = method(_y_tr, _x_tr, **kwargs)
 
@@ -223,7 +223,7 @@ def cross_validation(y, x, method, k_indices, k, degree, mode, **kwargs):
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
-        mc_tr = matthews_coeff(w=None, x=None, y_true=y_tr, y_pred=y_train_pred)
-        mc_te = matthews_coeff(w=None, x=None, y_true=y_te, y_pred=y_test_pred)
+        mc_tr = matthews_coeff(w=None, x=None, y_true=y_tr, _y_pred=y_train_pred)
+        mc_te = matthews_coeff(w=None, x=None, y_true=y_te, _y_pred=y_test_pred)
 
     return acc_tr, acc_te, mc_tr, mc_te

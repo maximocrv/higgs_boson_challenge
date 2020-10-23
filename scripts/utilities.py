@@ -66,9 +66,11 @@ def compute_f1score(w, x, y_true):
     return 2*(precision*recall)/(precision+recall)
 
 
-def matthews_coeff(w, x, y_true, **kwargs):
+def matthews_coeff(w, x, y_true, _y_pred):
     if w is not None:
         y_pred = predict_labels(w, x)
+    else:
+        y_pred = _y_pred
     cm = create_confusion_matrix(y_pred, y_true)
     tn, tp, fp, fn = cm[0, 0], cm[1, 1], cm[1, 0], cm[0, 1]
     mc = (tp * tn - fp * fn) / np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
