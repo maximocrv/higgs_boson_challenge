@@ -17,7 +17,7 @@ gammas = [0.25, 0.27, 0.29, 0.31]
 
 # set mode. can be ls, ls_gd, and ls_sgd
 mode = 'ls'
-assert mode == 'ls' or mode == 'ls_sgd' or mode == 'ls_gd', "Please enter a valid mode ('ls_gd', 'ls_sgd', 'ls')"
+assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
 if mode != 'ls':
     accuracy_ranking = np.zeros((len(gammas), len(degrees)))
@@ -25,10 +25,10 @@ if mode != 'ls':
         for i, degree in enumerate(degrees):
             temp_acc = []
             for k in range(k_fold):
-                if mode == 'ls_gd':
+                if mode == 'ls_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree, mode='default',
                                                       gamma=gamma)
-                elif mode == 'ls_sgd':
+                elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
                                                       mode='default', gamma=gamma)
 

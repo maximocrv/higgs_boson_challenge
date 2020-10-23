@@ -1,11 +1,8 @@
 import numpy as np
 
-from scripts.utilities import compute_accuracy
-from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
-from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch, balance_fromnans, \
-    build_poly, convert_nan
-from scripts.implementations import logistic_regression_GD, reg_logistic_regression, least_squares_SGD, \
-    reg_logistic_regression_GD
+from scripts.proj1_helpers import load_csv_data
+from scripts.data_preprocessing import build_k_indices
+from scripts.implementations import logistic_regression_GD, logistic_regression_SGD, cross_validation
 
 # streamlining hyperparameter tuning and testing across all optimization methods!!!!!!
 # logistic regression sgd is best example of how to perform preprocessing etc
@@ -19,26 +16,26 @@ from scripts.implementations import logistic_regression_GD, reg_logistic_regress
 nan_mode = 'median'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
-y_tr, x_tr = balance_fromnans(y_tr, x_tr)
+# y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 
 
 # Choice of variables to cut based on covariance and histograms
-cut_features = np.array([9, 29, 3, 4])
-cut_features2 = np.array([15, 18, 20])
-cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
+# cut_features = np.array([9, 29, 3, 4])
+# cut_features2 = np.array([15, 18, 20])
+# cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
 
 # unprocessed highly correlated features
-features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
+# features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
 # nan to mean highly correlated features
 # features = [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
 # highly correlated features no nans
 # features = INSERT INDICES
 
 # x_tr = np.delete(x_tr, cut_features, axis=1)
-x_tr = np.delete(x_tr, features, axis=1)
+# x_tr = np.delete(x_tr, features, axis=1)
 
 # STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
-x_tr = standardize_data(x_tr, nan_mode=nan_mode)
+# x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
 degrees = np.arange(2, 8)
@@ -50,6 +47,7 @@ k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
 mode = 'lr_sgd'
+assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
 # mode = 'submission'
 
 if mode == 'lr':
@@ -58,92 +56,18 @@ if mode == 'lr':
         for i, degree in enumerate(degrees):
             temp_acc = []
             for k in range(k_fold):
-                _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
+                if mode == 'lr_GD':
+                    acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
+                                                      mode='default', max_iters=30, gamma=gamma)
 
-                tx_tr = build_poly(_x_tr, degree)
-                tx_te = build_poly(_x_te, degree)
+                elif mode == 'lr_SGD':
+                    acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
+                                                      mode='default', max_iters=1000, gamma=gamma)
 
-                # w0 = np.random.randn(tx_tr.shape[1])
-                w0 = np.random.randn(tx_tr.shape[1])
-
-                # ridge regression
-                nll, w_tr = logistic_regression_GD(_y_tr, tx_tr, w0, max_iters=30, gamma=gamma)
-
-                acc = compute_accuracy(w_tr, tx_te, _y_te)
-
-                temp_acc.append(acc)
+                temp_acc.append(acc_tr)
             print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
-            #accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
-            accuracy_ranking[h, i] = np.mean(temp_acc)
-
-elif mode == 'lr_sgd':
-    # define lists to store the loss of training data and test data
-    accuracy_ranking = np.zeros((len(gammas), len(degrees)))
-    # cross validation
-    for h, gamma in enumerate(gammas):
-        for i, degree in enumerate(degrees):
-            temp_acc = []
-            for k in range(k_fold):
-                _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
-
-                tx_tr = build_poly(_x_tr, degree)
-                tx_te = build_poly(_x_te, degree)
-
-                tx_tr = standardize_data(tx_tr[:, 1:])
-                tx_tr = np.concatenate((np.ones((tx_tr.shape[0], 1)), tx_tr), axis=1)
-
-                tx_te = standardize_data(tx_te[:, 1:])
-                tx_te = np.concatenate((np.ones((tx_te.shape[0], 1)), tx_te), axis=1)
-
-                # w0 = np.random.randn(tx_tr.shape[1])
-                w0 = np.random.randn(tx_tr.shape[1])
-
-                # ridge regression
-                nll_tr, w_tr = least_squares_SGD(_y_tr, tx_tr, w0, max_iters=5000, gamma=gamma, batch_size=1,
-                                                 mode='logistic_reg')
-
-                w = w_tr[-1]
-
-                acc = compute_accuracy(w, tx_te, _y_te, mode='one_hot')
-
-                temp_acc.append(acc)
-            print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
-
-elif mode == 'regularized_lr':
-    accuracy_ranking = np.zeros((len(gammas), len(degrees), len(lambdas)))
-    for h, gamma in enumerate(gammas):
-        for i, degree in enumerate(degrees):
-            for j, lambda_ in enumerate(lambdas):
-                temp_acc = []
-                for k in range(k_fold):
-                    _x_tr, _y_tr, _x_te, _y_te = generate_batch(y_tr, x_tr, k_indices, k)
-
-                    tx_tr = build_poly(_x_tr, degree)
-                    tx_te = build_poly(_x_te, degree)
-
-                    tx_tr = standardize_data(tx_tr[:, 1:])
-                    tx_tr = np.concatenate((np.ones((tx_tr.shape[0], 1)), tx_tr), axis=1)
-
-                    tx_te = standardize_data(tx_te[:, 1:])
-                    tx_te = np.concatenate((np.ones((tx_te.shape[0], 1)), tx_te), axis=1)
-
-                    # w0 = np.random.randn(tx_tr.shape[1])
-                    w0 = np.random.randn(tx_tr.shape[1])
-
-                    # ridge regression
-                    nll, w_tr = reg_logistic_regression_GD(_y_tr, tx_tr, w0, 5, gamma, lambda_)
-
-                    acc = compute_accuracy(w_tr, tx_te, _y_te)
-
-                    temp_acc.append(acc)
-                print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
-                # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
-                accuracy_ranking[h, i, j] = np.mean(temp_acc)
-
-elif mode == 'submission':
-    print('gl hf')
 
 max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
 
