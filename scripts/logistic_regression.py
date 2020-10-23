@@ -46,28 +46,27 @@ lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
-mode = 'lr_sgd'
+mode = 'lr_SGD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
 # mode = 'submission'
 
-if mode == 'lr':
-    accuracy_ranking = np.zeros((len(gammas), len(degrees)))
-    for h, gamma in enumerate(gammas):
-        for i, degree in enumerate(degrees):
-            temp_acc = []
-            for k in range(k_fold):
-                if mode == 'lr_GD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
-                                                      mode='one_hot', max_iters=30, gamma=gamma)
+accuracy_ranking = np.zeros((len(gammas), len(degrees)))
+for h, gamma in enumerate(gammas):
+    for i, degree in enumerate(degrees):
+        temp_acc = []
+        for k in range(k_fold):
+            if mode == 'lr_GD':
+                acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
+                                                  split_mode='one_hot', max_iters=30, gamma=gamma)
 
-                elif mode == 'lr_SGD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
-                                                      mode='one_hot', max_iters=1000, gamma=gamma)
+            elif mode == 'lr_SGD':
+                acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
+                                                  split_mode='one_hot', max_iters=1000, gamma=gamma)
 
-                temp_acc.append(acc_tr)
-            print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
-            # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
-            accuracy_ranking[h, i] = np.mean(temp_acc)
+            temp_acc.append(acc_tr)
+        print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+        # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
+        accuracy_ranking[h, i] = np.mean(temp_acc)
 
 max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
 

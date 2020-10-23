@@ -12,11 +12,11 @@ def set_nan(x):
     return x
 
 
-def convert_nan(x, mode='mode'):
+def convert_nan(x, nan_mode='mode'):
     """
     Replace all -999 entries by the mean of their respective columns
 
-    :param mode:
+    :param nan_mode:
     :param x: Input data
     :return: Input data containing column means in place of -999 entries
     """
@@ -26,22 +26,25 @@ def convert_nan(x, mode='mode'):
     only_nans = np.where(nan_count == x.shape[0])
     x = np.delete(x, only_nans, axis=1)
 
-    if mode == 'mean':
+    if nan_mode == 'mean':
         col_vals = np.nanmean(x, axis=0)
 
-    elif mode == 'median':
+    elif nan_mode == 'median':
         col_vals = np.nanmedian(x, axis=0)
 
-    elif mode == 'mode':
+    elif nan_mode == 'mode':
         col_vals = np.zeros((1, x.shape[1]))
+        single_list = []
         for i in range(x.shape[1]):
             nan_rows = np.isnan(x[:, i])
             unique, counts = np.unique(x[~nan_rows, i], return_counts=True, axis=0)
             if len(unique) == 1:
-                x = np.delete(x, i, axis=1)
-                col_vals = col_vals[:, :-1]
+                single_list.append(i)
+                col_vals[:, i] = np.nan
             else:
                 col_vals[:, i] = unique[counts.argmax()]
+        x = np.delete(x, single_list, axis=1)
+        col_vals = col_vals[~np.isnan(col_vals)]
 
     inds = np.where(np.isnan(x))
     x[inds] = np.take(col_vals, inds[1])
@@ -66,7 +69,8 @@ def standardize_data(x):
 
 def balance_all(y, x):
     """
-
+    Balances the datasets by selecting and cutting a random subsets of misses, which are more abundant,
+    to obtain an equal number of hits and misses
     :param y: input, categorical
     :param x: input features
     :return: 50/50 balanced random
@@ -82,7 +86,7 @@ def balance_all(y, x):
     xv = np.delete(x, cut_indexes, axis=0)
     yv = np.delete(y, cut_indexes, axis=0)
 
-    # check if proportion hits = 0.5
+    # for testing : check if proportion hits = 0.5
     datalengthv = yv.shape[0]
     hitsv = np.sum(yv[yv == 1])
     missesv = - np.sum(yv[yv == -1])
@@ -93,7 +97,8 @@ def balance_all(y, x):
 
 def balance_fromnans(y, x):
     """
-
+    Balances the datasets by preferably cutting features with nans. To be used with the entire dataset and
+    not with spit-number-of-jets specific subdatasets
     :param y: classification feature, 1 or -1
     :param x: input matrix
     :return: yv and xv, with equal hits and misses
@@ -124,7 +129,7 @@ def balance_fromnans(y, x):
     xv = np.delete(x, cut_indexes, axis=0)
     yv = np.delete(y, cut_indexes, axis=0)
 
-    # checks to verify the new ratio hit/tot
+    # for testing : checks to verify the new ratio hit/tot
     datalengthv = yv.shape[0]
     hitsv = np.sum(yv[yv == 1])
     missesv = - np.sum(yv[yv == -1])
@@ -217,6 +222,11 @@ def generate_batch(y, x, k_indices, k):
 
 
 def split_data_jet(x):
+    """
+    Splits the data depending on the value of the number of jets variable (22)
+    :param x: input dataset
+    :return: split datasets
+    """
     ind_0 = x[:, 22] == 0
     ind_1 = x[:, 22] == 1
     ind_2 = np.logical_or(x[:, 22] == 2, x[:, 22] == 3)
@@ -224,11 +234,12 @@ def split_data_jet(x):
     return ind_0, ind_1, ind_2
 
 
-def preprocess_data(x, mode, degree):
+def preprocess_data(x, nan_mode, degree):
     # remove unnecessary features, 22 -- > jet group number
-    x = np.delete(x, [15, 18, 20, 25, 28], axis=1)
+    x = np.delete(x, [15, 18, 20, 25, 28, 9, 29], axis=1)
+    # useless features, based on histograms (15, 18, 20, 25, 28) and linearity found with the covariance matrix (9,29)
 
-    x = convert_nan(x, mode)
+    x = convert_nan(x, nan_mode)
 
     x = build_poly(x, degree)
 

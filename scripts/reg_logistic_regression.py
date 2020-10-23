@@ -40,9 +40,9 @@ feat = [21, 29]
 # x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
-degrees = np.arange(3, 8)
+degrees = np.arange(6, 8)
 k_fold = 5
-gammas = [1e-6, 1e-5, 1e-4]
+gammas = [1e-4, 1e-3, 1e-2, 2e-2]
 lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
@@ -60,15 +60,15 @@ for h, gamma in enumerate(gammas):
             for k in range(k_fold):
                 if mode == 'reg_lr_GD':
                     acc_tr, acc_te, mc_tr, mc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
-                                                                    k, degree, mode='jet_groups', max_iters=2,
+                                                                    k, degree, split_mode='jet_groups', max_iters=50,
                                                                     gamma=gamma, lambda_=lambda_, w0=None)
                 elif mode == 'reg_lr_SGD':
                     acc_tr, acc_te, mc_tr, mc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices,
-                                                                    k, degree, mode='jet_groups', max_iters=50,
+                                                                    k, degree, split_mode='jet_groups', max_iters=2000,
                                                                     gamma=gamma, lambda_=lambda_, w0=None)
 
                 temp_acc.append(acc_te)
-                print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, gamma = {gamma}, degree = {degree},'
+                print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree},'
                       f'lambda = {lambda_}, accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)

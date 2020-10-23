@@ -26,11 +26,11 @@ if mode != 'ls':
             temp_acc = []
             for k in range(k_fold):
                 if mode == 'ls_GD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree, mode='default',
+                    acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree, split_mode='default',
                                                       gamma=gamma)
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
-                                                      mode='default', gamma=gamma)
+                                                      split_mode='default', gamma=gamma)
 
                 temp_acc.append(acc_te)
             print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
@@ -44,7 +44,7 @@ elif mode == 'ls':
     for i, degree in enumerate(degrees):
         temp_acc = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, mode='default')
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode='default')
 
             temp_acc.append(acc_te)
         print(f'#: {i + 1} / {len(degrees)}, accuracy = {np.mean(temp_acc)}')
