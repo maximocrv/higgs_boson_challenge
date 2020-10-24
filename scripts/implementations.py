@@ -120,7 +120,7 @@ def logistic_regression_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
 
         # print(f'Stochastic Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
 
-    return losses, ws
+    return losses, w
 
 
 def reg_logistic_regression(y, tx, w, lambda_):

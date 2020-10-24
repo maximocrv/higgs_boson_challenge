@@ -104,3 +104,9 @@ def calculate_recall_precision_accuracy(confusion_matrix: np.ndarray) -> (float,
     precision = cm[1, 1] / (cm[1, 1] + cm[1, 0])
     accuracy = (cm[0, 0] + cm[1, 1]) / np.sum(cm)
     return recall, precision, accuracy
+
+
+def obtain_best_params(accuracy_ranking):
+    max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
+
+    raise NotImplementedError

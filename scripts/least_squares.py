@@ -6,17 +6,17 @@ from scripts.implementations import least_squares, least_squares_GD, least_squar
 from scripts.data_preprocessing import build_k_indices
 
 
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True)
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
 k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
-degrees = np.arange(1, 5)
-gammas = [1e-2, 1e-1, 1, 2, 3]
+degrees = np.arange(6, 11)
+gammas = [0.005, 1e-2, 1e-1]
 
 # set mode. can be ls, ls_gd, and ls_sgd
-mode = 'ls'
+mode = 'ls_SGD'
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
 count = 0
@@ -35,7 +35,7 @@ if mode != 'ls':
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
                                                       split_mode='default', binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=10000)
+                                                      w0=None, max_iters=200)
 
                 temp_acc.append(acc_te)
             print(f'#: {count}/{len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
