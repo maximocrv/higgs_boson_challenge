@@ -254,11 +254,16 @@ def transform_data(x_tr, x_te, degree):
     x_tr_cross = cross_channel_features(x_tr)
     x_te_cross = cross_channel_features(x_te)
 
+    neg_cols = np.any(x_tr <= 0, axis=0)
+
+    x_tr_log = np.log(x_tr[:, ~neg_cols])
+    x_te_log = np.log(x_te[:, ~neg_cols])
+
     x_tr = build_poly(x_tr, degree)
     x_te = build_poly(x_te, degree)
 
-    x_tr = np.concatenate((x_tr, x_tr_cross), axis=1)
-    x_te = np.concatenate((x_te, x_te_cross), axis=1)
+    x_tr = np.concatenate((x_tr, x_tr_cross, x_tr_log), axis=1)
+    x_te = np.concatenate((x_te, x_te_cross, x_te_log), axis=1)
 
     x_tr, tr_mean, tr_sd = standardize_data(x_tr)
     x_te = (x_te - tr_mean) / tr_sd
