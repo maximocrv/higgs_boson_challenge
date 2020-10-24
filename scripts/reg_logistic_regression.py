@@ -39,10 +39,10 @@ y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True, mode='one_
 # x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
-degrees = np.arange(6, 10)
+degrees = np.arange(6, 8)
 k_fold = 5
-gammas = [1e-3, 1e-2, 2e-2]
-lambdas = [1e-5]
+gammas = [1e-4, 1e-3, 1e-2, 2e-2]
+lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
