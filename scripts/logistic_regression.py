@@ -49,7 +49,7 @@ mode = 'lr_SGD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
 binary_mode = 'one_hot'
 split_mode = 'default'
-max_iters = 500
+max_iters = 50
 
 count = 0
 accuracy_ranking = np.zeros((len(gammas), len(degrees)))
@@ -69,7 +69,8 @@ for h, gamma in enumerate(gammas):
                                                   gamma=gamma, w0=None)
 
             temp_acc.append(acc_tr)
-        print(f'#: {count} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+        print(f'#: {count} / {len(gammas) * len(degrees)}, degree = {degree}, gamma = {gamma},'
+              f' accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
 
