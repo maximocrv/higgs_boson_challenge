@@ -9,10 +9,10 @@ from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_subm
 from scripts.utilities import compute_accuracy
 
 split_mode = 'jet_groups'
-binary_mode = 'default'
+binary_mode = 'one_hot'
 nan_mode = 'median'
 degree = 10
-gamma = 1e-4
+gamma = 1e-1
 max_iters = 1000
 lambda_ = 1e-7
 # lambdas = [0.0001, 0.0001, 0.0001]

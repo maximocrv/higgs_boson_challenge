@@ -10,7 +10,7 @@ from scripts.proj1_helpers import predict_labels
 def least_squares_GD(y, tx, w0, max_iters, gamma):
     """Gradient descent algorithm."""
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     ws = [w0]
     losses = []
@@ -33,7 +33,7 @@ def least_squares_GD(y, tx, w0, max_iters, gamma):
 def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     """Stochastic gradient descent algorithm."""
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     losses = []
     ws = []
@@ -167,14 +167,14 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     Return the loss and the updated w.
     """
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     ws = [w0]
     losses = []
     w = w0
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        loss, grad, hessian = penalized_logistic_regression(batch_y, batch_tx, w, lambda_)
+        loss, grad = penalized_logistic_regression(batch_y, batch_tx, w, lambda_)
 
         w = w - gamma * grad
 

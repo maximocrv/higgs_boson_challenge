@@ -36,6 +36,6 @@ for h, lambda_ in enumerate(lambdas):
         print(f'#: {count} / {len(degrees) * len(lambdas)}, lambda: {lambda_}, degree: {degree}, '
               f'accuracy_tr = {np.mean(temp_acc_tr)}, accuracy_te = {np.mean(temp_acc_te)}')
 
-        accuracy_ranking_conf_interval[h, i] = np.mean(temp_acc_te)-2*np.std(temp_acc_te)
+        accuracy_ranking_conf_interval[h, i] = np.mean(temp_acc_te) - 2 * np.std(temp_acc_te)
         accuracy_ranking_tr[h, i] = np.mean(temp_acc_tr)
         accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
