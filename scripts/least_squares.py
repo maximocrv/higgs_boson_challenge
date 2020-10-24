@@ -17,6 +17,13 @@ gammas = [0.005, 1e-2, 1e-1]
 
 # set mode. can be ls, ls_gd, and ls_sgd
 mode = 'ls_SGD'
+degrees = np.arange(1, 6)
+gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
+
+split_mode='default' # 'default', entire dataset, or 'jet_groups'
+
+# method mode: can be ls, ls_gd, and ls_sgd
+mode = 'ls'
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
 count = 0
@@ -30,16 +37,16 @@ if mode != 'ls':
             for k in range(k_fold):
                 if mode == 'ls_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree,
-                                                      split_mode='default', binary_mode='default', gamma=gamma,
+                                                      split_mode=split_mode, binary_mode='default', gamma=gamma,
                                                       w0=None, max_iters=100)
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
-                                                      split_mode='default', binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=200)
+                                                      split_mode=split_mode, binary_mode='default', gamma=gamma,
+                                                      w0=None, max_iters=400)
 
                 temp_acc.append(acc_te)
             print(f'#: {count}/{len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
-                  f'accuracy = {np.mean(temp_acc)}')
+                  f'mean accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
 
@@ -51,11 +58,11 @@ elif mode == 'ls':
         count += 1
         temp_acc = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode='jet_groups',
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode= split_mode,
                                               binary_mode='default')
 
             temp_acc.append(acc_te)
-        print(f'#: {count} / {len(degrees)}, degree: {degree}, accuracy = {np.mean(temp_acc)}')
+        print(f'#: {count} / {len(degrees)}, degree: {degree}, mean accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[i] = np.mean(temp_acc)
 
