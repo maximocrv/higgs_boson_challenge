@@ -12,8 +12,8 @@ seed = 1
 k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
-degrees = np.arange(5, 8)
-gammas = [1e-2, 1e-1]
+degrees = np.arange(1, 5)
+gammas = [1e-2, 1e-1, 1, 2, 3]
 
 # set mode. can be ls, ls_gd, and ls_sgd
 mode = 'ls'
@@ -55,7 +55,7 @@ elif mode == 'ls':
                                               binary_mode='default')
 
             temp_acc.append(acc_te)
-        print(f'#: {count} / {len(degrees)}, accuracy = {np.mean(temp_acc)}')
+        print(f'#: {count} / {len(degrees)}, degree: {degree}, accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[i] = np.mean(temp_acc)
 

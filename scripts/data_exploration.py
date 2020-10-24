@@ -44,7 +44,7 @@ def covariance_matrix(x):
     :param x: input 
     :return: covmat : covariance matrix
     """
-    x = convert_nan(x, mode='median')
+    x = convert_nan(x, nan_mode='median')
     x = standardize_data(x)
     covmat = np.corrcoef(x.T)
     return covmat
@@ -57,7 +57,7 @@ def principal_component_analysis(x):
     :param x: 
     :return: 
     """
-    x = convert_nan(x, mode='median')
+    x = convert_nan(x, nan_mode='median')
     x = standardize_data(x)
     cov_matrix = np.cov(x.T)
     evalues, evectors = np.linalg.eig(cov_matrix)
@@ -70,8 +70,6 @@ def principal_component_analysis(x):
         explained_var.append(explanatory_power)
     return explained_var
 
-
-# vec = principal_component_analysis(x)
 
 
 def lin_dep(x):
@@ -190,7 +188,7 @@ if __name__ == '__main__':
         plt.title(f'feature : {i}')
         plt.ylim(0, 2)
 
-    x = convert_nan(x, mode='median')
+    x = convert_nan(x, nan_mode='median')
     cov = covariance_matrix(x)
     cov_ = set_cov_inf(cov)
     col_el = corr_col(cov_, t=0.85)
