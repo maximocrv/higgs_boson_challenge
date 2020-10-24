@@ -13,6 +13,8 @@ lambdas = np.logspace(-4, -1, 5)
 k_fold = 10
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
+nan_mode = 'mode'
+
 accuracy_ranking = np.zeros((len(lambdas), len(degrees)))
 count = 0
 for h, lambda_ in enumerate(lambdas):
@@ -21,7 +23,7 @@ for h, lambda_ in enumerate(lambdas):
         temp_acc = []
         for k in range(k_fold):
             acc_tr, acc_te = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree, binary_mode='default',
-                                              split_mode='jet_groups', lambda_=lambda_)
+                                              split_mode='jet_groups', lambda_=lambda_, nan_mode=nan_mode)
 
             temp_acc.append(acc_te)
         print(f'#: {count} / {len(degrees) * len(lambdas)}, lambda: {lambda_}, degree: {degree}, '

@@ -47,6 +47,7 @@ lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
+nan_mode = 'mode'
 mode = 'reg_lr_GD'
 assert mode == 'reg_lr_GD' or mode == 'reg_lr_SGD', "Please enter a valid mode (reg_lr_GD, reg_lr_SGD)"
 # mode = 'submission'
@@ -63,11 +64,12 @@ for h, gamma in enumerate(gammas):
                 if mode == 'reg_lr_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
                                                       k, degree, split_mode='jet_groups', binary_mode='one_hot',
-                                                      max_iters=1000, gamma=gamma, lambda_=lambda_, w0=None)
+                                                      max_iters=1000, gamma=gamma, lambda_=lambda_, w0=None,
+                                                      nan_mode=nan_mode)
                 elif mode == 'reg_lr_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices, k, degree,
                                                       split_mode='jet_groups', binary_mode='one_hot', max_iters=5000,
-                                                      gamma=gamma, lambda_=lambda_, w0=None)
+                                                      gamma=gamma, lambda_=lambda_, w0=None, nan_mode=nan_mode)
 
                 temp_acc.append(acc_te)
             print(f'#: {count} / {len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree}, '
