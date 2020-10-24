@@ -110,8 +110,8 @@ def logistic_regression_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
 
     for i in range(max_iters):
         for batch_y, batch_tx in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
-            grad = compute_negative_log_likelihood_loss(batch_y, batch_tx, w)
-            loss = compute_negative_log_likelihood_gradient(batch_y, batch_tx, w)
+            grad = compute_negative_log_likelihood_gradient(batch_y, batch_tx, w)
+            loss = compute_negative_log_likelihood_loss(batch_y, batch_tx, w)
 
             w = w - gamma * grad
 
