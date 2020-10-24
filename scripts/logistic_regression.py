@@ -7,7 +7,7 @@ from scripts.implementations import logistic_regression_GD, logistic_regression_
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
 seed = 1
-degrees = np.arange(2, 8)
+degrees = np.arange(2, 5)
 k_fold = 5
 gammas = [1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
@@ -19,8 +19,13 @@ assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, l
 
 nan_mode = 'median'
 binary_mode = 'one_hot'
+<<<<<<< HEAD
+split_mode = 'default'
+max_iters = 50
+=======
 split_mode = 'jet_groups'
 max_iters = 200
+>>>>>>> 57e19e25804b6f9a915e499ccf49b693dc0995c0
 
 count = 0
 accuracy_ranking = np.zeros((len(gammas), len(degrees)))
@@ -33,23 +38,34 @@ for h, gamma in enumerate(gammas):
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
                                                   binary_mode=binary_mode, split_mode=split_mode, nan_mode=nan_mode,
                                                   max_iters=max_iters, gamma=gamma, w0=None)
-
             elif mode == 'lr_SGD':
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
                                                   binary_mode=binary_mode, split_mode=split_mode, nan_mode=nan_mode,
                                                   max_iters=max_iters, gamma=gamma, w0=None)
 
             temp_acc.append(acc_tr)
+<<<<<<< HEAD
+        print(f'#: {count} / {len(gammas) * len(degrees)}, degree = {degree}, gamma = {gamma},'
+              f' accuracy = {np.mean(temp_acc)}')
+=======
         print(f'#: {count} / {len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
               f'accuracy = {np.mean(temp_acc)}')
 
+>>>>>>> 57e19e25804b6f9a915e499ccf49b693dc0995c0
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
 
-max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
+# max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
 
 # gamma_ind = max_ind[0]
 # gamma = gammas[gamma_ind]
+
+# degree_ind = max_ind[1]
+# degree = degrees[degree_ind]
+
+# if len(max_ind) > 2:
+    # lambda_ind = max_ind[2]
+    # lambda_ = lambdas[lambda_ind]
 #
 # degree_ind = max_ind[1]
 # degree = degrees[degree_ind]
