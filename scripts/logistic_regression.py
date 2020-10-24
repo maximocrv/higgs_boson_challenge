@@ -7,7 +7,7 @@ from scripts.implementations import logistic_regression_GD, logistic_regression_
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
 seed = 1
-degrees = np.arange(2, 5)
+degrees = np.arange(5, 8)
 k_fold = 5
 gammas = [1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
@@ -20,8 +20,6 @@ assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, l
 nan_mode = 'median'
 binary_mode = 'one_hot'
 split_mode = 'default'
-max_iters = 50
-split_mode = 'jet_groups'
 max_iters = 200
 
 count = 0

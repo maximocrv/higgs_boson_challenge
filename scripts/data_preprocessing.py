@@ -35,7 +35,7 @@ def convert_nan(x, nan_mode='mode'):
     """
     Replace all -999 entries by the mean, median, or mode of their respective columns
 
-    :param nan_mode:
+    :param nan_mode: mean, median or mode
     :param x: Input data
     :return: Input data containing column means in place of -999 entries
     """
@@ -60,10 +60,10 @@ def convert_nan(x, nan_mode='mode'):
 
 def standardize_data(x):
     """
-
-    :param nan_mode:
-    :param x:
-    :return:
+    Standardization of the dataset, so that mean = 0 and std = 1
+    :param nan_mode: mean, median, mode
+    :param x: input dataset
+    :return: standardized dataset
     """
 
     col_means = np.nanmean(x, axis=0)
@@ -227,6 +227,13 @@ def split_data_jet(x):
 
 
 def preprocess_data(x, nan_mode):
+    """
+    Perform all the pre-processing algorithms that we want to apply to our dataset before using it. Remove unnecessary
+    features, based on the correlation, remove the constant features and convert nans to a selected parameter.
+    :param x: input dataset
+    :param nan_mode: mean, median or mode
+    :return: preprocessed dataset
+    """
     # remove unnecessary features, 22 -- > jet group number
     x = np.delete(x, [9, 15, 18, 20, 25, 28, 29], axis=1)
     # useless features, based on histograms (15, 18, 20, 25, 28) and linearity found with the covariance matrix (9,29)

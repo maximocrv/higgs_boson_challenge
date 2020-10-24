@@ -1,4 +1,5 @@
-# ML Project 1
+# ML Project I 
+## Higgs Boson Challenge
 #####Samuele Caneschi, Maximo Cravero, Milo Imbeni
 
 To reproduce our result, at first make sure to have ```Numpy``` installed and to download properly the dataset 
@@ -31,8 +32,10 @@ signals and backgrounds;
 - ```split_data```, ```split_data_jet```: to split the dataset based on the jet number feature;
 - ```batch_iter```, ```generate_batch```, ```build_k_indices```: functions that create a k-fold division of the starting
  dataset to perform cross validation of hyperparameters;
+- ```cross_channel_features```: creates an array containing the products between every couple of features;
+- ```transform_data```: performs the polynomial expansion of the dataset and adds to it the columns containing products
+between the features;
 - ```preprocess_data```: contains all the pre-processing methods we wnat to apply to the dataset.
-
  
 ###```implementations.py``` 
 Contains all the functions associated to the different methods we used to build models, from 
