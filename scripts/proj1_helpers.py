@@ -3,8 +3,6 @@
 import csv
 import numpy as np
 
-from scripts.utilities import sigmoid
-
 
 def load_csv_data(data_path, sub_sample=False, mode='default'):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
