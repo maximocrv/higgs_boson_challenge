@@ -3,7 +3,7 @@ import numpy as np
 
 from scripts.data_preprocessing import preprocess_data, split_data_jet, transform_data
 from scripts.implementations import least_squares
-from scripts.proj1_helpers import load_csv_data
+from scripts.proj1_helpers import load_csv_data, predict_labels
 
 # RUN SETTINGS
 from scripts.utilities import compute_accuracy
@@ -25,7 +25,7 @@ if split_mode == 'default':
 
     x_tr, x_te = transform_data(x_tr, x_te, degree)
 
-    loss_tr, w = method(y_tr, x_tr, **kwargs)
+    loss_tr, w = method(y_tr, x_tr)
 
     # y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
     # y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
@@ -53,7 +53,7 @@ elif split_mode == 'jet_groups':
 
         _x_tr, _x_te = transform_data(_x_tr, _x_te, degree)
 
-        loss_tr, w = method(_y_tr, _x_tr, **kwargs)
+        loss_tr, w = method(_y_tr, _x_tr)
 
         y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
         y_test_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
@@ -62,3 +62,5 @@ elif split_mode == 'jet_groups':
 
     acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
     acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
+
+
