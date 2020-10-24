@@ -19,9 +19,9 @@ gammas = [0.005, 1e-2, 1e-1]
 mode = 'ls_SGD'
 degrees = np.arange(1, 6)
 gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
-
-split_mode = 'default'  # 'default', entire dataset, or 'jet_groups'
 nan_mode = 'mode'
+split_mode = 'default' # 'default', entire dataset, or 'jet_groups'
+
 # method mode: can be ls, ls_gd, and ls_sgd
 mode = 'ls'
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
@@ -59,7 +59,7 @@ elif mode == 'ls':
         temp_acc = []
         for k in range(k_fold):
             acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode= split_mode,
-                                              binary_mode='default')
+                                              binary_mode='default', nan_mode=nan_mode)
 
             temp_acc.append(acc_te)
         print(f'#: {count} / {len(degrees)}, degree: {degree}, mean accuracy = {np.mean(temp_acc)}')

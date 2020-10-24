@@ -1,7 +1,8 @@
 import numpy as np
 
 from scripts.utilities import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
-    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient
+    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient, calculate_recall_precision_accuracy, \
+    compute_f1score, create_confusion_matrix
 from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
 from scripts.proj1_helpers import predict_labels
 
@@ -90,6 +91,7 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
     for i in range(max_iters):
         loss = compute_negative_log_likelihood_loss(y, tx, w)
         grad = compute_negative_log_likelihood_gradient(y, tx, w)
+
         w = w - gamma * grad
 
         ws.append(w0)
@@ -123,16 +125,16 @@ def logistic_regression_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     return losses, w
 
 
-def reg_logistic_regression(y, tx, w, lambda_):
+def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss, gradient, and Hessian."""
 
     loss = np.sum(np.log(1 + np.exp(tx @ w)) - y * (tx @ w)) + lambda_ * np.linalg.norm(w) ** 2
     gradient = tx.T @ (sigmoid(tx @ w) - y) + 2 * lambda_ * w
 
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
-    hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
+    # hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
 
-    return loss, gradient, hessian
+    return loss, gradient
 
 
 def reg_logistic_regression_GD(y, tx, w0, max_iters, gamma, lambda_):
@@ -148,7 +150,7 @@ def reg_logistic_regression_GD(y, tx, w0, max_iters, gamma, lambda_):
     w = w0
 
     for i in range(max_iters):
-        loss, grad, hessian = reg_logistic_regression(y, tx, w, lambda_)
+        loss, grad = penalized_logistic_regression(y, tx, w, lambda_)
         w = w - gamma * grad
 
         ws.append(w0)
@@ -170,7 +172,7 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     w = w0
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        loss, grad, hessian = reg_logistic_regression(batch_y, batch_tx, w, lambda_)
+        loss, grad, hessian = penalized_logistic_regression(batch_y, batch_tx, w, lambda_)
 
         w = w - gamma * grad
 
@@ -183,7 +185,19 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
 
 
 def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, nan_mode, **kwargs):
-    """return the loss of ridge regression."""
+    """
+
+    :param y:
+    :param x:
+    :param method:
+    :param k_indices:
+    :param k:
+    :param degree:
+    :param split_mode:
+    :param binary_mode:
+    :param kwargs:
+    :return:
+    """
 
     test_ind = k_indices[k]
     train_ind = k_indices[np.arange(len(k_indices)) != k].ravel()
