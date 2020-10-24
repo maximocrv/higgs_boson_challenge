@@ -52,9 +52,12 @@ assert mode == 'reg_lr_GD' or mode == 'reg_lr_SGD', "Please enter a valid mode (
 # mode = 'submission'
 
 accuracy_ranking = np.zeros((len(gammas), len(degrees), len(lambdas)))
+
+count = 0
 for h, gamma in enumerate(gammas):
     for i, degree in enumerate(degrees):
         for j, lambda_ in enumerate(lambdas):
+            count += 1
             temp_acc = []
             for k in range(k_fold):
                 if mode == 'reg_lr_GD':
@@ -67,9 +70,8 @@ for h, gamma in enumerate(gammas):
                                                       gamma=gamma, lambda_=lambda_, w0=None)
 
                 temp_acc.append(acc_te)
-            print(f'#: {h*len(gammas) + i*len(degrees) + j + 1} / '
-                  f'{len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree}, lambda = '
-                  f'{lambda_}, accuracy = {np.mean(temp_acc)}')
+            print(f'#: {count} / {len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree}, '
+                  f'lambda = {lambda_}, accuracy = {np.mean(temp_acc)}')
 
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)

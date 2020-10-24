@@ -14,7 +14,7 @@ from scripts.implementations import logistic_regression_GD, logistic_regression_
 # test all the above with ridge regression
 
 nan_mode = 'median'
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot', sub_sample=True)
 # balance dataset
 # y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 
@@ -48,11 +48,15 @@ k_indices = build_k_indices(y_tr, k_fold, seed)
 # set mode to either lr, lr_sgd or regularized_lr
 mode = 'lr_SGD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
-# mode = 'submission'
+binary_mode = 'one_hot'
+split_mode = 'default'
+max_iters = 500
 
+count = 0
 accuracy_ranking = np.zeros((len(gammas), len(degrees)))
 for h, gamma in enumerate(gammas):
     for i, degree in enumerate(degrees):
+        count += 1
         temp_acc = []
         for k in range(k_fold):
             if mode == 'lr_GD':
@@ -62,11 +66,16 @@ for h, gamma in enumerate(gammas):
 
             elif mode == 'lr_SGD':
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
-                                                  split_mode='jet_mode', binary_mode='one_hot', max_iters=1000,
-                                                  gamma=gamma)
+                                                  binary_mode=binary_mode, split_mode=split_mode, max_iters=max_iters,
+                                                  gamma=gamma, w0=None)
+
+            elif mode == 'lr_SGD':
+                acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
+                                                  binary_mode=binary_mode, split_mode=split_mode, max_iters=max_iters,
+                                                  gamma=gamma, w0=None)
 
             temp_acc.append(acc_tr)
-        print(f'degree = {degree}, gamma = {gamma}, accuracy = {np.mean(temp_acc)}')
+        print(f'#: {count} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
 
@@ -81,6 +90,13 @@ for h, gamma in enumerate(gammas):
 # if len(max_ind) > 2:
     # lambda_ind = max_ind[2]
     # lambda_ = lambdas[lambda_ind]
+#
+# degree_ind = max_ind[1]
+# degree = degrees[degree_ind]
+#
+# if len(max_ind) > 2:
+#     lambda_ind = max_ind[2]
+#     lambda_ = lambdas[lambda_ind]
 # # x_tr and y_tr already balanced from nans and standardized
 # tx_tr_tot = multi_build_poly(x_tr, degree)
 # # standardize again after polynomial basis expansion

@@ -108,18 +108,19 @@ def logistic_regression_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
 
     w = w0
 
-    for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        grad = compute_negative_log_likelihood_loss(batch_y, batch_tx, w)
-        loss = compute_negative_log_likelihood_gradient(batch_y, batch_tx, w)
+    for i in range(max_iters):
+        for batch_y, batch_tx in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
+            grad = compute_negative_log_likelihood_loss(batch_y, batch_tx, w)
+            loss = compute_negative_log_likelihood_gradient(batch_y, batch_tx, w)
 
-        w = w - gamma * grad
+            w = w - gamma * grad
 
-        losses.append(loss)
-        ws.append(w)
+            losses.append(loss)
+            ws.append(w)
 
         # print(f'Stochastic Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
 
-    return losses, ws
+    return losses, w
 
 
 def reg_logistic_regression(y, tx, w, lambda_):
