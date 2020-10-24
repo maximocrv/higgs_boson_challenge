@@ -14,7 +14,7 @@ gammas = [1e-4, 1e-3, 1e-2, 1e-1]
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
-mode = 'lr_SGD'
+mode = 'lr_GD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
 
 nan_mode = 'median'

@@ -3,6 +3,8 @@
 import csv
 import numpy as np
 
+from scripts.utilities import sigmoid
+
 
 def load_csv_data(data_path, sub_sample=False, mode='default'):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
@@ -37,9 +39,7 @@ def predict_labels(weights, data, binary_mode='default'):
 
     elif binary_mode == 'one_hot':
         y_pred = np.dot(data, weights)
-        y_pred = np.exp(y_pred) / (1 + np.exp(y_pred))
-        # y_pred[np.where(y_pred <= 0.5)] = 0
-        # y_pred[np.where(y_pred > 0.5)] = 1
+        y_pred = sigmoid(y_pred)
         y_pred[np.where(y_pred < 0.5)] = 0
         y_pred[np.where(y_pred >= 0.5)] = 1
     

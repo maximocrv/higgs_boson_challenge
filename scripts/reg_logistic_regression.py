@@ -4,7 +4,7 @@ from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch, balance_fromnans, \
     build_poly, convert_nan
-from scripts.implementations import logistic_regression_GD, reg_logistic_regression, least_squares_SGD, \
+from scripts.implementations import logistic_regression_GD, penalized_logistic_regression, least_squares_SGD, \
     reg_logistic_regression_GD, cross_validation, reg_logistic_regression_SGD
 
 # logistic regression sgd is best example of how to perform preprocessing etc

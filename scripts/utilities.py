@@ -30,6 +30,7 @@ def compute_gradient(y, tx, w):
 
 def sigmoid(t):
     """apply the sigmoid function on t."""
+    t = np.clip(t, -500, 500)
     return np.exp(t) / (1 + np.exp(t))
 
 
