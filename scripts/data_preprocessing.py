@@ -12,20 +12,33 @@ def set_nan(x):
     return x
 
 
-def convert_nan(x, nan_mode='mode'):
-    """
-    Replace all -999 entries by the mean of their respective columns
-
-    :param nan_mode:
-    :param x: Input data
-    :return: Input data containing column means in place of -999 entries
-    """
+def remove_constant_columns(x):
     x = set_nan(x)
 
     nan_count = np.sum(np.isnan(x), axis=0)
     only_nans = np.where(nan_count == x.shape[0])
     x = np.delete(x, only_nans, axis=1)
 
+    single_list = []
+    for i in range(x.shape[1]):
+        nan_rows = np.isnan(x[:, i])
+        unique, counts = np.unique(x[~nan_rows, i], return_counts=True, axis=0)
+        if len(unique) == 1:
+            single_list.append(i)
+
+    x = np.delete(x, single_list, axis=1)
+
+    return x
+
+
+def convert_nan(x, nan_mode='mode'):
+    """
+    Replace all -999 entries by the mean, median, or mode of their respective columns
+
+    :param nan_mode:
+    :param x: Input data
+    :return: Input data containing column means in place of -999 entries
+    """
     if nan_mode == 'mean':
         col_vals = np.nanmean(x, axis=0)
 
@@ -34,17 +47,11 @@ def convert_nan(x, nan_mode='mode'):
 
     elif nan_mode == 'mode':
         col_vals = np.zeros((1, x.shape[1]))
-        single_list = []
+
         for i in range(x.shape[1]):
             nan_rows = np.isnan(x[:, i])
             unique, counts = np.unique(x[~nan_rows, i], return_counts=True, axis=0)
-            if len(unique) == 1:
-                single_list.append(i)
-                col_vals[:, i] = np.nan
-            else:
-                col_vals[:, i] = unique[counts.argmax()]
-        x = np.delete(x, single_list, axis=1)
-        col_vals = col_vals[~np.isnan(col_vals)]
+            col_vals[:, i] = unique[counts.argmax()]
 
     inds = np.where(np.isnan(x))
     x[inds] = np.take(col_vals, inds[1])
@@ -64,7 +71,7 @@ def standardize_data(x):
 
     x = (x - col_means) / col_sd
 
-    return x
+    return x, col_means, col_sd
 
 
 def balance_all(y, x):
@@ -147,7 +154,6 @@ def build_poly(x, degree):
         x = np.repeat(x[..., np.newaxis], degree, axis=-1)
         x = x ** np.arange(1, degree + 1)
         x = np.concatenate(x.transpose(2, 0, 1), axis=-1)
-        # tx = np.c_[np.ones(num_samples), x]
     return x
 
 
@@ -207,20 +213,6 @@ def build_k_indices(y, k_fold, seed):
     return np.array(k_indices)
 
 
-def generate_batch(y, x, k_indices, k):
-    """return the loss of ridge regression."""
-    # indices calculation
-    te_indices = k_indices[k]
-    tr_indices = k_indices[~(np.arange(k_indices.shape[0])==k)]
-    tr_indices = tr_indices.reshape(-1)
-    # dividing x and y in training and testing set
-    x_te = x[te_indices]
-    x_tr = x[tr_indices]
-    y_te = y[te_indices]
-    y_tr = y[tr_indices]
-    return x_tr, y_tr, x_te, y_te
-
-
 def split_data_jet(x):
     """
     Splits the data depending on the value of the number of jets variable (22)
@@ -234,18 +226,45 @@ def split_data_jet(x):
     return ind_0, ind_1, ind_2
 
 
-def preprocess_data(x, nan_mode, degree):
+def preprocess_data(x, nan_mode):
     # remove unnecessary features, 22 -- > jet group number
     x = np.delete(x, [15, 18, 20, 25, 28, 29], axis=1)
     # useless features, based on histograms (15, 18, 20, 25, 28) and linearity found with the covariance matrix (9,29)
     # Took out 9 because I think you only need to take out one of the linearly dependent features
 
+    x = remove_constant_columns(x)
+
     x = convert_nan(x, nan_mode)
 
-    x = build_poly(x, degree)
-
-    x = standardize_data(x)
-
-    x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
-
     return x
+
+
+def cross_channel_features(x):
+    cross_x = np.zeros((x.shape[0], np.sum(np.arange(x.shape[1]))))
+
+    count = 0
+    for i in range(x.shape[1]):
+        for j in range(i+1, x.shape[1]):
+            cross_x[:, count] = x[:, i] * x[:, j]
+            count += 1
+
+    return cross_x
+
+
+def transform_data(x_tr, x_te, degree):
+    x_tr_cross = cross_channel_features(x_tr)
+    x_te_cross = cross_channel_features(x_te)
+
+    x_tr = build_poly(x_tr, degree)
+    x_te = build_poly(x_te, degree)
+
+    x_tr = np.concatenate((x_tr, x_tr_cross), axis=1)
+    x_te = np.concatenate((x_te, x_te_cross), axis=1)
+
+    x_tr, tr_mean, tr_sd = standardize_data(x_tr)
+    x_te = (x_te - tr_mean) / tr_sd
+
+    x_tr = np.concatenate((np.ones((x_tr.shape[0], 1)), x_tr), axis=1)
+    x_te = np.concatenate((np.ones((x_te.shape[0], 1)), x_te), axis=1)
+
+    return x_tr, x_te

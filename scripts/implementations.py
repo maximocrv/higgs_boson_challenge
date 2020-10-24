@@ -1,16 +1,19 @@
 import numpy as np
 
 from scripts.utilities import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
-    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient, matthews_coeff
-from scripts.data_preprocessing import batch_iter, build_poly, split_data_jet, preprocess_data
+    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient
+from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
 from scripts.proj1_helpers import predict_labels
 
 
-def least_squares_GD(y, tx, initial_w, max_iters, gamma):
+def least_squares_GD(y, tx, w0, max_iters, gamma):
     """Gradient descent algorithm."""
-    ws = [initial_w]
+    if w0 is None:
+        w0 = np.random.randn(tx.shape[1])
+
+    ws = [w0]
     losses = []
-    w = initial_w
+    w = w0
     for n_iter in range(max_iters):
         grad = compute_gradient(y, tx, w)
         loss = compute_mse(y, tx, w)
@@ -23,15 +26,18 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
         # print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss,
         #                                                                        w0=w[0], w1=w[1]))
 
-    return losses, ws
+    return losses, w
 
 
-def least_squares_SGD(y, tx, initial_w, max_iters, gamma, batch_size=1):
+def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     """Stochastic gradient descent algorithm."""
+    if w0 is None:
+        w0 = np.random.randn(tx.shape[1])
+
     losses = []
     ws = []
 
-    w = initial_w
+    w = w0
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
         grad = compute_gradient(batch_y, batch_tx, w)
@@ -44,7 +50,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma, batch_size=1):
 
         # print(f'Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
 
-    return losses, ws
+    return losses, w
 
 
 def least_squares(y, tx):
@@ -74,6 +80,9 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
     Do one step of gradient descent using logistic regression.
     Return the loss and the updated w.
     """
+    if w0 is None:
+        w0 = np.random.randn(tx.shape[1])
+
     ws = [w0]
     losses = []
     w = w0
@@ -182,15 +191,17 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
     x_te, y_te = x[test_ind], y[test_ind]
 
     if split_mode == 'default':
-        x_tr = preprocess_data(x_tr, degree=degree, nan_mode='mode')
-        x_te = preprocess_data(x_te, degree=degree, nan_mode='mode')
+        x_tr = preprocess_data(x_tr, nan_mode='mode')
+        x_te = preprocess_data(x_te, nan_mode='mode')
+
+        x_tr, x_te = transform_data(x_tr, x_te, degree)
 
         loss_tr, w = method(y_tr, x_tr, **kwargs)
 
-        y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
-        y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
+        # y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
+        # y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
 
-        loss_te = compute_mse(y_te, x_te, w)
+        # loss_te = compute_mse(y_te, x_te, w)
 
         acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
         acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
@@ -208,15 +219,17 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
             _y_tr = y_tr[jet_group_tr]
             _y_te = y_te[jet_group_te]
 
-            _x_tr = preprocess_data(_x_tr, nan_mode='mode', degree=degree)
-            _x_te = preprocess_data(_x_te, nan_mode='mode', degree=degree)
+            _x_tr = preprocess_data(_x_tr, nan_mode='mode')
+            _x_te = preprocess_data(_x_te, nan_mode='mode')
+
+            _x_tr, _x_te = transform_data(_x_tr, _x_te, degree)
 
             loss_tr, w = method(_y_tr, _x_tr, **kwargs)
 
             y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
             y_test_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
 
-            loss_te = compute_mse(_y_te, _x_te, w)
+            # loss_te = compute_mse(_y_te, _x_te, w)
 
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]

@@ -3,7 +3,7 @@ import numpy as np
 from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.implementations import least_squares, least_squares_GD, least_squares_SGD, cross_validation
-from scripts.data_preprocessing import build_k_indices, generate_batch, standardize_data, build_poly
+from scripts.data_preprocessing import build_k_indices
 
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True)
@@ -13,27 +13,30 @@ k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 degrees = np.arange(5, 8)
-gammas = [0.25, 0.27, 0.29, 0.31]
+gammas = [1e-3, 1e-2, 1e-1]
 
 # set mode. can be ls, ls_gd, and ls_sgd
-mode = 'ls'
+mode = 'ls_GD'
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
 if mode != 'ls':
     accuracy_ranking = np.zeros((len(gammas), len(degrees)))
     for h, gamma in enumerate(gammas):
         for i, degree in enumerate(degrees):
+            count = 0
             temp_acc = []
             for k in range(k_fold):
                 if mode == 'ls_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree,
-                                                      split_mode='default', binary_mode='default', gamma=gamma)
+                                                      split_mode='default', binary_mode='default', gamma=gamma,
+                                                      w0=None, max_iters=50)
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
                                                       split_mode='default', binary_mode='default', gamma=gamma)
 
                 temp_acc.append(acc_te)
-            print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+            count += 1
+            print(f'#: {count}, accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
 
