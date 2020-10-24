@@ -82,7 +82,7 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
     Return the loss and the updated w.
     """
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     ws = [w0]
     losses = []
@@ -96,6 +96,8 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
 
         ws.append(w0)
         losses.append(loss)
+
+        print(f'# {i} / {max_iters}, loss = {loss}')
 
     return loss, w
 
