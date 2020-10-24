@@ -14,7 +14,7 @@ from scripts.implementations import logistic_regression_GD, logistic_regression_
 # test all the above with ridge regression
 
 nan_mode = 'median'
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot', sub_sample=True)
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
 # y_tr, x_tr = balance_fromnans(y_tr, x_tr)
 
@@ -41,7 +41,6 @@ seed = 1
 degrees = np.arange(2, 8)
 k_fold = 5
 gammas = [1e-3, 1e-2, 1e-1, 0.2, 0.4, 0.6]
-lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
