@@ -7,8 +7,8 @@ from scripts.data_preprocessing import build_k_indices
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
-degrees = np.arange(1, 14)
-lambdas = np.logspace(-5, -1, 5)
+degrees = np.arange(4, 14)
+lambdas = np.logspace(-6, -1, 5)
 
 k_fold = 10
 k_indices = build_k_indices(y_tr, k_fold, seed)
@@ -21,6 +21,7 @@ accuracy_ranking_conf_interval = np.zeros((len(lambdas), len(degrees)))
 accuracy_ranking_tr = np.zeros((len(lambdas), len(degrees)))
 accuracy_ranking_te = np.zeros((len(lambdas), len(degrees)))
 count = 0
+
 for h, lambda_ in enumerate(lambdas):
     for i, degree in enumerate(degrees):
         count += 1
