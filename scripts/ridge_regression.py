@@ -4,7 +4,7 @@ from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import ridge_regression, cross_validation
 from scripts.data_preprocessing import build_k_indices
 
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True)
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
 degrees = np.arange(6, 10)
