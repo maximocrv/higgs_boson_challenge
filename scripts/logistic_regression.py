@@ -4,51 +4,23 @@ from scripts.proj1_helpers import load_csv_data
 from scripts.data_preprocessing import build_k_indices
 from scripts.implementations import logistic_regression_GD, logistic_regression_SGD, cross_validation
 
-# streamlining hyperparameter tuning and testing across all optimization methods!!!!!!
-# logistic regression sgd is best example of how to perform preprocessing etc
-# standardizing continuous variables and leaving categorical variables be
-# test feature elimination based on unprocessed highcorr features and nan to mean highcorr features
-# test mean and median nan mode w logistic regression
-# implement accuracy metric using distribution across folds (i.e. max(mean(acc) - 2*sd(acc)))
-# PCA
-# test all the above with ridge regression
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
-# balance dataset
-# y_tr, x_tr = balance_fromnans(y_tr, x_tr)
-
-
-# Choice of variables to cut based on covariance and histograms
-# cut_features = np.array([9, 29, 3, 4])
-# cut_features2 = np.array([15, 18, 20])
-# cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
-
-# unprocessed highly correlated features
-# features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
-# nan to mean highly correlated features
-# features = [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
-# highly correlated features no nans
-# features = INSERT INDICES
-
-# x_tr = np.delete(x_tr, cut_features, axis=1)
-# x_tr = np.delete(x_tr, features, axis=1)
-
-# STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
-# x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
 degrees = np.arange(2, 8)
 k_fold = 5
-gammas = [1e-3, 1e-2, 1e-1, 0.2, 0.4, 0.6]
+gammas = [1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
 mode = 'lr_SGD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
+
 nan_mode = 'median'
 binary_mode = 'one_hot'
-split_mode = 'default'
-max_iters = 100
+split_mode = 'jet_groups'
+max_iters = 200
 
 count = 0
 accuracy_ranking = np.zeros((len(gammas), len(degrees)))
