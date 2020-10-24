@@ -36,12 +36,12 @@ def sigmoid(t):
 
 def compute_negative_log_likelihood_loss(y, tx, w):
     """compute the loss: negative log likelihood."""
-    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w))
+    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w)) / y.shape[0]
 
 
 def compute_negative_log_likelihood_gradient(y, tx, w):
     """compute the gradient of the negative log likelihood."""
-    return tx.T @ (sigmoid(tx @ w) - y)
+    return tx.T @ (sigmoid(tx @ w) - y) / y.shape[0]
 
 
 def calculate_hessian(tx, w):
