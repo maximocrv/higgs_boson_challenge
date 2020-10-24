@@ -130,7 +130,7 @@ def obtain_best_params(accuracy_ranking, gammas, degrees, lambdas):
 
     elif gammas is None and lambdas is not None:
         lambda_ind = max_ind[0]
-        lambda_ = gammas[lambda_ind]
+        lambda_ = lambdas[lambda_ind]
 
         return degree, lambda_
 
