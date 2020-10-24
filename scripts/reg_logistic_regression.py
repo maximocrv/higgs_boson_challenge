@@ -2,10 +2,8 @@ import numpy as np
 
 from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
-from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch, balance_fromnans, \
-    build_poly, convert_nan
-from scripts.implementations import logistic_regression_GD, penalized_logistic_regression, least_squares_SGD, \
-    reg_logistic_regression_GD, cross_validation, reg_logistic_regression_SGD
+from scripts.data_preprocessing import standardize_data, build_k_indices
+from scripts.implementations import reg_logistic_regression_GD, cross_validation, reg_logistic_regression_SGD
 
 # logistic regression sgd is best example of how to perform preprocessing etc
 # standardizing continuous variables and leaving categorical variables be
@@ -47,6 +45,8 @@ lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # set mode to either lr, lr_sgd or regularized_lr
+split_mode = 'jet_groups'
+binary_mode = 'one_hot'
 nan_mode = 'mode'
 mode = 'reg_lr_GD'
 assert mode == 'reg_lr_GD' or mode == 'reg_lr_SGD', "Please enter a valid mode (reg_lr_GD, reg_lr_SGD)"
@@ -63,12 +63,12 @@ for h, gamma in enumerate(gammas):
             for k in range(k_fold):
                 if mode == 'reg_lr_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
-                                                      k, degree, split_mode='jet_groups', binary_mode='one_hot',
+                                                      k, degree, split_mode=split_mode, binary_mode=binary_mode,
                                                       max_iters=1000, gamma=gamma, lambda_=lambda_, w0=None,
                                                       nan_mode=nan_mode)
                 elif mode == 'reg_lr_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices, k, degree,
-                                                      split_mode='jet_groups', binary_mode='one_hot', max_iters=5000,
+                                                      split_mode=split_mode, binary_mode=binary_mode, max_iters=5000,
                                                       gamma=gamma, lambda_=lambda_, w0=None, nan_mode=nan_mode)
 
                 temp_acc.append(acc_te)
