@@ -40,7 +40,9 @@ for h, gamma in enumerate(gammas):
                                                   max_iters=max_iters, gamma=gamma, w0=None)
 
             temp_acc.append(acc_tr)
-        print(f'#: {count} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+        print(f'#: {count} / {len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
+              f'accuracy = {np.mean(temp_acc)}')
+
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
 
