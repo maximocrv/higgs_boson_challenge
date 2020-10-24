@@ -38,15 +38,15 @@ def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     ws = []
 
     w = w0
+    for i in range(max_iters):
+        for batch_y, batch_tx in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
+            grad = compute_gradient(batch_y, batch_tx, w)
+            loss = compute_mse(batch_y, batch_tx, w)
 
-    for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        grad = compute_gradient(batch_y, batch_tx, w)
-        loss = compute_mse(batch_y, batch_tx, w)
+            w = w - gamma * grad
 
-        w = w - gamma * grad
-
-        losses.append(loss)
-        ws.append(w)
+            losses.append(loss)
+            ws.append(w)
 
         # print(f'Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
 

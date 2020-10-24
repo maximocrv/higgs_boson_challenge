@@ -228,9 +228,8 @@ def split_data_jet(x):
 
 def preprocess_data(x, nan_mode):
     # remove unnecessary features, 22 -- > jet group number
-    x = np.delete(x, [15, 18, 20, 25, 28, 29], axis=1)
+    x = np.delete(x, [9, 15, 18, 20, 25, 28, 29], axis=1)
     # useless features, based on histograms (15, 18, 20, 25, 28) and linearity found with the covariance matrix (9,29)
-    # Took out 9 because I think you only need to take out one of the linearly dependent features
 
     x = remove_constant_columns(x)
 

@@ -13,30 +13,33 @@ k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 degrees = np.arange(5, 8)
-gammas = [1e-3, 1e-2, 1e-1]
+gammas = [1e-2, 1e-1]
 
 # set mode. can be ls, ls_gd, and ls_sgd
-mode = 'ls_GD'
+mode = 'ls'
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
+
+count = 0
 
 if mode != 'ls':
     accuracy_ranking = np.zeros((len(gammas), len(degrees)))
     for h, gamma in enumerate(gammas):
         for i, degree in enumerate(degrees):
-            count = 0
+            count += 1
             temp_acc = []
             for k in range(k_fold):
                 if mode == 'ls_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree,
                                                       split_mode='default', binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=50)
+                                                      w0=None, max_iters=100)
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
-                                                      split_mode='default', binary_mode='default', gamma=gamma)
+                                                      split_mode='default', binary_mode='default', gamma=gamma,
+                                                      w0=None, max_iters=10000)
 
                 temp_acc.append(acc_te)
-            count += 1
-            print(f'#: {count}, accuracy = {np.mean(temp_acc)}')
+            print(f'#: {count}/{len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
+                  f'accuracy = {np.mean(temp_acc)}')
             # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc)
 
@@ -45,13 +48,14 @@ elif mode == 'ls':
     accuracy_ranking = np.zeros(len(degrees))
     # cross validation
     for i, degree in enumerate(degrees):
+        count += 1
         temp_acc = []
         for k in range(k_fold):
             acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode='jet_groups',
                                               binary_mode='default')
 
             temp_acc.append(acc_te)
-        print(f'#: {i + 1} / {len(degrees)}, accuracy = {np.mean(temp_acc)}')
+        print(f'#: {count} / {len(degrees)}, accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[i] = np.mean(temp_acc)
 
