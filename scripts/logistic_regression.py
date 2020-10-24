@@ -19,8 +19,6 @@ assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, l
 
 nan_mode = 'median'
 binary_mode = 'one_hot'
-split_mode = 'default'
-max_iters = 50
 split_mode = 'jet_groups'
 max_iters = 200
 
