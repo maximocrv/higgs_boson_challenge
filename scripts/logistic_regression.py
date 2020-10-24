@@ -22,7 +22,7 @@ assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, l
 nan_mode = 'median'
 binary_mode = 'one_hot'
 split_mode = 'jet_groups'
-max_iters = 400
+max_iters = 1000
 
 accuracy_ranking_tr = np.zeros((len(gammas), len(degrees)))
 accuracy_ranking_te = np.zeros((len(gammas), len(degrees)))
@@ -55,4 +55,4 @@ for h, gamma in enumerate(gammas):
         accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
         accuracy_ranking_conf_interval[h, i] = np.mean(temp_acc_te) - 2 * np.std(temp_acc_te)
 
-best_params = obtain_best_params(accuracy_ranking_te, gammas, degrees, None)
+# best_params = obtain_best_params(accuracy_ranking_te, gammas, degrees, None)

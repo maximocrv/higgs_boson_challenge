@@ -97,7 +97,7 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
         ws.append(w0)
         losses.append(loss)
 
-        if (i+1) % 100:
+        if not (i) % 100:
             print(f'# {i} / {max_iters}, loss = {loss}')
 
     return loss, w
