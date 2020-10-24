@@ -182,7 +182,7 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     return loss, w
 
 
-def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, **kwargs):
+def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, nan_mode, **kwargs):
     """return the loss of ridge regression."""
 
     test_ind = k_indices[k]
@@ -192,8 +192,8 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
     x_te, y_te = x[test_ind], y[test_ind]
 
     if split_mode == 'default':
-        x_tr = preprocess_data(x_tr, nan_mode='mode')
-        x_te = preprocess_data(x_te, nan_mode='mode')
+        x_tr = preprocess_data(x_tr, nan_mode=nan_mode)
+        x_te = preprocess_data(x_te, nan_mode=nan_mode)
 
         x_tr, x_te = transform_data(x_tr, x_te, degree)
 
@@ -220,8 +220,8 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
             _y_tr = y_tr[jet_group_tr]
             _y_te = y_te[jet_group_te]
 
-            _x_tr = preprocess_data(_x_tr, nan_mode='mode')
-            _x_te = preprocess_data(_x_te, nan_mode='mode')
+            _x_tr = preprocess_data(_x_tr, nan_mode=nan_mode)
+            _x_te = preprocess_data(_x_te, nan_mode=nan_mode)
 
             _x_tr, _x_te = transform_data(_x_tr, _x_te, degree)
 

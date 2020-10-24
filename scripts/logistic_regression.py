@@ -12,8 +12,6 @@ from scripts.implementations import logistic_regression_GD, logistic_regression_
 # implement accuracy metric using distribution across folds (i.e. max(mean(acc) - 2*sd(acc)))
 # PCA
 # test all the above with ridge regression
-
-nan_mode = 'median'
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 # balance dataset
 # y_tr, x_tr = balance_fromnans(y_tr, x_tr)
@@ -47,6 +45,7 @@ k_indices = build_k_indices(y_tr, k_fold, seed)
 # set mode to either lr, lr_sgd or regularized_lr
 mode = 'lr_SGD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
+nan_mode = 'median'
 binary_mode = 'one_hot'
 split_mode = 'default'
 max_iters = 50
@@ -60,13 +59,12 @@ for h, gamma in enumerate(gammas):
         for k in range(k_fold):
             if mode == 'lr_GD':
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
-                                                  split_mode='jet_mode', binary_mode='one_hot', max_iters=30,
-                                                  gamma=gamma)
-
+                                                  binary_mode=binary_mode, split_mode=split_mode, nan_mode=nan_mode,
+                                                  max_iters=max_iters, gamma=gamma, w0=None)
             elif mode == 'lr_SGD':
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
-                                                  binary_mode=binary_mode, split_mode=split_mode, max_iters=max_iters,
-                                                  gamma=gamma, w0=None)
+                                                  binary_mode=binary_mode, split_mode=split_mode, nan_mode=nan_mode,
+                                                  max_iters=max_iters, gamma=gamma, w0=None)
 
             temp_acc.append(acc_tr)
         print(f'#: {count} / {len(gammas) * len(degrees)}, degree = {degree}, gamma = {gamma},'
