@@ -17,6 +17,7 @@ k_indices = build_k_indices(y_tr, k_fold, seed)
 mode = 'lr_GD'
 assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, lr_SGD)"
 
+
 nan_mode = 'median'
 binary_mode = 'one_hot'
 split_mode = 'jet_groups'
