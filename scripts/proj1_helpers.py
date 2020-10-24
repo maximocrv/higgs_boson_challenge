@@ -39,7 +39,10 @@ def predict_labels(weights, data, binary_mode='default'):
 
     elif binary_mode == 'one_hot':
         y_pred = np.dot(data, weights)
-        y_pred = sigmoid(y_pred)
+
+        y_pred = np.clip(y_pred, -500, 500)
+        y_pred = np.exp(y_pred) / (1 + np.exp(y_pred))
+
         y_pred[np.where(y_pred < 0.5)] = 0
         y_pred[np.where(y_pred >= 0.5)] = 1
     
