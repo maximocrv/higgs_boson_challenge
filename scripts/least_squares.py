@@ -6,13 +6,13 @@ from scripts.implementations import least_squares, least_squares_GD, least_squar
 from scripts.data_preprocessing import build_k_indices, generate_batch, standardize_data, build_poly
 
 
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True)
 
 seed = 1
 k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
-degrees = np.arange(1, 4)
+degrees = np.arange(5, 8)
 gammas = [0.25, 0.27, 0.29, 0.31]
 
 # set mode. can be ls, ls_gd, and ls_sgd
@@ -26,11 +26,11 @@ if mode != 'ls':
             temp_acc = []
             for k in range(k_fold):
                 if mode == 'ls_GD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree, split_mode='default',
-                                                      gamma=gamma)
+                    acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree,
+                                                      split_mode='default', binary_mode='default', gamma=gamma)
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
-                                                      split_mode='default', gamma=gamma)
+                                                      split_mode='default', binary_mode='default', gamma=gamma)
 
                 temp_acc.append(acc_te)
             print(f'#: {h * len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
@@ -44,20 +44,22 @@ elif mode == 'ls':
     for i, degree in enumerate(degrees):
         temp_acc = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode='default')
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode='jet_groups',
+                                              binary_mode='default')
 
             temp_acc.append(acc_te)
         print(f'#: {i + 1} / {len(degrees)}, accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[i] = np.mean(temp_acc)
 
-max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
 
-gamma_ind = max_ind[0]
-gamma = gammas[gamma_ind]
-
-degree_ind = max_ind[1]
-degree = degrees[degree_ind]
+# max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
+#
+# gamma_ind = max_ind[0]
+# gamma = gammas[gamma_ind]
+#
+# degree_ind = max_ind[1]
+# degree = degrees[degree_ind]
 
 # tx_tr_tot = build_poly(x_tr, 7)
 # mse, w = least_squares(y_tr, tx_tr_tot)

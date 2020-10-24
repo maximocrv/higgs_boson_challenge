@@ -195,9 +195,6 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
         acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
 
-        mc_tr = matthews_coeff(w, x_tr, y_tr, _y_pred=None)
-        mc_te = matthews_coeff(w, x_te, y_te, _y_pred=None)
-
     elif split_mode == 'jet_groups':
         y_train_pred = np.zeros(len(y_tr))
         y_test_pred = np.zeros(len(y_te))
@@ -224,7 +221,4 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
-        mc_tr = matthews_coeff(w=None, x=None, y_true=y_tr, _y_pred=y_train_pred)
-        mc_te = matthews_coeff(w=None, x=None, y_true=y_te, _y_pred=y_test_pred)
-
-    return acc_tr, acc_te, mc_tr, mc_te
+    return acc_tr, acc_te
