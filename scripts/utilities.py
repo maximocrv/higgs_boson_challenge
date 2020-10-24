@@ -107,7 +107,26 @@ def calculate_recall_precision_accuracy(confusion_matrix: np.ndarray) -> (float,
     return recall, precision, accuracy
 
 
-def obtain_best_params(accuracy_ranking):
+def obtain_best_params(accuracy_ranking, gammas, degrees, lambdas):
     max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
 
-    raise NotImplementedError
+    degree_ind = max_ind[1]
+    degree = degrees[degree_ind]
+
+    if gammas is not None and lambdas is not None:
+        gamma_ind = max_ind[0]
+        gamma = gammas[gamma_ind]
+
+        lambda_ind = max_ind[2]
+        lambda_ = lambdas[lambda_ind]
+
+        return gamma, degree, lambda_
+
+    elif gammas is not None and lambdas is None:
+        gamma_ind = max_ind[0]
+        gamma = gammas[gamma_ind]
+
+        return gamma, degree
+
+    else:
+        return degree

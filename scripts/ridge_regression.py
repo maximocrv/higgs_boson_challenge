@@ -4,7 +4,7 @@ from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import ridge_regression, cross_validation
 from scripts.data_preprocessing import build_k_indices
 
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True)
 
 seed = 1
 degrees = np.arange(6, 10)
@@ -14,6 +14,8 @@ k_fold = 10
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 nan_mode = 'mode'
+binary_mode = 'default'
+split_mode = 'jet_groups'
 
 accuracy_ranking = np.zeros((len(lambdas), len(degrees)))
 count = 0
@@ -22,8 +24,8 @@ for h, lambda_ in enumerate(lambdas):
         count += 1
         temp_acc = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree, binary_mode='default',
-                                              split_mode='jet_groups', lambda_=lambda_, nan_mode=nan_mode)
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree, split_mode=split_mode,
+                                              binary_mode=binary_mode, lambda_=lambda_, nan_mode=nan_mode)
 
             temp_acc.append(acc_te)
         print(f'#: {count} / {len(degrees) * len(lambdas)}, lambda: {lambda_}, degree: {degree}, '
