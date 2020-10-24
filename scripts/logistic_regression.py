@@ -8,7 +8,7 @@ from scripts.utilities import obtain_best_params
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
 seed = 1
-degrees = np.arange(2, 5)
+degrees = np.arange(2, 8)
 k_fold = 5
 gammas = [1e-4, 1e-3, 1e-2, 1e-1]
 # split data in k fold for cross validation
