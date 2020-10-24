@@ -1,7 +1,8 @@
 import numpy as np
 
 from scripts.utilities import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
-    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient
+    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient, calculate_recall_precision_accuracy, \
+    compute_f1score, create_confusion_matrix
 from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
 from scripts.proj1_helpers import predict_labels
 
@@ -183,7 +184,19 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
 
 
 def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, nan_mode, **kwargs):
-    """return the loss of ridge regression."""
+    """
+
+    :param y:
+    :param x:
+    :param method:
+    :param k_indices:
+    :param k:
+    :param degree:
+    :param split_mode:
+    :param binary_mode:
+    :param kwargs:
+    :return:
+    """
 
     test_ind = k_indices[k]
     train_ind = k_indices[np.arange(len(k_indices)) != k].ravel()

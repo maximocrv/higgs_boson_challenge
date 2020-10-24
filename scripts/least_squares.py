@@ -20,8 +20,8 @@ mode = 'ls_SGD'
 degrees = np.arange(1, 6)
 gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
 
-split_mode = 'default'  # 'default', entire dataset, or 'jet_groups'
-nan_mode = 'mode'
+split_mode='default' # 'default', entire dataset, or 'jet_groups'
+
 # method mode: can be ls, ls_gd, and ls_sgd
 mode = 'ls'
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
@@ -38,11 +38,11 @@ if mode != 'ls':
                 if mode == 'ls_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree,
                                                       split_mode=split_mode, binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=100, nan_mode=nan_mode)
+                                                      w0=None, max_iters=100)
                 elif mode == 'ls_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
                                                       split_mode=split_mode, binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=400, nan_mode=nan_mode)
+                                                      w0=None, max_iters=400)
 
                 temp_acc.append(acc_te)
             print(f'#: {count}/{len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
