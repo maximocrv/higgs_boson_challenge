@@ -13,7 +13,7 @@ k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 degrees = np.arange(1, 6)
-gammas = [1e-2, 5e-2, 1e-1, 0.5, 0.8]
+gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
 
 split_mode='default' # 'default', entire dataset, or 'jet_groups'
 
@@ -53,7 +53,7 @@ elif mode == 'ls':
         count += 1
         temp_acc = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode='jet_groups',
+            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode= split_mode,
                                               binary_mode='default')
 
             temp_acc.append(acc_te)
