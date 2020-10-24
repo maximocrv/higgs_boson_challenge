@@ -22,7 +22,7 @@ assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, l
 nan_mode = 'median'
 binary_mode = 'one_hot'
 split_mode = 'jet_groups'
-max_iters = 200
+max_iters = 400
 
 accuracy_ranking_tr = np.zeros((len(gammas), len(degrees)))
 accuracy_ranking_te = np.zeros((len(gammas), len(degrees)))
