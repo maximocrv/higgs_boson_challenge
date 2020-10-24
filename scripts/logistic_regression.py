@@ -57,28 +57,30 @@ for h, gamma in enumerate(gammas):
         for k in range(k_fold):
             if mode == 'lr_GD':
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_GD, k_indices, k, degree,
-                                                  split_mode='one_hot', max_iters=30, gamma=gamma)
+                                                  split_mode='jet_mode', binary_mode='one_hot', max_iters=30,
+                                                  gamma=gamma)
 
             elif mode == 'lr_SGD':
                 acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression_SGD, k_indices, k, degree,
-                                                  split_mode='one_hot', max_iters=1000, gamma=gamma)
+                                                  split_mode='jet_mode', binary_mode='one_hot', max_iters=1000,
+                                                  gamma=gamma)
 
             temp_acc.append(acc_tr)
-        print(f'#: {h*len(degrees) + i + 1} / {len(gammas) * len(degrees)}, accuracy = {np.mean(temp_acc)}')
+        print(f'degree = {degree}, gamma = {gamma}, accuracy = {np.mean(temp_acc)}')
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking[h, i] = np.mean(temp_acc)
 
-max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
+# max_ind = np.unravel_index(np.argmax(accuracy_ranking), accuracy_ranking.shape)
 
-gamma_ind = max_ind[0]
-gamma = gammas[gamma_ind]
+# gamma_ind = max_ind[0]
+# gamma = gammas[gamma_ind]
 
-degree_ind = max_ind[1]
-degree = degrees[degree_ind]
+# degree_ind = max_ind[1]
+# degree = degrees[degree_ind]
 
-if len(max_ind) > 2:
-    lambda_ind = max_ind[2]
-    lambda_ = lambdas[lambda_ind]
+# if len(max_ind) > 2:
+    # lambda_ind = max_ind[2]
+    # lambda_ = lambdas[lambda_ind]
 # # x_tr and y_tr already balanced from nans and standardized
 # tx_tr_tot = multi_build_poly(x_tr, degree)
 # # standardize again after polynomial basis expansion
