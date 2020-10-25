@@ -8,9 +8,9 @@ from scripts.utilities import obtain_best_params
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
 seed = 1
-degrees = np.arange(4, 11, 3)
-k_fold = 10
-gammas = [1e-3, 1e-2, 1e-1]
+degrees = np.arange(7, 14, 3)
+k_fold = 5
+gammas = [0.15, 0.2, 0.25, 0.4]
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
