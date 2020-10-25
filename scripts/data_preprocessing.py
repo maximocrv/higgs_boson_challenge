@@ -269,7 +269,6 @@ def remove_outliers(x):
     return x[~outliers]
 
 
-
 def cross_channel_features(x):
     cross_x = np.zeros((x.shape[0], np.sum(np.arange(x.shape[1]))))
 
@@ -283,24 +282,23 @@ def cross_channel_features(x):
 
 
 def transform_data(x_tr, x_te, degree):
-    # x_tr_cross = cross_channel_features(x_tr)
-    # x_te_cross = cross_channel_features(x_te)
-    #
-    # neg_cols = np.any(x_tr <= 0, axis=0)
-    #
-    # x_tr_log = np.log(x_tr[:, ~neg_cols])
-    # x_te_log = np.log(x_te[:, ~neg_cols])
+    x_tr_cross = cross_channel_features(x_tr)
+    x_te_cross = cross_channel_features(x_te)
+
+    neg_cols = np.any(x_tr <= 0, axis=0)
+    x_tr_log = np.log(x_tr[:, ~neg_cols])
+    x_te_log = np.log(x_te[:, ~neg_cols])
 
     x_tr = build_poly(x_tr, degree)
     x_te = build_poly(x_te, degree)
 
-    # x_tr = np.concatenate((x_tr, x_tr_cross, x_tr_log), axis=1)
-    # x_te = np.concatenate((x_te, x_te_cross, x_te_log), axis=1)
+    x_tr = np.concatenate((x_tr, x_tr_cross, x_tr_log), axis=1)
+    x_te = np.concatenate((x_te, x_te_cross, x_te_log), axis=1)
 
     x_tr, tr_mean, tr_sd = standardize_data(x_tr)
-    # x_te = (x_te - tr_mean) / tr_sd
-    x_te[:, tr_sd > 0] = (x_te[:, tr_sd > 0] - tr_mean[tr_sd > 0]) / tr_sd[tr_sd > 0]
-    x_te[:, tr_sd == 0] = x_te[:, tr_sd == 0] - tr_mean[tr_sd == 0]
+    x_te = (x_te - tr_mean) / tr_sd
+    # x_te[:, tr_sd > 0] = (x_te[:, tr_sd > 0] - tr_mean[tr_sd > 0]) / tr_sd[tr_sd > 0]
+    # x_te[:, tr_sd == 0] = x_te[:, tr_sd == 0] - tr_mean[tr_sd == 0]
 
     x_tr = np.concatenate((np.ones((x_tr.shape[0], 1)), x_tr), axis=1)
     x_te = np.concatenate((np.ones((x_te.shape[0], 1)), x_te), axis=1)

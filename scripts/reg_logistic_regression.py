@@ -59,7 +59,8 @@ for h, gamma in enumerate(gammas):
     for i, degree in enumerate(degrees):
         for j, lambda_ in enumerate(lambdas):
             count += 1
-            temp_acc = []
+            temp_acc_tr = []
+            temp_acc_te = []
             for k in range(k_fold):
                 if mode == 'reg_lr_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
@@ -71,7 +72,9 @@ for h, gamma in enumerate(gammas):
                                                       split_mode=split_mode, binary_mode=binary_mode, max_iters=5000,
                                                       gamma=gamma, lambda_=lambda_, w0=None, nan_mode=nan_mode)
 
-                temp_acc.append(acc_te)
+                temp_acc_tr.append(acc_tr)
+                temp_acc_te.append(acc_te)
+
             print(f'#: {count} / {len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree}, '
                   f'lambda = {lambda_}, accuracy = {np.mean(temp_acc)}')
 
