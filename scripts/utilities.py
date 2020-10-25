@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-"""Functions used to compute the loss."""
+"""This script contains utility functions used throughout the codebase."""
 
 import numpy as np
 
