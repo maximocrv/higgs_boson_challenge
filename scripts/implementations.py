@@ -1,7 +1,6 @@
 """Contains the required optimization implementations with any required additional functions."""
 import numpy as np
 
-from scripts.utilities import compute_accuracy
 from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
 from scripts.proj1_helpers import predict_labels
 
