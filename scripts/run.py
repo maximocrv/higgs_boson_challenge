@@ -6,7 +6,7 @@ from scripts.implementations_testing import least_squares, logistic_regression_G
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 
 # RUN SETTINGS
-from scripts.utilities import compute_accuracy
+from scripts.implementations import compute_accuracy
 from scripts.data_preprocessing import split_data
 
 split_mode = 'default'

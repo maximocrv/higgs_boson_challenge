@@ -1,10 +1,31 @@
+"""Contains the required optimization implementations with any required additional functions."""
 import numpy as np
 
-from scripts.utilities import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
-    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient, calculate_recall_precision_accuracy, \
-    compute_f1score, create_confusion_matrix
+from scripts.utilities import compute_accuracy
 from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
 from scripts.proj1_helpers import predict_labels
+
+
+def compute_mse(y, tx, w):
+    """
+    Compute mean square error.
+    """
+    e = y - tx @ w
+    return 1/2 * np.mean(e**2)
+
+
+def compute_rmse(y, tx, w):
+    """
+    Comput root mean square error
+    """
+    mse = compute_mse(y, tx, w)
+    return np.sqrt(2*mse)
+
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+
+    return -1 / y.shape[0] * tx.T @ (y - tx @ w)
 
 
 def least_squares_GD(y, tx, w0, max_iters, gamma):
@@ -65,8 +86,6 @@ def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
             losses.append(loss)
             ws.append(w)
 
-        # print(f'Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
-
     return losses, w
 
 
@@ -79,7 +98,6 @@ def least_squares(y, tx):
     :return:
     """
     a = tx.T @ tx
-    a = a + 1e-7*np.eye(tx.shape[1])
     b = tx.T @ y
     w = np.linalg.solve(a, b)
     mse = compute_mse(y, tx, w)
@@ -103,6 +121,30 @@ def ridge_regression(y, tx, lambda_):
     mse = compute_mse(y, tx, w)
 
     return mse, w
+
+
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    t = np.clip(t, -500, 500)
+    return np.exp(t) / (1 + np.exp(t))
+
+
+def compute_negative_log_likelihood_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w)) / y.shape[0]
+
+
+def compute_negative_log_likelihood_gradient(y, tx, w):
+    """compute the gradient of the negative log likelihood."""
+    return tx.T @ (sigmoid(tx @ w) - y) / y.shape[0]
+
+
+def calculate_hessian(tx, w):
+    """return the Hessian of the loss function."""
+
+    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
+
+    return tx.T @ S @ tx
 
 
 def logistic_regression(y, tx, w0, max_iters, gamma):
@@ -178,6 +220,18 @@ def reg_logistic_regression(y, tx, w0, max_iters, gamma, lambda_):
         losses.append(loss)
 
     return loss, w
+
+
+"""Put this somewhere else maybe???"""
+
+
+def compute_accuracy(w, x, y_true, binary_mode='default'):
+    y_pred = predict_labels(w, x, binary_mode)
+    true_list = y_true - y_pred
+    num_true = np.where(true_list == 0)
+    acc = len(num_true[0]) / y_true.shape[0]
+
+    return acc
 
 
 def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, nan_mode, **kwargs):
