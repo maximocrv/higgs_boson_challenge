@@ -15,7 +15,7 @@ k_indices = build_k_indices(y_tr, k_fold, seed)
 
 nan_mode = 'mode'
 binary_mode = 'default'
-split_mode = 'jet_groups'
+split_mode = 'default'
 
 accuracy_ranking_conf_interval = np.zeros((len(lambdas), len(degrees)))
 accuracy_ranking_tr = np.zeros((len(lambdas), len(degrees)))

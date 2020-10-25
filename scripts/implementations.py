@@ -57,6 +57,7 @@ def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
 def least_squares(y, tx):
     """calculate the least squares solution."""
     a = tx.T @ tx
+    a = a + 1e-7*np.eye(tx.shape[1])
     b = tx.T @ y
     w = np.linalg.solve(a, b)
     mse = compute_mse(y, tx, w)

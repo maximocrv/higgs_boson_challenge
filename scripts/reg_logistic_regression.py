@@ -37,7 +37,7 @@ y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True, mode='one_
 # x_tr = standardize_data(x_tr, nan_mode=nan_mode)
 
 seed = 1
-degrees = np.arange(6, 8)
+degrees = np.arange(2, 6)
 k_fold = 5
 gammas = [1e-4, 1e-3, 1e-2, 2e-2]
 lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
@@ -64,7 +64,7 @@ for h, gamma in enumerate(gammas):
                 if mode == 'reg_lr_GD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
                                                       k, degree, split_mode=split_mode, binary_mode=binary_mode,
-                                                      max_iters=1000, gamma=gamma, lambda_=lambda_, w0=None,
+                                                      max_iters=200, gamma=gamma, lambda_=lambda_, w0=None,
                                                       nan_mode=nan_mode)
                 elif mode == 'reg_lr_SGD':
                     acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_SGD, k_indices, k, degree,

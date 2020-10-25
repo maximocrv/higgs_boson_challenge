@@ -8,6 +8,7 @@ from scripts.utilities import obtain_best_params
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
 seed = 1
+degrees = np.arange(5, 8)
 degrees = np.arange(7, 14, 3)
 k_fold = 5
 gammas = [0.15, 0.2, 0.25, 0.4]
@@ -21,6 +22,7 @@ assert mode == 'lr_GD' or mode == 'lr_SGD', "Please enter a valid mode (lr_GD, l
 
 nan_mode = 'median'
 binary_mode = 'one_hot'
+split_mode = 'default'
 split_mode = 'jet_groups'
 max_iters = 1000
 
