@@ -1,6 +1,6 @@
 import numpy as np
 
-from scripts.costs import compute_accuracy
+from scripts.implementations import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.data_preprocessing import standardize_data, build_k_indices, generate_batch, balance_fromnans, \
     multi_build_poly, convert_nan

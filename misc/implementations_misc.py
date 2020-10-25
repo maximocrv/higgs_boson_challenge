@@ -1,43 +1,13 @@
-"""Contains the required optimization implementations with any required additional functions."""
 import numpy as np
 
+from scripts.implementations import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
+    compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient
 from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
 from scripts.proj1_helpers import predict_labels
 
 
-def compute_mse(y, tx, w):
-    """
-    Compute mean square error.
-    """
-    e = y - tx @ w
-    return 1/2 * np.mean(e**2)
-
-
-def compute_rmse(y, tx, w):
-    """
-    Comput root mean square error
-    """
-    mse = compute_mse(y, tx, w)
-    return np.sqrt(2*mse)
-
-
-def compute_gradient(y, tx, w):
-    """Compute the gradient."""
-
-    return -1 / y.shape[0] * tx.T @ (y - tx @ w)
-
-
 def least_squares_GD(y, tx, w0, max_iters, gamma):
-    """
-    Perform least squares using gradient descent.
-
-    :param y:
-    :param tx:
-    :param w0:
-    :param max_iters:
-    :param gamma:
-    :return:
-    """
+    """Gradient descent algorithm."""
     if w0 is None:
         w0 = np.zeros(tx.shape[1])
 
@@ -53,21 +23,14 @@ def least_squares_GD(y, tx, w0, max_iters, gamma):
         ws.append(w)
         losses.append(loss)
 
+        # print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss,
+        #                                                                        w0=w[0], w1=w[1]))
+
     return losses, w
 
 
 def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
-    """
-    Perform least squares using stochastic gradient descent.
-
-    :param y:
-    :param tx:
-    :param w0:
-    :param max_iters:
-    :param gamma:
-    :param batch_size:
-    :return:
-    """
+    """Stochastic gradient descent algorithm."""
     if w0 is None:
         w0 = np.zeros(tx.shape[1])
 
@@ -85,18 +48,15 @@ def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
             losses.append(loss)
             ws.append(w)
 
+        # print(f'Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
+
     return losses, w
 
 
 def least_squares(y, tx):
-    """
-    Calculate least squares solution using the normal equations.
-
-    :param y:
-    :param tx:
-    :return:
-    """
+    """calculate the least squares solution."""
     a = tx.T @ tx
+    a = a + 1e-7*np.eye(tx.shape[1])
     b = tx.T @ y
     w = np.linalg.solve(a, b)
     mse = compute_mse(y, tx, w)
@@ -104,58 +64,24 @@ def least_squares(y, tx):
 
 
 def ridge_regression(y, tx, lambda_):
-    """
-    Calculate the weights using ridge regression.
+    """implement ridge regression."""
 
-    :param y:
-    :param tx:
-    :param lambda_:
-    :return:
-    """
     a = tx.T @ tx + 2 * lambda_ * tx.shape[0] * np.eye(tx.shape[1])
     b = tx.T @ y
 
     w = np.linalg.solve(a, b)
 
-    mse = compute_mse(y, tx, w)
+    # mse = compute_mse(y, tx, w)
+    w_l2 = np.sqrt(np.sum(w**2))
+    mse_temp = compute_mse(y, tx, w) + lambda_*w_l2
 
-    return mse, w
-
-
-def sigmoid(t):
-    """apply the sigmoid function on t."""
-    t = np.clip(t, -500, 500)
-    return np.exp(t) / (1 + np.exp(t))
+    return mse_temp, w
 
 
-def compute_negative_log_likelihood_loss(y, tx, w):
-    """compute the loss: negative log likelihood."""
-    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w)) / y.shape[0]
-
-
-def compute_negative_log_likelihood_gradient(y, tx, w):
-    """compute the gradient of the negative log likelihood."""
-    return tx.T @ (sigmoid(tx @ w) - y) / y.shape[0]
-
-
-def calculate_hessian(tx, w):
-    """return the Hessian of the loss function."""
-
-    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
-
-    return tx.T @ S @ tx
-
-
-def logistic_regression(y, tx, w0, max_iters, gamma):
+def logistic_regression_GD(y, tx, w0, max_iters, gamma):
     """
-    Perform gradient descent using logistic regression.
-
-    :param y:
-    :param tx:
-    :param w0:
-    :param max_iters:
-    :param gamma:
-    :return:
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
     """
     if w0 is None:
         w0 = np.zeros(tx.shape[1])
@@ -173,36 +99,53 @@ def logistic_regression(y, tx, w0, max_iters, gamma):
         ws.append(w0)
         losses.append(loss)
 
+        if not (i) % 100:
+            print(f'# {i} / {max_iters}, loss = {loss}')
+
     return loss, w
 
 
-def penalized_logistic_regression(y, tx, w, lambda_):
-    """
-    Compute the penalized logistic regression and its corresponding gradient.
+def logistic_regression_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
+    """Stochastic gradient descent algorithm."""
+    if w0 is None:
+        w0 = np.zeros(tx.shape[1])
 
-    :param y:
-    :param tx:
-    :param w:
-    :param lambda_:
-    :return:
-    """
+    losses = []
+    ws = [w0]
+
+    w = w0
+
+    for i in range(max_iters):
+        for batch_y, batch_tx in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
+            grad = compute_negative_log_likelihood_gradient(batch_y, batch_tx, w)
+            loss = compute_negative_log_likelihood_loss(batch_y, batch_tx, w)
+
+            w = w - gamma * grad
+
+            losses.append(loss)
+            ws.append(w)
+
+        # print(f'Stochastic Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
+
+    return losses, w
+
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient, and Hessian."""
+
     loss = np.sum(np.log(1 + np.exp(tx @ w)) - y * (tx @ w)) + lambda_ * np.linalg.norm(w) ** 2
     gradient = tx.T @ (sigmoid(tx @ w) - y) + 2 * lambda_ * w
+
+    # S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
+    # hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
 
     return loss, gradient
 
 
-def reg_logistic_regression(y, tx, w0, max_iters, gamma, lambda_):
+def reg_logistic_regression_GD(y, tx, w0, max_iters, gamma, lambda_):
     """
-    Perform gradient descent using regularized logistic regression.
-
-    :param y:
-    :param tx:
-    :param w0:
-    :param max_iters:
-    :param gamma:
-    :param lambda_:
-    :return:
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
     """
     if w0 is None:
         w0 = np.zeros(tx.shape[1])
@@ -221,44 +164,52 @@ def reg_logistic_regression(y, tx, w0, max_iters, gamma, lambda_):
     return loss, w
 
 
-"""Put this somewhere else maybe???"""
-
-
-def compute_accuracy(w, x, y_true, binary_mode='default'):
-    y_pred = predict_labels(w, x, binary_mode)
-    true_list = y_true - y_pred
-    num_true = np.where(true_list == 0)
-    acc = len(num_true[0]) / y_true.shape[0]
-
-    return acc
-
-
-def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, nan_mode, **kwargs):
+def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size=1):
     """
-    This function performs k-means cross validation for one single fold. It can be used for any of the implementations
-    by providing the appropriate function name. Furthermore, make sure to provide the correct key word arguments to
-    avoid encountering any errors.
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    if w0 is None:
+        w0 = np.zeros(tx.shape[1])
 
-    :param y: Labels.
-    :param x: Feature set.
-    :param method: Function name
+    ws = [w0]
+    losses = []
+    w = w0
+
+    for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
+        loss, grad = penalized_logistic_regression(batch_y, batch_tx, w, lambda_)
+
+        w = w - gamma * grad
+
+        losses.append(loss)
+        ws.append(w)
+
+        # print(f'Stochastic Gradient Descent ({i}/{max_iters-1}): loss={loss}, w0={w[0]}, w1={w[1]}')
+
+    return loss, w
+
+
+def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode, nan_mode, lambda_, **kwargs):
+    """
+
+    :param y:
+    :param x:
+    :param method:
     :param k_indices:
     :param k:
     :param degree:
     :param split_mode:
     :param binary_mode:
-    :param nan_mode:
     :param kwargs:
     :return:
     """
+
     test_ind = k_indices[k]
     train_ind = k_indices[np.arange(len(k_indices)) != k].ravel()
 
     x_tr, y_tr = x[train_ind], y[train_ind]
     x_te, y_te = x[test_ind], y[test_ind]
 
-    loss_te_list = []
-    loss_tr_list = []
     if split_mode == 'default':
         x_tr = preprocess_data(x_tr, nan_mode=nan_mode)
         x_te = preprocess_data(x_te, nan_mode=nan_mode)
@@ -267,10 +218,10 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
 
         loss_tr, w = method(y_tr, x_tr, **kwargs)
 
-        loss_te = compute_mse(y_te, x_te, w)
+        # y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
+        # y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
 
-        loss_te_list.append(loss_te)
-        loss_tr_list.append(loss_tr)
+        # loss_te = compute_mse(y_te, x_te, w)
 
         acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
         acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
@@ -283,7 +234,7 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         jet_groups_te = split_data_jet(x_te)
 
         loss_te_list = []
-        loss_tr_list = []
+        loss_te_l2_list = []
         for jet_group_tr, jet_group_te in zip(jet_groups_tr, jet_groups_te):
             _x_tr = x_tr[jet_group_tr]
             _x_te = x_te[jet_group_te]
@@ -295,20 +246,21 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
 
             _x_tr, _x_te = transform_data(_x_tr, _x_te, degree)
 
-            loss_tr, w = method(_y_tr, _x_tr, **kwargs)
+            loss_tr, w = method(_y_tr, _x_tr, lambda_=lambda_, **kwargs)
 
             y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
             y_test_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
 
             loss_te = compute_mse(_y_te, _x_te, w)
-
             loss_te_list.append(loss_te)
-            loss_tr_list.append(loss_tr)
+
+            w_l2 = np.sqrt(np.sum(w ** 2))
+            loss_te_l2 = compute_mse(_y_te, _x_te, w) + lambda_ * w_l2
+            loss_te_l2_list.append(loss_te_l2)
 
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
-    loss_tr_avg = np.mean(loss_tr_list)
-    loss_te_avg = np.mean(loss_te_list)
-
-    return acc_tr, acc_te, loss_tr_avg, loss_te_avg
+    mean_loss_te_list = np.mean(loss_te_list)
+    mean_loss_te_l2_list = np.mean(loss_te_l2_list)
+    return acc_tr, acc_te, mean_loss_te_list, mean_loss_te_l2_list

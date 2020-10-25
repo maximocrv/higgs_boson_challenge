@@ -1,7 +1,6 @@
 import numpy as np
 
-from scripts.utilities import compute_accuracy
-from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
+from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import least_squares, least_squares_GD, least_squares_SGD, cross_validation
 from scripts.data_preprocessing import build_k_indices
 

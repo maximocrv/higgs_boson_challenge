@@ -1,64 +1,7 @@
-# -*- coding: utf-8 -*-
-"""Functions used to compute the loss."""
-
+"""This script contains utility functions used throughout the codebase."""
 import numpy as np
 
 from scripts.proj1_helpers import predict_labels
-
-
-def compute_mse(y, tx, w):
-    """
-    Compute mean square error.
-    """
-    e = y - tx @ w
-    return 1/2 * np.mean(e**2)
-
-
-def compute_rmse(y, tx, w):
-    """
-    Comput root mean square error
-    """
-    mse = compute_mse(y, tx, w)
-    return np.sqrt(2*mse)
-
-
-def compute_gradient(y, tx, w):
-    """Compute the gradient."""
-
-    return -1 / y.shape[0] * tx.T @ (y - tx @ w)
-
-
-def sigmoid(t):
-    """apply the sigmoid function on t."""
-    t = np.clip(t, -500, 500)
-    return np.exp(t) / (1 + np.exp(t))
-
-
-def compute_negative_log_likelihood_loss(y, tx, w):
-    """compute the loss: negative log likelihood."""
-    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w)) / y.shape[0]
-
-
-def compute_negative_log_likelihood_gradient(y, tx, w):
-    """compute the gradient of the negative log likelihood."""
-    return tx.T @ (sigmoid(tx @ w) - y) / y.shape[0]
-
-
-def calculate_hessian(tx, w):
-    """return the Hessian of the loss function."""
-
-    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
-
-    return tx.T @ S @ tx
-
-
-def compute_accuracy(w, x, y_true, binary_mode='default'):
-    y_pred = predict_labels(w, x, binary_mode)
-    true_list = y_true - y_pred
-    num_true = np.where(true_list == 0)
-    acc = len(num_true[0]) / y_true.shape[0]
-
-    return acc
 
 
 def compute_f1score(w, x, y_true):
