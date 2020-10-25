@@ -254,6 +254,22 @@ def preprocess_data(x, nan_mode):
     return x
 
 
+def remove_outliers(x):
+    x_mean = np.mean(x, axis=0)
+    x_sd = np.std(x, axis=0)
+
+    lower_lim = x_mean - 6 * x_sd
+    upper_lim = x_mean + 6 * x_sd
+
+    testlower = np.any(x < lower_lim, axis=1)
+    testupper = np.any(x > upper_lim, axis=1)
+
+    outliers = np.logical_or(testlower, testupper)
+
+    return x[~outliers]
+
+
+
 def cross_channel_features(x):
     cross_x = np.zeros((x.shape[0], np.sum(np.arange(x.shape[1]))))
 
@@ -269,9 +285,9 @@ def cross_channel_features(x):
 def transform_data(x_tr, x_te, degree):
     # x_tr_cross = cross_channel_features(x_tr)
     # x_te_cross = cross_channel_features(x_te)
-
+    #
     # neg_cols = np.any(x_tr <= 0, axis=0)
-
+    #
     # x_tr_log = np.log(x_tr[:, ~neg_cols])
     # x_te_log = np.log(x_te[:, ~neg_cols])
 

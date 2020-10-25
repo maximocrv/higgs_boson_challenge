@@ -18,7 +18,7 @@ mode = 'ls'
 degrees = np.arange(2, 13)
 gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
 nan_mode = 'median'
-split_mode = 'jet_groups' # 'default', entire dataset, or 'jet_groups'
+split_mode = 'default'  # 'default', entire dataset, or 'jet_groups'
 
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
