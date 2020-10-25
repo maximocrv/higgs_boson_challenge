@@ -3,7 +3,7 @@ import numpy as np
 from scripts.utilities import compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.data_preprocessing import standardize_data, build_k_indices
-from scripts.implementations_testing import reg_logistic_regression_GD, cross_validation, reg_logistic_regression_SGD
+from scripts.implementations_misc import reg_logistic_regression_GD, cross_validation, reg_logistic_regression_SGD
 
 # logistic regression sgd is best example of how to perform preprocessing etc
 # standardizing continuous variables and leaving categorical variables be
