@@ -8,17 +8,18 @@ from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_subm
 # RUN SETTINGS
 from scripts.utilities import compute_accuracy
 
-split_mode = 'default'
-binary_mode = 'default'
+
+split_mode = 'jet_groups'
+binary_mode = 'one_hot'
 nan_mode = 'median'
 degree = 10
-gamma = 0.01
+gamma = 2*1e-1
 max_iters = 1000
-lambda_ = 0.0001
+lambda_ = 1e-7
 # lambdas = [0.0001, 0.0001, 0.0001]
 # degrees = [9, 10, 10]
 
-method = least_squares_GD
+method = logistic_regression_GD
 
 y_tr, x_tr, ids_tr = load_csv_data('data/train.csv', mode=binary_mode)
 empty, x_te, ids_te = load_csv_data('data/test.csv', mode=binary_mode)

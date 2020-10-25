@@ -10,7 +10,7 @@ from scripts.proj1_helpers import predict_labels
 def least_squares_GD(y, tx, w0, max_iters, gamma):
     """Gradient descent algorithm."""
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     ws = [w0]
     losses = []
@@ -33,7 +33,7 @@ def least_squares_GD(y, tx, w0, max_iters, gamma):
 def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     """Stochastic gradient descent algorithm."""
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     losses = []
     ws = []
@@ -82,7 +82,7 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
     Return the loss and the updated w.
     """
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     ws = [w0]
     losses = []
@@ -96,6 +96,9 @@ def logistic_regression_GD(y, tx, w0, max_iters, gamma):
 
         ws.append(w0)
         losses.append(loss)
+
+        if not (i) % 100:
+            print(f'# {i} / {max_iters}, loss = {loss}')
 
     return loss, w
 
@@ -131,7 +134,7 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     loss = np.sum(np.log(1 + np.exp(tx @ w)) - y * (tx @ w)) + lambda_ * np.linalg.norm(w) ** 2
     gradient = tx.T @ (sigmoid(tx @ w) - y) + 2 * lambda_ * w
 
-    S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
+    # S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
     # hessian = tx.T @ S @ tx + np.diag(np.ones((1, 3)) * 2 * lambda_)
 
     return loss, gradient
@@ -165,14 +168,14 @@ def reg_logistic_regression_SGD(y, tx, w0, max_iters, gamma, lambda_, batch_size
     Return the loss and the updated w.
     """
     if w0 is None:
-        w0 = np.random.randn(tx.shape[1])
+        w0 = np.zeros(tx.shape[1])
 
     ws = [w0]
     losses = []
     w = w0
 
     for i, (batch_y, batch_tx) in enumerate(batch_iter(y, tx, batch_size=batch_size, num_batches=max_iters)):
-        loss, grad, hessian = penalized_logistic_regression(batch_y, batch_tx, w, lambda_)
+        loss, grad = penalized_logistic_regression(batch_y, batch_tx, w, lambda_)
 
         w = w - gamma * grad
 
