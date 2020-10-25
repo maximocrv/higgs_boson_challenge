@@ -68,7 +68,7 @@ elif split_mode == 'jet_groups':
 
         _x_tr, _x_te = transform_data(_x_tr, _x_te, degree)
 
-        loss_tr, w = method(_y_tr, _x_tr, w0=None, max_iters=max_iters, gamma=gamma)
+        loss_tr, w = method(_y_tr, _x_tr)
 
         y_tr_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
         y_te_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)

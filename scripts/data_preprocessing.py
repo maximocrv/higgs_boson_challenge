@@ -71,8 +71,8 @@ def standardize_data(x):
 
     #zero_sd = np.where(col_sd == 0)
 
-    x[:, col_sd > 0] = (x[:, col_sd>0] - col_means[col_sd > 0]) / col_sd[col_sd > 0]
-    x[:, col_sd == 0] = x[:, col_sd==0] - col_means[col_sd == 0]
+    x[:, col_sd > 0] = (x[:, col_sd > 0] - col_means[col_sd > 0]) / col_sd[col_sd > 0]
+    x[:, col_sd == 0] = x[:, col_sd == 0] - col_means[col_sd == 0]
     #if not zero_sd:
     #    x[:, zero_sd] = (x[:, zero_sd] - col_means[zero_sd])
     #    x[:, ~zero_sd] = (x[:, ~zero_sd] - col_means[~zero_sd]) / col_sd[~zero_sd]
