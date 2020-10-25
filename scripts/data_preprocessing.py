@@ -1,3 +1,4 @@
+"""This script contains functions used for preprocessing the data."""
 import numpy as np
 
 

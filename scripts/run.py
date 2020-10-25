@@ -2,7 +2,7 @@
 import numpy as np
 
 from scripts.data_preprocessing import preprocess_data, split_data_jet, transform_data
-from scripts.implementations import least_squares, logistic_regression_GD, ridge_regression, least_squares_GD
+from scripts.implementations_testing import least_squares, logistic_regression_GD, ridge_regression, least_squares_GD
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 
 # RUN SETTINGS

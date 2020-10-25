@@ -1,8 +1,9 @@
+"""Performing hyperparameter tuning for logistic regression."""
 import numpy as np
 
 from scripts.proj1_helpers import load_csv_data
 from scripts.data_preprocessing import build_k_indices
-from scripts.implementations import logistic_regression_GD, logistic_regression_SGD, cross_validation
+from scripts.implementations_testing import logistic_regression_GD, logistic_regression_SGD, cross_validation
 from scripts.utilities import obtain_best_params
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
