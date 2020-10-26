@@ -2,7 +2,7 @@
 import numpy as np
 
 from scripts.proj1_helpers import load_csv_data
-from misc.implementations_misc import ridge_regression, cross_validation
+from scripts.implementations import ridge_regression, cross_validation
 from scripts.data_preprocessing import build_k_indices
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
