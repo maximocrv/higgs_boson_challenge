@@ -2,30 +2,31 @@
 import numpy as np
 
 from scripts.data_preprocessing import preprocess_data, split_data_jet, transform_data
-from scripts.implementations import least_squares, logistic_regression_GD, ridge_regression, least_squares_GD
+from scripts.implementations import ridge_regression, compute_accuracy
 from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 
 # RUN SETTINGS
-from scripts.utilities import compute_accuracy
+
 from scripts.data_preprocessing import split_data
+
 
 split_mode = 'default'
 binary_mode = 'default'
-nan_mode = 'median'
-degree = 4
-degrees = np.arange(2, 15)
+nan_mode = 'mode'
+degree = 13
+lambda_ = 1e-3
+# degrees = np.arange(2, 15)
 # gamma = 2*1e-1
 # max_iters = 1000
-# lambda_ = 1e-7
 # lambdas = [0.0001, 0.0001, 0.0001]
 # degrees = [9, 10, 10]
 
-method = least_squares_GD
+method = ridge_regression
 
-y, x, ids_tr = load_csv_data('data/train.csv', mode=binary_mode)
-# empty, x_te, ids_te = load_csv_data('data/test.csv', mode=binary_mode)
+y_tr, x_tr, ids_tr = load_csv_data('data/train.csv', mode=binary_mode)
+_nothing_, x_te, ids_te = load_csv_data('data/test.csv', mode=binary_mode)
 
-x_tr, y_tr, x_te, y_te = split_data(x, y, ratio=0.7, seed=1)
+# x_tr, y_tr, x_te, y_te = split_data(x, y, ratio=0.7, seed=1)
 
 if split_mode == 'default':
     x_tr = preprocess_data(x_tr, nan_mode=nan_mode)
@@ -33,21 +34,20 @@ if split_mode == 'default':
     acc_rank_te = []
     acc_rank_tr = []
 
-    for degree in degrees:
-        x_tr, x_te = transform_data(x_tr, x_te, degree)
+    x_tr, x_te = transform_data(x_tr, x_te, degree)
 
-        loss_tr, w = method(y_tr, x_tr, w0=None, max_iters=200, gamma=0.01)
+    loss_tr, w = method(y_tr, x_tr, lambda_=lambda_)
 
-        y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
-        y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
+    y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
+    y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
 
-        acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
-        acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
+    acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
+    # acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
 
-        acc_rank_tr.append(acc_tr)
-        acc_rank_te.append(acc_te)
+    acc_rank_tr.append(acc_tr)
+    # acc_rank_te.append(acc_te)
 
-        print(f'degree = {degree}, accuracy_tr = {acc_tr}, accuracy_te {acc_te}')
+    # print(f'degree = {degree}, accuracy_tr = {acc_tr}, accuracy_te {acc_te}')
     # loss_te = compute_mse(y_te, x_te, w)
 
 

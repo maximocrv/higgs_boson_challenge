@@ -75,11 +75,11 @@ def ridge_regression(y, tx, lambda_):
     # w_l2 = np.sqrt(np.sum(w**2))
     # mse_temp = compute_mse(y, tx, w) + lambda_*w_l2
 
-    # rmse = compute_rmse(y, tx, w)
+    rmse = compute_rmse(y, tx, w)
 
-    mae = np.mean(np.abs(y - tx @ w))
+    # mae = np.mean(np.abs(y - tx @ w))
 
-    return mae, w
+    return rmse, w
 
 
 def logistic_regression_GD(y, tx, w0, max_iters, gamma):
@@ -228,8 +228,8 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
 
         loss_tr, w = method(_y_tr, _x_tr, lambda_=lambda_, **kwargs)
 
-        loss_te = np.mean(np.abs(_y_te - _x_te @ w)) / _x_te.shape[0]
-        loss_tr = loss_tr / _x_tr.shape[0]
+        # loss_te = np.mean(np.abs(_y_te - _x_te @ w)) / _x_te.shape[0]
+        loss_te = compute_rmse(_y_te, _x_te, w)
 
 
         # y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
