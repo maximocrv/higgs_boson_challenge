@@ -1,4 +1,4 @@
-# Script to run our best performing model with config etc etc
+"""Script to generate our best test prediction."""
 import numpy as np
 
 from scripts.data_preprocessing import preprocess_data, split_data_jet, transform_data
@@ -46,5 +46,5 @@ acc_tr = len(np.where(y_tr_pred - y_tr == 0)[0]) / y_tr_pred.shape[0]
     # acc_te = len(np.where(y_te_pred - y_te == 0)[0]) / y_te_pred.shape[0]
 
 
-# y_te_pred[y_te_pred == 0] = -1
+y_te_pred[y_te_pred == 0] = -1
 # create_csv_submission(ids_te, y_te_pred, 'ridge_reg_submission.csv')

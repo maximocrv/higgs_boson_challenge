@@ -8,7 +8,7 @@ from scripts.data_preprocessing import build_k_indices
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
-degrees = np.arange(4, 14)
+degrees = np.arange(15, 18)
 # lambdas = np.logspace(-6, -1, 6)
 # lambdas = np.array([1e-4, 1e-3, 1e-2, 1e-1])
 lambdas = np.array([1e-3])
@@ -48,8 +48,8 @@ for h, lambda_ in enumerate(lambdas):
                                                                    lambda_=lambda_, split_mode=split_mode,
                                                                    binary_mode=binary_mode, nan_mode=nan_mode)
             # RMSE NOW!!!
-            # temp_acc_te.append(acc_te)
-            # temp_acc_tr.append(acc_tr)
+            temp_acc_te.append(acc_te)
+            temp_acc_tr.append(acc_tr)
             # temp_loss_te.append(loss_te)
             # temp_loss_l2_te.append(loss_te_l2)
             temp_loss_tr.append(loss_tr)
