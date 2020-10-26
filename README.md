@@ -64,7 +64,7 @@ implementations. The functions implemented in this section are:
 - ```compute_f1score```, ```matthews_coeff```, ```calculate_recall_precision_accuracy```: calculate different metrics to 
 evaluate the efficiency of the method used for prediction;
 - ```create_confusion_matrix```: creates the confusion matrix, used to compute the different metrics;
-- ```obtain_best_params```: .
+- ```obtain_best_params```: computes the hyperparameters that provide the best model, in term of accuracy.
 
 ###```proj1_helpers.py``` 
 Contains the following functions:
