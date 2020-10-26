@@ -1,7 +1,7 @@
 import numpy as np
 
-from scripts.utilities import compute_mse
-
+# from scripts.utilities import compute_mse
+from scripts.implementations import compute_mse
 
 def generate_w(num_intervals):
     """Generate a grid of values for w0 and w1."""

@@ -5,9 +5,27 @@ from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_da
 from scripts.proj1_helpers import predict_labels
 
 
+def compute_mae(y, tx, w):
+    """
+    Computes the mean absolute error.
+
+    :param y: Label data.
+    :param tx: Input features.
+    :param w: Model weights
+    :return: Mean absolute error of the predicted vector with respect to the label data.
+    """
+    e = y - tx @ w
+    return np.mean(np.abs(e))
+
+
 def compute_mse(y, tx, w):
     """
     Compute mean square error.
+
+    :param y: Label data.
+    :param tx: Input features.
+    :param w: Model weights
+    :return: Mean squared error of the predicted vector with respect to the label data.
     """
     e = y - tx @ w
     return 1/2 * np.mean(e**2)
@@ -15,14 +33,26 @@ def compute_mse(y, tx, w):
 
 def compute_rmse(y, tx, w):
     """
-    Comput root mean square error
+    Compute root mean square error.
+
+    :param y: Label data.
+    :param tx: Input features.
+    :param w: Model weights
+    :return: Root mean squared error of the predicted vector with respect to the label data.
     """
     mse = compute_mse(y, tx, w)
     return np.sqrt(2*mse)
 
 
 def compute_gradient(y, tx, w):
-    """Compute the gradient."""
+    """
+    Compute the gradient for least squares.
+
+    :param y: Label data.
+    :param tx: Input features.
+    :param w: Model weights
+    :return: Gradient matrix containing derivatives with respect to all the weights.
+    """
 
     return -1 / y.shape[0] * tx.T @ (y - tx @ w)
 

@@ -8,6 +8,16 @@ To reproduce our result, at first make sure to have ```Numpy``` installed and to
 The other files content, which has been use in this project to get to the final result, is explained in detail in the 
 following document.
 
+### ```data_exploration.ipynb```
+Contains all the functions used to understand the properties of the data and the implementations of some useful plots. 
+The functions implemented in this section are: 
+- ```count_nan```, ```chech_nan_positions```: to count and find out the position of nan values;
+- ```cut_datapoints```: cuts datapoints which have nans in some specific features;
+- ```linear_dependency```: the output contains all the couples of features that are linearly dependent;
+- ```coviariance matrix```: the output is a matrix containing the values of the covariance between the different features;
+- ```set_cov_inf```, ```corr_col```: the output of the second function, that uses the first to do its operations, is a 
+list that contains all the couples of features that has a correlation higher than a pre-selected threshold.
+
 ###```data_preprocessing.py``` 
 Contains all the functions used to apply different pre-processing methods to the data before building the model. The 
 functions implemented in this section are:

@@ -72,10 +72,14 @@ def ridge_regression(y, tx, lambda_):
     w = np.linalg.solve(a, b)
 
     # mse = compute_mse(y, tx, w)
-    w_l2 = np.sqrt(np.sum(w**2))
-    mse_temp = compute_mse(y, tx, w) + lambda_*w_l2
+    # w_l2 = np.sqrt(np.sum(w**2))
+    # mse_temp = compute_mse(y, tx, w) + lambda_*w_l2
 
-    return mse_temp, w
+    # rmse = compute_rmse(y, tx, w)
+
+    mae = np.mean(np.abs(y - tx @ w))
+
+    return mae, w
 
 
 def logistic_regression_GD(y, tx, w0, max_iters, gamma):
@@ -234,7 +238,9 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         jet_groups_te = split_data_jet(x_te)
 
         loss_te_list = []
+        loss_tr_list = []
         loss_te_l2_list = []
+
         for jet_group_tr, jet_group_te in zip(jet_groups_tr, jet_groups_te):
             _x_tr = x_tr[jet_group_tr]
             _x_te = x_te[jet_group_te]
@@ -251,8 +257,10 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
             y_train_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
             y_test_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
 
-            loss_te = compute_mse(_y_te, _x_te, w)
+            # loss_te = compute_rmse(_y_te, _x_te, w)
+            loss_te = np.mean(np.abs(_y_te - _x_te @ w)) / _x_te.shape[0]
             loss_te_list.append(loss_te)
+            loss_tr_list.append(loss_tr / _x_tr.shape[0])
 
             w_l2 = np.sqrt(np.sum(w ** 2))
             loss_te_l2 = compute_mse(_y_te, _x_te, w) + lambda_ * w_l2
@@ -261,6 +269,7 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
-    mean_loss_te_list = np.mean(loss_te_list)
-    mean_loss_te_l2_list = np.mean(loss_te_l2_list)
-    return acc_tr, acc_te, mean_loss_te_list, mean_loss_te_l2_list
+    mean_loss_te = np.mean(loss_te_list)
+    mean_loss_te_l2 = np.mean(loss_te_l2_list)
+    mean_loss_tr = np.mean(loss_tr_list)
+    return acc_tr, acc_te, mean_loss_te, mean_loss_te_l2, mean_loss_tr
