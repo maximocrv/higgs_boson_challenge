@@ -343,4 +343,3 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         loss_te = np.mean(loss_te_list)
 
     return acc_tr, acc_te, loss_tr, loss_te
-g
