@@ -2,20 +2,20 @@
 import numpy as np
 
 from scripts.data_preprocessing import preprocess_data, split_data_jet, transform_data
-from scripts.proj1_helpers import load_csv_data, predict_labels
+from scripts.proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from scripts.implementations import compute_accuracy, ridge_regression
 
 # RUN SETTINGS
-split_mode = 'default'
-binary_mode = 'one_hot'
-nan_mode = 'median'
-degree = 4
-lambda_ = 1e-7
+split_mode = 'jet_groups'
+binary_mode = 'default'
+nan_mode = 'mode'
+degree = 13
+lambda_ = 1e-3
 
 method = ridge_regression
 
 y_tr, x_tr, ids_tr = load_csv_data('data/train.csv', mode=binary_mode)
-_nothing_, x_te, ids_te = load_csv_data('data/train.csv', mode=binary_mode)
+_nothing_, x_te, ids_te = load_csv_data('data/test.csv', mode=binary_mode)
 
 
 y_tr_pred = np.zeros(len(y_tr))
@@ -46,5 +46,5 @@ acc_tr = len(np.where(y_tr_pred - y_tr == 0)[0]) / y_tr_pred.shape[0]
     # acc_te = len(np.where(y_te_pred - y_te == 0)[0]) / y_te_pred.shape[0]
 
 
-y_te_pred[y_te_pred == 0] = -1
-# create_csv_submission(ids_te, y_te_pred, 'ridge_reg_submission.csv')
+#y_te_pred[y_te_pred == 0] = -1
+create_csv_submission(ids_te, y_te_pred, 'ridge_reg_submission8.csv')
