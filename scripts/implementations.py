@@ -5,6 +5,11 @@ from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_da
 from scripts.proj1_helpers import predict_labels
 
 
+def compute_mae(y, tx, w):
+    e = y - tx @ w
+    return np.mean(np.abs(e))
+
+
 def compute_mse(y, tx, w):
     """
     Compute mean square error.

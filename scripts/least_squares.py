@@ -1,12 +1,11 @@
+"""Performing hyperparameter tuning using least squares (and its gradient descent variants)."""
 import numpy as np
 
 from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import least_squares, least_squares_GD, least_squares_SGD, cross_validation
 from scripts.data_preprocessing import build_k_indices
 
-
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv" )
-
 
 seed = 1
 k_fold = 5
