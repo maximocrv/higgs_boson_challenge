@@ -90,13 +90,13 @@ def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
     """
     Perform least squares using stochastic gradient descent.
 
-    :param y:
-    :param tx:
-    :param w0:
-    :param max_iters:
-    :param gamma:
-    :param batch_size:
-    :return:
+    :param y: Label data.
+    :param tx: Input features.
+    :param w0: Initialization weights.
+    :param max_iters: Maximum number of stochastic gradient descent iterations to perform.
+    :param gamma: Step size for performing weight updates (i.e. learning rate).
+    :param batch_size: Size of each batch when performing least squares gradient descent.
+    :return: Mean square error loss and model weights.
     """
     if w0 is None:
         w0 = np.zeros(tx.shape[1])
@@ -122,14 +122,15 @@ def least_squares(y, tx):
     """
     Calculate least squares solution using the normal equations.
 
-    :param y:
-    :param tx:
-    :return:
+    :param y: Label data.
+    :param tx: Input features.
+    :return: Mean squared error loss and model weight.
     """
     a = tx.T @ tx
     b = tx.T @ y
     w = np.linalg.solve(a, b)
     mse = compute_mse(y, tx, w)
+
     return mse, w
 
 
