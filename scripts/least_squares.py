@@ -12,11 +12,11 @@ k_fold = 5
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
 # method mode: can be ls, ls_gd, and ls_sgd
-mode = 'ls'
+mode = 'ls_GD'
 degrees = np.arange(2, 13)
 gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
 nan_mode = 'median'
-split_mode = 'default'
+split_mode = 'jet_groups'
 
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
@@ -40,7 +40,7 @@ if mode != 'ls':
                     acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k,
                                                                         degree, split_mode=split_mode,
                                                                         binary_mode='default', gamma=gamma, w0=None,
-                                                                        max_iters=100, nan_mode=nan_mode)
+                                                                        max_iters=2, nan_mode=nan_mode)
 
                 temp_acc_te.append(acc_te)
                 temp_acc_tr.append(acc_tr)

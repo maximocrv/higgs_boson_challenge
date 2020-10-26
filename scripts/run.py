@@ -39,4 +39,4 @@ for i, (jet_group_tr, jet_group_te) in enumerate(zip(jet_groups_tr, jet_groups_t
     y_tr_pred[jet_group_tr] = predict_labels(w, _x_tr, binary_mode=binary_mode)
     y_te_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
 
-create_csv_submission(ids_te, y_te_pred, 'ridge_reg_submission.csv')
+# create_csv_submission(ids_te, y_te_pred, 'ridge_reg_submission.csv')
