@@ -24,7 +24,7 @@ def compute_mse(y, tx, w):
 
     :param y: Label data.
     :param tx: Input features.
-    :param w: Model weights
+    :param w: Model weights.
     :return: Mean squared error of the predicted vector with respect to the label data.
     """
     e = y - tx @ w
@@ -61,12 +61,12 @@ def least_squares_GD(y, tx, w0, max_iters, gamma):
     """
     Perform least squares using gradient descent.
 
-    :param y:
-    :param tx:
-    :param w0:
-    :param max_iters:
-    :param gamma:
-    :return:
+    :param y: Label data.
+    :param tx: Input features.
+    :param w0: Initial model weights.
+    :param max_iters: Maximum number of iterations to perform.
+    :param gamma: Step size for performing weight updates (i.e. learning rate)
+    :return: Final loss and model weights.
     """
     if w0 is None:
         w0 = np.zeros(tx.shape[1])
@@ -83,7 +83,7 @@ def least_squares_GD(y, tx, w0, max_iters, gamma):
         ws.append(w)
         losses.append(loss)
 
-    return losses, w
+    return losses[-1], w
 
 
 def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
@@ -115,7 +115,7 @@ def least_squares_SGD(y, tx, w0, max_iters, gamma, batch_size=1):
             losses.append(loss)
             ws.append(w)
 
-    return losses, w
+    return losses[-1], w
 
 
 def least_squares(y, tx):
@@ -154,18 +154,17 @@ def ridge_regression(y, tx, lambda_):
 
 def sigmoid(t):
     """apply the sigmoid function on t."""
-    t = np.clip(t, -500, 500)
     return np.exp(t) / (1 + np.exp(t))
 
 
 def compute_negative_log_likelihood_loss(y, tx, w):
     """compute the loss: negative log likelihood."""
-    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w)) / y.shape[0]
+    return np.sum(np.log(1+np.exp(tx @ w)) - y * (tx @ w))
 
 
 def compute_negative_log_likelihood_gradient(y, tx, w):
     """compute the gradient of the negative log likelihood."""
-    return tx.T @ (sigmoid(tx @ w) - y) / y.shape[0]
+    return tx.T @ (sigmoid(tx @ w) - y)
 
 
 def calculate_hessian(tx, w):
@@ -249,9 +248,6 @@ def reg_logistic_regression(y, tx, w0, max_iters, gamma, lambda_):
         losses.append(loss)
 
     return loss, w
-
-
-"""Put this somewhere else maybe???"""
 
 
 def compute_accuracy(w, x, y_true, binary_mode='default'):

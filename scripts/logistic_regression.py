@@ -17,7 +17,6 @@ k_indices = build_k_indices(y_tr, k_fold, seed)
 
 nan_mode = 'median'
 binary_mode = 'one_hot'
-split_mode = 'default'
 split_mode = 'jet_groups'
 max_iters = 1000
 

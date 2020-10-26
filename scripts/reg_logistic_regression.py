@@ -2,7 +2,7 @@ import numpy as np
 
 from scripts.proj1_helpers import load_csv_data
 from scripts.data_preprocessing import build_k_indices
-from misc.implementations_misc import reg_logistic_regression_GD, cross_validation, reg_logistic_regression_SGD
+from scripts.implementations import reg_logistic_regression, cross_validation
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", sub_sample=True, mode='one_hot')
 
@@ -29,7 +29,7 @@ for h, gamma in enumerate(gammas):
             temp_acc_tr = []
             temp_acc_te = []
             for k in range(k_fold):
-                acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression_GD, k_indices,
+                acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression, k_indices,
                                                   k, degree, split_mode=split_mode, binary_mode=binary_mode,
                                                   max_iters=200, gamma=gamma, lambda_=lambda_, w0=None,
                                                   nan_mode=nan_mode)
