@@ -294,20 +294,20 @@ def remove_outliers(x):
     Filters outliers from the dataset by removing those within a certain number of standard deviations from the mean.
 
     :param x: Input features.
-    :return:
+    :return: Filtered dataset with the outliers removed.
     """
     x_mean = np.mean(x, axis=0)
     x_sd = np.std(x, axis=0)
 
-    lower_lim = x_mean - 6 * x_sd
-    upper_lim = x_mean + 6 * x_sd
+    lower_lim = x_mean - 3 * x_sd
+    upper_lim = x_mean + 3 * x_sd
 
     testlower = np.any(x < lower_lim, axis=1)
     testupper = np.any(x > upper_lim, axis=1)
 
     outliers = np.logical_or(testlower, testupper)
 
-    return x[~outliers]
+    return x[~outliers], outliers
 
 
 def cross_channel_features(x):

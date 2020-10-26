@@ -2,7 +2,7 @@ import numpy as np
 
 from scripts.implementations import compute_mse, compute_rmse, compute_accuracy, compute_gradient, sigmoid, \
     compute_negative_log_likelihood_loss, compute_negative_log_likelihood_gradient
-from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data
+from scripts.data_preprocessing import batch_iter, split_data_jet, preprocess_data, transform_data, remove_outliers
 from scripts.proj1_helpers import predict_labels
 
 
@@ -215,12 +215,22 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
     x_te, y_te = x[test_ind], y[test_ind]
 
     if split_mode == 'default':
-        x_tr = preprocess_data(x_tr, nan_mode=nan_mode)
-        x_te = preprocess_data(x_te, nan_mode=nan_mode)
+        _x_tr = preprocess_data(x_tr, nan_mode=nan_mode)
+        _x_te = preprocess_data(x_te, nan_mode=nan_mode)
+
+        _x_tr, outliers_tr = remove_outliers(_x_tr)
+        _x_te, outliers_te = remove_outliers(_x_te)
+
+        _y_te = y_te[~outliers_te]
+        _y_tr = y_tr[~outliers_tr]
 
         x_tr, x_te = transform_data(x_tr, x_te, degree)
 
         loss_tr, w = method(y_tr, x_tr, **kwargs)
+
+        loss_te = np.mean(np.abs(_y_te - _x_te @ w)) / _x_te.shape[0]
+        loss_tr = loss_tr / _x_tr.shape[0]
+
 
         # y_tr_pred = predict_labels(w, x_tr, binary_mode=binary_mode)
         # y_te_pred = predict_labels(w, x_te, binary_mode=binary_mode)
@@ -269,7 +279,7 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         acc_tr = len(np.where(y_train_pred - y_tr == 0)[0]) / y_train_pred.shape[0]
         acc_te = len(np.where(y_test_pred - y_te == 0)[0]) / y_test_pred.shape[0]
 
-    mean_loss_te = np.mean(loss_te_list)
-    mean_loss_te_l2 = np.mean(loss_te_l2_list)
-    mean_loss_tr = np.mean(loss_tr_list)
-    return acc_tr, acc_te, mean_loss_te, mean_loss_te_l2, mean_loss_tr
+    # mean_loss_te = np.mean(loss_te_list)
+    # mean_loss_te_l2 = np.mean(loss_te_l2_list)
+    # mean_loss_tr = np.mean(loss_tr_list)
+    return acc_tr, acc_te, loss_tr, loss_te
