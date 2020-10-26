@@ -18,45 +18,25 @@ nan_mode = 'mode'
 binary_mode = 'default'
 split_mode = 'jet_groups'
 
-test_acc_sd = np.zeros((len(lambdas), len(degrees)))
-accuracy_ranking_conf_interval = np.zeros((len(lambdas), len(degrees)))
 accuracy_ranking_tr = np.zeros((len(lambdas), len(degrees)))
 accuracy_ranking_te = np.zeros((len(lambdas), len(degrees)))
 
-train_loss_rank = np.zeros((len(lambdas), len(degrees)))
-test_loss_rank = np.zeros((len(lambdas), len(degrees)))
-test_loss_l2_rank = np.zeros((len(lambdas), len(degrees)))
-test_loss_sd_rank = np.zeros((len(lambdas), len(degrees)))
-
 count = 0
-
 for h, lambda_ in enumerate(lambdas):
     for i, degree in enumerate(degrees):
         count += 1
         temp_acc_te = []
         temp_acc_tr = []
-        temp_loss_te = []
-        temp_loss_l2_te = []
-        temp_loss_tr = []
         for k in range(k_fold):
-            acc_tr, acc_te, loss_te, loss_te_l2, loss_tr = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree,
-                                                                   lambda_=lambda_, split_mode=split_mode,
-                                                                   binary_mode=binary_mode, nan_mode=nan_mode)
-            # RMSE NOW!!!
+            acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree,
+                                                                lambda_=lambda_, split_mode=split_mode,
+                                                                binary_mode=binary_mode, nan_mode=nan_mode)
+
             temp_acc_te.append(acc_te)
             temp_acc_tr.append(acc_tr)
-            temp_loss_te.append(loss_te)
-            temp_loss_l2_te.append(loss_te_l2)
-            temp_loss_tr.append(loss_tr)
+
         print(f'#: {count} / {len(degrees) * len(lambdas)}, lambda: {lambda_}, degree: {degree}, '
               f'accuracy_tr = {np.mean(temp_acc_tr)}, accuracy_te = {np.mean(temp_acc_te)}')
 
-        test_acc_sd[h, i] = np.std(temp_acc_te)
-        accuracy_ranking_conf_interval[h, i] = np.mean(temp_acc_te) - 2 * np.std(temp_acc_te)
         accuracy_ranking_tr[h, i] = np.mean(temp_acc_tr)
         accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
-
-        train_loss_rank[h, i] = np.mean(temp_loss_tr)
-        test_loss_rank[h, i] = np.mean(temp_loss_te)
-        test_loss_l2_rank[h, i] = np.mean(temp_loss_l2_te)
-        test_loss_sd_rank[h, i] = np.std(temp_loss_te)

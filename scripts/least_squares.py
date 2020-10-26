@@ -32,16 +32,19 @@ if mode != 'ls':
             temp_acc_tr = []
             for k in range(k_fold):
                 if mode == 'ls_GD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k, degree,
-                                                      split_mode=split_mode, binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=100, nan_mode=nan_mode)
+                    acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, least_squares_GD, k_indices, k,
+                                                                        degree, split_mode=split_mode,
+                                                                        binary_mode='default', gamma=gamma, w0=None,
+                                                                        max_iters=100, nan_mode=nan_mode)
                 elif mode == 'ls_SGD':
-                    acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k, degree,
-                                                      split_mode=split_mode, binary_mode='default', gamma=gamma,
-                                                      w0=None, max_iters=100, nan_mode=nan_mode)
+                    acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, least_squares_SGD, k_indices, k,
+                                                                        degree, split_mode=split_mode,
+                                                                        binary_mode='default', gamma=gamma, w0=None,
+                                                                        max_iters=100, nan_mode=nan_mode)
 
                 temp_acc_te.append(acc_te)
                 temp_acc_tr.append(acc_tr)
+
             print(f'#: {count}/{len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
                   f'mean test accuracy = {np.mean(temp_acc_te)}, mean train accuracy = {np.mean(temp_acc_tr)}')
 
@@ -59,11 +62,13 @@ elif mode == 'ls':
         temp_acc_te = []
         temp_acc_tr = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree, split_mode= split_mode,
-                                              binary_mode='default', nan_mode=nan_mode)
+            acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, least_squares, k_indices, k, degree,
+                                                                split_mode=split_mode, binary_mode='default',
+                                                                nan_mode=nan_mode)
 
             temp_acc_te.append(acc_te)
             temp_acc_tr.append(acc_tr)
+
         print(f'#: {count} / {len(degrees)}, degree: {degree}, mean test accuracy = {np.mean(temp_acc_te)},'
               f' mean train accuracy = {np.mean(temp_acc_tr)}')
 

@@ -21,7 +21,6 @@ max_iters = 1000
 
 accuracy_ranking_tr = np.zeros((len(gammas), len(degrees)))
 accuracy_ranking_te = np.zeros((len(gammas), len(degrees)))
-accuracy_ranking_conf_interval = np.zeros((len(gammas), len(degrees)))
 
 count = 0
 for h, gamma in enumerate(gammas):
@@ -30,9 +29,10 @@ for h, gamma in enumerate(gammas):
         temp_acc_tr = []
         temp_acc_te = []
         for k in range(k_fold):
-            acc_tr, acc_te = cross_validation(y_tr, x_tr, logistic_regression, k_indices, k, degree,
-                                              binary_mode=binary_mode, split_mode=split_mode, nan_mode=nan_mode,
-                                              max_iters=max_iters, gamma=gamma, w0=None)
+            acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, logistic_regression, k_indices, k, degree,
+                                                                binary_mode=binary_mode, split_mode=split_mode,
+                                                                nan_mode=nan_mode, max_iters=max_iters, gamma=gamma,
+                                                                w0=None)
 
             temp_acc_tr.append(acc_tr)
             temp_acc_te.append(acc_te)
@@ -43,4 +43,3 @@ for h, gamma in enumerate(gammas):
         # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
         accuracy_ranking_tr[h, i] = np.mean(temp_acc_tr)
         accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
-        accuracy_ranking_conf_interval[h, i] = np.mean(temp_acc_te) - 2 * np.std(temp_acc_te)

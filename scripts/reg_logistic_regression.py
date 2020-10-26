@@ -30,10 +30,10 @@ for h, gamma in enumerate(gammas):
             temp_acc_tr = []
             temp_acc_te = []
             for k in range(k_fold):
-                acc_tr, acc_te = cross_validation(y_tr, x_tr, reg_logistic_regression, k_indices,
-                                                  k, degree, split_mode=split_mode, binary_mode=binary_mode,
-                                                  max_iters=200, gamma=gamma, lambda_=lambda_, w0=None,
-                                                  nan_mode=nan_mode)
+                acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, reg_logistic_regression, k_indices,
+                                                                    k, degree, split_mode=split_mode,
+                                                                    binary_mode=binary_mode, max_iters=200, gamma=gamma,
+                                                                    lambda_=lambda_, w0=None, nan_mode=nan_mode)
 
                 temp_acc_tr.append(acc_tr)
                 temp_acc_te.append(acc_te)
