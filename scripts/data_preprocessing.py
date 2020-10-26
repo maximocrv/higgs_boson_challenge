@@ -6,8 +6,8 @@ def set_nan(x):
     """
     Converts all -999 entries to nans.
 
-    :param x: Input dataset
-    :return: Input dataset with all -999's replaced by nans
+    :param x: Input dataset.
+    :return: Input dataset with all -999's replaced by nans.
     """
     x[x == -999] = np.nan
     return x
@@ -40,11 +40,11 @@ def remove_constant_columns(x):
 
 def convert_nan(x, nan_mode='mode'):
     """
-    Replace all -999 entries by the mean, median, or mode of their respective columns
+    Replace all -999 entries by the mean, median, or mode of their respective columns.
 
-    :param nan_mode: mean, median or mode
-    :param x: Input data
-    :return: Input data containing column means in place of -999 entries
+    :param nan_mode: Mean, median or mode.
+    :param x: Input data.
+    :return: Input data containing column means in place of -999 entries.
     """
     if nan_mode == 'mean':
         col_vals = np.nanmean(x, axis=0)
@@ -70,9 +70,8 @@ def standardize_data(x):
     Standardization of the dataset, so that mean = 0 and std = 1. The data is filtered such that all columns where the
     standard deviation is equal to zero simply have their mean subtracted, in order to avoid division by zero errors.
 
-    :param nan_mode: mean, median, mode
-    :param x: input dataset
-    :return: standardized dataset
+    :param x: Input dataset.
+    :return: Standardized dataset.
     """
 
     col_means = np.nanmean(x, axis=0)
@@ -112,8 +111,8 @@ def balance_fromnans(y, x):
     Balances the datasets by preferably cutting features with nans. To be used with the entire dataset and
     not with spit-number-of-jets specific subdatasets.
 
-    :param y: classification feature, 1 or -1
-    :param x: input matrix
+    :param y: Label data.
+    :param x: Input features.
     :return: yv and xv, with equal hits and misses
     """
     x = set_nan(x)
