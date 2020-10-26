@@ -5,7 +5,7 @@ from scripts.proj1_helpers import load_csv_data
 from scripts.implementations import least_squares, least_squares_GD, least_squares_SGD, cross_validation
 from scripts.data_preprocessing import build_k_indices
 
-y_tr, x_tr, ids_tr = load_csv_data("data/train.csv" )
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
 k_fold = 5
@@ -16,7 +16,7 @@ mode = 'ls'
 degrees = np.arange(2, 13)
 gammas = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
 nan_mode = 'median'
-split_mode = 'default'  # 'default', entire dataset, or 'jet_groups'
+split_mode = 'default'
 
 assert mode == 'ls' or mode == 'ls_SGD' or mode == 'ls_GD', "Please enter a valid mode ('ls_GD', 'ls_SGD', 'ls')"
 
@@ -44,16 +44,16 @@ if mode != 'ls':
                 temp_acc_tr.append(acc_tr)
             print(f'#: {count}/{len(gammas) * len(degrees)}, gamma: {gamma}, degree: {degree}, '
                   f'mean test accuracy = {np.mean(temp_acc_te)}, mean train accuracy = {np.mean(temp_acc_tr)}')
-            # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
+
             accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
             accuracy_ranking_tr[h, i] = np.mean(temp_acc_tr)
 
 elif mode == 'ls':
-    # define lists to store the loss of training data and test data
+
     accuracy_ranking_conf_interval = np.zeros(len(degrees))
     accuracy_ranking_tr = np.zeros(len(degrees))
     accuracy_ranking_te = np.zeros(len(degrees))
-    # cross validation
+
     for i, degree in enumerate(degrees):
         count += 1
         temp_acc_te = []
@@ -66,6 +66,7 @@ elif mode == 'ls':
             temp_acc_tr.append(acc_tr)
         print(f'#: {count} / {len(degrees)}, degree: {degree}, mean test accuracy = {np.mean(temp_acc_te)},'
               f' mean train accuracy = {np.mean(temp_acc_tr)}')
+
         accuracy_ranking_conf_interval[i] = np.mean(temp_acc_te)-2*np.std(temp_acc_te)
         accuracy_ranking_te[i] = np.mean(temp_acc_te)
         accuracy_ranking_tr[i] = np.mean(temp_acc_tr)

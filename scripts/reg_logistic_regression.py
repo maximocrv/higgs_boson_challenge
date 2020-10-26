@@ -1,3 +1,4 @@
+"""Hyperparameter tuning for regularized logistic regression."""
 import numpy as np
 
 from scripts.proj1_helpers import load_csv_data
@@ -11,10 +12,10 @@ degrees = np.arange(2, 6)
 k_fold = 5
 gammas = [1e-4, 1e-3, 1e-2, 2e-2]
 lambdas = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
+
 # split data in k fold for cross validation
 k_indices = build_k_indices(y_tr, k_fold, seed)
 
-# set mode to either lr, lr_sgd or regularized_lr
 split_mode = 'jet_groups'
 binary_mode = 'one_hot'
 nan_mode = 'mode'
@@ -40,7 +41,4 @@ for h, gamma in enumerate(gammas):
             print(f'#: {count} / {len(gammas) * len(degrees) * len(lambdas)}, gamma = {gamma}, degree = {degree}, '
                   f'lambda = {lambda_}, accuracy = {np.mean(temp_acc_te)}')
 
-            # accuracy_ranking[h,i]=np.mean(temp_acc)-2*np.std(temp_acc)
             accuracy_ranking[h, i] = np.mean(temp_acc_te)
-
-# obtain_best_params()
