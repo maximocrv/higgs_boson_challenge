@@ -138,10 +138,10 @@ def ridge_regression(y, tx, lambda_):
     """
     Calculate the weights using ridge regression.
 
-    :param y:
-    :param tx:
-    :param lambda_:
-    :return:
+    :param y: Label data.
+    :param tx: Input features.
+    :param lambda_: Regularization parameter lambda.
+    :return: Mean squared error and model weights.
     """
     a = tx.T @ tx + 2 * lambda_ * tx.shape[0] * np.eye(tx.shape[1])
     b = tx.T @ y
@@ -154,7 +154,12 @@ def ridge_regression(y, tx, lambda_):
 
 
 def sigmoid(t):
-    """apply the sigmoid function on t."""
+    """
+    Apply the sigmoid function on t.
+
+    :param t: Some input value.
+    :return: Sigmoid evaluated at t.
+    """
     return np.exp(t) / (1 + np.exp(t))
 
 
@@ -164,13 +169,25 @@ def compute_negative_log_likelihood_loss(y, tx, w):
 
 
 def compute_negative_log_likelihood_gradient(y, tx, w):
-    """compute the gradient of the negative log likelihood."""
+    """
+    Compute the gradient of the negative log likelihood.
+
+    :param y: Label data.
+    :param tx: Input features.
+    :param w: Model weights.
+    :return: Negative log likelihood.
+    """
     return tx.T @ (sigmoid(tx @ w) - y)
 
 
 def calculate_hessian(tx, w):
-    """return the Hessian of the loss function."""
+    """
+    Calculates the Hessian of the loss function.
 
+    :param tx: Input features.
+    :param w: Model weights.
+    :return: Hessian array of the loss function.
+    """
     S = np.diag((sigmoid(tx @ w) * (1 - sigmoid(tx @ w))).flatten())
 
     return tx.T @ S @ tx
