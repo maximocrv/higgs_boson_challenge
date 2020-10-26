@@ -224,9 +224,9 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
         _y_te = y_te[~outliers_te]
         _y_tr = y_tr[~outliers_tr]
 
-        x_tr, x_te = transform_data(x_tr, x_te, degree)
+        _x_tr, _x_te = transform_data(_x_tr, _x_te, degree)
 
-        loss_tr, w = method(y_tr, x_tr, **kwargs)
+        loss_tr, w = method(_y_tr, _x_tr, lambda_=lambda_, **kwargs)
 
         loss_te = np.mean(np.abs(_y_te - _x_te @ w)) / _x_te.shape[0]
         loss_tr = loss_tr / _x_tr.shape[0]
@@ -237,8 +237,8 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
 
         # loss_te = compute_mse(y_te, x_te, w)
 
-        acc_tr = compute_accuracy(w, x_tr, y_tr, binary_mode=binary_mode)
-        acc_te = compute_accuracy(w, x_te, y_te, binary_mode=binary_mode)
+        acc_tr = compute_accuracy(w, _x_tr, _y_tr, binary_mode=binary_mode)
+        acc_te = compute_accuracy(w, _x_te, _y_te, binary_mode=binary_mode)
 
     elif split_mode == 'jet_groups':
         y_train_pred = np.zeros(len(y_tr))
