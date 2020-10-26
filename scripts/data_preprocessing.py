@@ -67,7 +67,8 @@ def convert_nan(x, nan_mode='mode'):
 
 def standardize_data(x):
     """
-    Standardization of the dataset, so that mean = 0 and std = 1
+    Standardization of the dataset, so that mean = 0 and std = 1. The data is filtered such that all columns where the
+    standard deviation is equal to zero simply have their mean subtracted, in order to avoid division by zero errors.
 
     :param nan_mode: mean, median, mode
     :param x: input dataset
@@ -77,16 +78,8 @@ def standardize_data(x):
     col_means = np.nanmean(x, axis=0)
     col_sd = np.nanstd(x, axis=0)
 
-    #zero_sd = np.where(col_sd == 0)
-
     x[:, col_sd > 0] = (x[:, col_sd > 0] - col_means[col_sd > 0]) / col_sd[col_sd > 0]
     x[:, col_sd == 0] = x[:, col_sd == 0] - col_means[col_sd == 0]
-    #if not zero_sd:
-    #    x[:, zero_sd] = (x[:, zero_sd] - col_means[zero_sd])
-    #    x[:, ~zero_sd] = (x[:, ~zero_sd] - col_means[~zero_sd]) / col_sd[~zero_sd]
-
-    #else:
-    #    x = (x - col_means) / col_sd
 
     return x, col_means, col_sd
 
@@ -101,7 +94,7 @@ def balance_all(y, x):
     :return: Balanced dataset containing a randomly selected 50/50 distribution of signals and background noise.
     """
     x = set_nan(x)
-    datalength = y.shape[0]
+
     hits = np.sum(y[y == 1])
     misses = - np.sum(y[y == -1])
 
@@ -111,12 +104,6 @@ def balance_all(y, x):
     xv = np.delete(x, cut_indexes, axis=0)
     yv = np.delete(y, cut_indexes, axis=0)
 
-    # for testing : check if proportion hits = 0.5
-    datalengthv = yv.shape[0]
-    hitsv = np.sum(yv[yv == 1])
-    missesv = - np.sum(yv[yv == -1])
-    proportion_hitsv = hitsv / datalengthv
-    diffv = missesv - hitsv
     return yv, xv
 
 
@@ -130,21 +117,19 @@ def balance_fromnans(y, x):
     :return: yv and xv, with equal hits and misses
     """
     x = set_nan(x)
-    datalength = y.shape[0]
+
     hits = np.sum(y[y == 1])
-    # misses = - np.sum(y[y == -1])
     misses = len(y[y == 0])
-    proportion_hits = hits / datalength
     diff = misses - hits
 
     features = np.array([23, 24, 25, 4, 5, 6, 12, 26, 27, 28])
     nancount = np.isnan(x[:, features])
-    # nancount_allfeat = (np.sum(nancount, 1) == features.shape[0]) & (y == -1)
+
     nancount_allfeat = (np.sum(nancount, 1) == features.shape[0]) & (y == 0)
     misses_subgroup = np.sum(nancount_allfeat)
 
     if misses_subgroup < diff:
-        "not enough misses to cut that are nans in the selected features"
+        # not enough misses to cut that are nans in the selected features
         amount = misses_subgroup
     else:
         amount = diff
@@ -154,13 +139,6 @@ def balance_fromnans(y, x):
 
     xv = np.delete(x, cut_indexes, axis=0)
     yv = np.delete(y, cut_indexes, axis=0)
-
-    # for testing : checks to verify the new ratio hit/tot
-    datalengthv = yv.shape[0]
-    hitsv = np.sum(yv[yv == 1])
-    missesv = - np.sum(yv[yv == -1])
-    proportion_hitsv = hitsv / datalengthv
-    diffv = missesv - hitsv
 
     return yv, xv
 
@@ -311,6 +289,12 @@ def remove_outliers(x):
 
 
 def cross_channel_features(x):
+    """
+    Generate matrix containing product of all features with one another (except themselves).
+
+    :param x: Input features.
+    :return: Numpy array containing product of all channels with each other.
+    """
     cross_x = np.zeros((x.shape[0], np.sum(np.arange(x.shape[1]))))
 
     count = 0
@@ -323,13 +307,23 @@ def cross_channel_features(x):
 
 
 def transform_data(x_tr, x_te, degree):
+    """
+    Performs the data transformation and feature expansion on the input features. Concatenates the polynomial expansion
+    basis, logarithmic basis (of positive columns), cross channel correlations, and the intercept term for the training
+    and testing data.
+
+    :param x_tr: Train input features.
+    :param x_te: Test input features.
+    :param degree: Degree of the polynomial basis.
+    :return: Transformed, horizontally concatenated input feature matrix.
+    """
     x_tr_cross = cross_channel_features(x_tr)
     x_te_cross = cross_channel_features(x_te)
 
     neg_cols_te = np.any(x_tr <= 0, axis=0)
     neg_cols_tr = np.any(x_te <= 0, axis=0)
     neg_cols = np.logical_or(neg_cols_te, neg_cols_tr)
-    # pos_cols = np.any(x_tr > 0, axis=0)
+
     x_tr_log = np.log(x_tr[:, ~neg_cols])
     x_te_log = np.log(x_te[:, ~neg_cols])
 
@@ -340,7 +334,7 @@ def transform_data(x_tr, x_te, degree):
     x_te = np.concatenate((x_te, x_te_cross, x_te_log), axis=1)
 
     x_tr, tr_mean, tr_sd = standardize_data(x_tr)
-    # x_te = (x_te - tr_mean) / tr_sd
+
     x_te[:, tr_sd > 0] = (x_te[:, tr_sd > 0] - tr_mean[tr_sd > 0]) / tr_sd[tr_sd > 0]
     x_te[:, tr_sd == 0] = x_te[:, tr_sd == 0] - tr_mean[tr_sd == 0]
 
