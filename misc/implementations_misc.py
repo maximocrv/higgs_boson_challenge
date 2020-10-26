@@ -258,9 +258,9 @@ def cross_validation(y, x, method, k_indices, k, degree, split_mode, binary_mode
             y_test_pred[jet_group_te] = predict_labels(w, _x_te, binary_mode=binary_mode)
 
             # loss_te = compute_rmse(_y_te, _x_te, w)
-            loss_te = np.mean(np.abs(_y_te - _x_te @ w))
+            loss_te = np.mean(np.abs(_y_te - _x_te @ w)) / _x_te.shape[0]
             loss_te_list.append(loss_te)
-            loss_tr_list.append(loss_te)
+            loss_tr_list.append(loss_tr / _x_tr.shape[0])
 
             w_l2 = np.sqrt(np.sum(w ** 2))
             loss_te_l2 = compute_mse(_y_te, _x_te, w) + lambda_ * w_l2

@@ -8,7 +8,7 @@ from scripts.data_preprocessing import build_k_indices
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
 
 seed = 1
-degrees = np.arange(8, 14)
+degrees = np.arange(1, 14)
 lambdas = np.logspace(-6, -1, 6)
 
 k_fold = 5

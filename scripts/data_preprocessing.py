@@ -14,6 +14,12 @@ def set_nan(x):
 
 
 def remove_constant_columns(x):
+    """
+    Removes columns containing one single value (be it np.nan or other values).
+
+    :param x: Input feature data.
+    :return: Cleaned input data excluding columns containing one element.
+    """
     x = set_nan(x)
 
     nan_count = np.sum(np.isnan(x), axis=0)
@@ -62,6 +68,7 @@ def convert_nan(x, nan_mode='mode'):
 def standardize_data(x):
     """
     Standardization of the dataset, so that mean = 0 and std = 1
+
     :param nan_mode: mean, median, mode
     :param x: input dataset
     :return: standardized dataset
@@ -87,10 +94,11 @@ def standardize_data(x):
 def balance_all(y, x):
     """
     Balances the datasets by selecting and cutting a random subsets of misses, which are more abundant,
-    to obtain an equal number of hits and misses
-    :param y: input, categorical
-    :param x: input features
-    :return: 50/50 balanced random
+    to obtain an equal number of hits and misses.
+
+    :param y: Label data.
+    :param x: Input features.
+    :return: Balanced dataset containing a randomly selected 50/50 distribution of signals and background noise.
     """
     x = set_nan(x)
     datalength = y.shape[0]
@@ -115,7 +123,8 @@ def balance_all(y, x):
 def balance_fromnans(y, x):
     """
     Balances the datasets by preferably cutting features with nans. To be used with the entire dataset and
-    not with spit-number-of-jets specific subdatasets
+    not with spit-number-of-jets specific subdatasets.
+
     :param y: classification feature, 1 or -1
     :param x: input matrix
     :return: yv and xv, with equal hits and misses
@@ -157,7 +166,14 @@ def balance_fromnans(y, x):
 
 
 def build_poly(x, degree):
-    """polynomial basis functions for multidimensional input data x"""
+    """
+    Builds polynomial basis function (for both input vectors or input arrays).
+
+    :param x: Input features.
+    :param degree: Degree of the polynomial basis.
+    :return: Horizontally concatenated array containing all the degree bases up to and including the selected degree
+    parameter.
+    """
     if degree == 0:
         x = np.ones((x.shape[0], 1))
     else:
@@ -169,11 +185,14 @@ def build_poly(x, degree):
 
 def split_data(x, y, ratio, seed=1):
     """
-    split the dataset based on the split ratio. If ratio is 0.8
-    you will have 80% of your data set dedicated to training
-    and the rest dedicated to testing
+    Split the dataset into training and testing data.
+
+    :param x: Input features.
+    :param y: Label data.
+    :param ratio: Ratio of training data.
+    :param seed: Seed for random permutations (to allow for reproducibility).
+    :return: Training and testing sets for both the input features and label data.
     """
-    # set seed
     np.random.seed(seed)
 
     split = int(ratio * x.shape[0])
@@ -195,6 +214,13 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     Example of use :
     for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
         <DO-SOMETHING>
+
+    :param y: Label data.
+    :param tx: Input features.
+    :param batch_size: Size of the batch to generate (default is 1).
+    :param num_batches: Number of batches to generate for iterator.
+    :param shuffle: Boolean to decide whether to shuffle data or not (default is True).
+    :return: Iterator containing the requested number of batches with the given batch size.
     """
     data_size = len(y)
 
@@ -213,7 +239,14 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 
 
 def build_k_indices(y, k_fold, seed):
-    """build k indices for k-fold."""
+    """
+    Build the set of k indices for k-fold validation.
+
+    :param y: Label data.
+    :param k_fold: Number of folds (i.e. dataset partitions).
+    :param seed: Seed for random permutations (to allow for reproducibility).
+    :return: Array containing subarrays with the indices of each of the folds.
+    """
     num_row = y.shape[0]
     interval = int(num_row / k_fold)
     np.random.seed(seed)
@@ -225,9 +258,10 @@ def build_k_indices(y, k_fold, seed):
 
 def split_data_jet(x):
     """
-    Splits the data depending on the value of the number of jets variable (22)
-    :param x: input dataset
-    :return: split datasets
+    Splits the data depending on the value of the number of jets variable (feature #22)
+
+    :param x: Input features.
+    :return: Indices pertaining to jet numbers of 0, 1, or 2 and 3.
     """
     ind_0 = x[:, 22] == 0
     ind_1 = x[:, 22] == 1
@@ -238,15 +272,15 @@ def split_data_jet(x):
 
 def preprocess_data(x, nan_mode):
     """
-    Perform all the pre-processing algorithms that we want to apply to our dataset before using it. Remove unnecessary
-    features, based on the correlation, remove the constant features and convert nans to a selected parameter.
-    :param x: input dataset
-    :param nan_mode: mean, median or mode
-    :return: preprocessed dataset
+    Perform all the pre-processing steps to the input data. Removes unnecessary features based on intercorrelations in
+    the features and correlations with respect to the label data, as outlined in the report. Removes columns containing
+    single unique elements and replaces nan entries by the selected mode.
+
+    :param x: Input features.
+    :param nan_mode: Appraoch for replacing the nan values. Can selected between 'mean', 'median' or 'mode'.
+    :return: Preprocessed input features.
     """
-    # remove unnecessary features, 22 -- > jet group number
     x = np.delete(x, [9, 15, 18, 20, 25, 28, 29], axis=1)
-    # useless features, based on histograms (15, 18, 20, 25, 28) and linearity found with the covariance matrix (9,29)
 
     x = remove_constant_columns(x)
 
@@ -256,6 +290,12 @@ def preprocess_data(x, nan_mode):
 
 
 def remove_outliers(x):
+    """
+    Filters outliers from the dataset by removing those within a certain number of standard deviations from the mean.
+
+    :param x: Input features.
+    :return:
+    """
     x_mean = np.mean(x, axis=0)
     x_sd = np.std(x, axis=0)
 
