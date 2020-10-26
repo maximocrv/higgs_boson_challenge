@@ -4,7 +4,6 @@ import numpy as np
 from scripts.proj1_helpers import load_csv_data
 from scripts.data_preprocessing import build_k_indices
 from scripts.implementations import logistic_regression, cross_validation
-from scripts.utilities import obtain_best_params
 
 y_tr, x_tr, ids_tr = load_csv_data("data/train.csv", mode='one_hot')
 
@@ -45,5 +44,3 @@ for h, gamma in enumerate(gammas):
         accuracy_ranking_tr[h, i] = np.mean(temp_acc_tr)
         accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
         accuracy_ranking_conf_interval[h, i] = np.mean(temp_acc_te) - 2 * np.std(temp_acc_te)
-
-best_params = obtain_best_params(accuracy_ranking_te, gammas, degrees, None)
