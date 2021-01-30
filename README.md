@@ -1,6 +1,6 @@
 # ML Project I 
 ## Higgs Boson Challenge
-#####Samuele Caneschi, Maximo Cravero, Milo Imbeni
+### Samuele Caneschi, Maximo Cravero, Milo Imbeni
 
 To reproduce our result, at first make sure to have ```Numpy``` installed and to download properly the dataset 
 ```train.csv``` and ```test.csv```. Then, run the file ```run.py```.
@@ -18,7 +18,7 @@ The functions implemented in this section are:
 - ```set_cov_inf```, ```corr_col```: the output of the second function, that uses the first to do its operations, is a 
 list that contains all the couples of features that has a correlation higher than a pre-selected threshold.
 
-###```data_preprocessing.py``` 
+### ```data_preprocessing.py``` 
 Contains all the functions used to apply different pre-processing methods to the data before building the model. The 
 functions implemented in this section are:
 - ```set_nan```, ```convert_nan```: respectively to set all -999 values to nan and to convert them to the mean, median
@@ -37,7 +37,7 @@ signals and backgrounds;
 between the features;
 - ```preprocess_data```: contains all the pre-processing methods we wnat to apply to the dataset.
  
-###```implementations.py``` 
+### ```implementations.py``` 
 Contains all the functions associated with the different methods we used to build models and the functions used to 
 perform simple operations necessary to obtain coefficients used in the implementation of the methods. The functions 
 in this section are:
@@ -58,7 +58,7 @@ regression method, using gradient descent;
 - ```cross_validation```: performs cross validation using two modes: ```default``` or ```jet_groups```, which is used 
 when the dataset has been split based on the jet number. 
 
-###```utilities.py``` 
+### ```utilities.py``` 
 Contains all the functions doing simple operations to calculate coefficients or indicators that are useful in other
 implementations. The functions implemented in this section are:
 - ```compute_f1score```, ```matthews_coeff```, ```calculate_recall_precision_accuracy```: calculate different metrics to 
@@ -66,7 +66,7 @@ evaluate the efficiency of the method used for prediction;
 - ```create_confusion_matrix```: creates the confusion matrix, used to compute the different metrics;
 - ```obtain_best_params```: computes the hyperparameters that provide the best model, in term of accuracy.
 
-###```proj1_helpers.py``` 
+### ```proj1_helpers.py``` 
 Contains the following functions:
 - ```load_csv_data```: loads the dataset;
 - ```predict_labels```: predicts the classification (signal/background) of the test dataset based on the model built;
