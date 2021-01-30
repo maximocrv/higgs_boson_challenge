@@ -1,0 +1,63 @@
+# streamlining hyperparameter tuning and testing across all optimization methods!!!!!!
+# logistic regression sgd is best example of how to perform preprocessing etc
+# standardizing continuous variables and leaving categorical variables be
+# test feature elimination based on unprocessed highcorr features and nan to mean highcorr features
+# test mean and median nan mode w logistic regression
+# implement accuracy metric using distribution across folds (i.e. max(mean(acc) - 2*sd(acc)))
+# PCA
+# test all the above with ridge regression
+
+# balance dataset
+# y_tr, x_tr = balance_fromnans(y_tr, x_tr)
+
+
+# Choice of variables to cut based on covariance and histograms
+# cut_features = np.array([9, 29, 3, 4])
+# cut_features2 = np.array([15, 18, 20])
+# cut_features3 = np.array([4, 5, 6, 12, 26, 27, 28])
+
+# unprocessed highly correlated features
+# features = [5, 6, 12, 21, 22, 24, 25, 26, 27, 28, 29]
+# nan to mean highly correlated features
+# features = [2, 6, 7, 9, 11, 12, 16, 17, 19, 21, 22, 23, 29]
+# highly correlated features no nans
+# features = INSERT INDICES
+
+# x_tr = np.delete(x_tr, cut_features, axis=1)
+# x_tr = np.delete(x_tr, features, axis=1)
+
+# STANDARDIZE DATA AFTER GENERATING FEATURE EXPANSION VECTOR
+# x_tr = standardize_data(x_tr, nan_mode=nan_mode)
+
+# standardize data after polynomial basis expansion?
+# function to generate test predictions?..... is this run.py descritta sul doc?
+# implement confusion matrix....
+# remove features 15, 18, 20
+# balance dataset done
+# remove 30% of 40% dataset containing nans and misses (to balance dataset!) yep done
+# test newton's method, random forest?... idk do we have time?
+
+- shuffle data!
+
+- normalize data = mean to 0 and variance to 1
+
+- -999 -> mean or median
+
+- Different approaches to dealing with -999 values: mean or median or eliminate features
+
+- Which features are always corrupted? three groups, 15 40 70
+
+- Eliminate linearly dependent rows/ columns: no directly linearly dependent features. Role of linear dependency on rows
+unclear, ASK TA
+
+- checking for linear dependence; before or after basis expansion? does it make any difference? ASK TA
+
+- Relationships between features : covariance matrix = eliminate features with correlation over 90%?
+
+- Distributions of the variables : explored using histograms and graphs of the hit/miss ratio for each variable
+
+- Polynomial expansion done
+
+- Compare different model types
+
+- which loss functions to use??

@@ -1,15 +1,42 @@
-# -*- coding: utf-8 -*-
-"""Function used to perform ridge regression."""
+"""Performing hyperparameter tuning using ridge regression."""
+import numpy as np
 
-def ridge_regression(y, tx, lambda_):
-    """implement ridge regression."""
-    
-    a = tx.T @ tx + 2 * lambda_ * tx.shape[0] * np.eye(tx.shape[1])
-    b = tx.T @ y
-    
-    w = np.linalg.solve(a, b)
-    
-    mse = compute_mse(y, tx, w)
-    rmse = compute_rmse(y, tx, w)
-    
-    return mse, w
+from scripts.proj1_helpers import load_csv_data
+from scripts.implementations import ridge_regression, cross_validation
+from scripts.data_preprocessing import build_k_indices
+
+y_tr, x_tr, ids_tr = load_csv_data("data/train.csv")
+
+seed = 1
+degrees = np.arange(1, 14)
+lambdas = np.logspace(-6, -1, 6)
+
+k_fold = 5
+k_indices = build_k_indices(y_tr, k_fold, seed)
+
+nan_mode = 'mode'
+binary_mode = 'default'
+split_mode = 'jet_groups'
+
+accuracy_ranking_tr = np.zeros((len(lambdas), len(degrees)))
+accuracy_ranking_te = np.zeros((len(lambdas), len(degrees)))
+
+count = 0
+for h, lambda_ in enumerate(lambdas):
+    for i, degree in enumerate(degrees):
+        count += 1
+        temp_acc_te = []
+        temp_acc_tr = []
+        for k in range(k_fold):
+            acc_tr, acc_te, loss_tr, loss_te = cross_validation(y_tr, x_tr, ridge_regression, k_indices, k, degree,
+                                                                lambda_=lambda_, split_mode=split_mode,
+                                                                binary_mode=binary_mode, nan_mode=nan_mode)
+
+            temp_acc_te.append(acc_te)
+            temp_acc_tr.append(acc_tr)
+
+        print(f'#: {count} / {len(degrees) * len(lambdas)}, lambda: {lambda_}, degree: {degree}, '
+              f'accuracy_tr = {np.mean(temp_acc_tr)}, accuracy_te = {np.mean(temp_acc_te)}')
+
+        accuracy_ranking_tr[h, i] = np.mean(temp_acc_tr)
+        accuracy_ranking_te[h, i] = np.mean(temp_acc_te)
